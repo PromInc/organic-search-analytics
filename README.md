@@ -32,3 +32,11 @@ Import organic search analytics from Google Search Console (Google Webmaster Too
   4. DB_CONNECTION_DATABASE = the MySQL database name as defined in step 3.
   5. OAUTH_CREDENTIALS_EMAIL = the Google API Access email address from step 5.xv.
   6. OAUTH_CREDENTIALS_PRIVATE_KEY_FILE_NAME = The file name of the P12 file from step 5.xiv.
+7. Grant access to Google Search Console.
+  1. Log into [Google Search Console](https://www.google.com/webmasters/)
+  2. For each site you wish to access data from, choose **Manage property -> Add or remove users**.
+  3. Click **ADD A NEW USER**
+  4. Enter the email address from ste 5.xv in the **User email** field.
+  5. Set the **Permision** dropdown to **Full**.
+  6. Click the **Add** button.
+  7. To grant access to other sites, click **Search Console** in the top left and repeat steps iii through vi, using the same email address in each step.
