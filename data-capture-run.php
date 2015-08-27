@@ -7,7 +7,7 @@ if( isset($_GET) && isset($_GET['domain']) && isset($_GET['date']) && preg_match
 
 	$recordsImported = $dataCapture->downloadGoogleSearchAnalytics($_GET['domain'],$_GET['date']);
 /* 	echo "<p>" . $recordsImported . " records succesfully imported to the database for " . $$_GET['domain'] . " for date: " . $_GET['date'] . ".</p>"; */
-	echo $recordsImported . " records succesfully imported to the database for " . $_GET['domain'] . " for date: " . $_GET['date'] . ".";
+	echo number_format( $recordsImported ) . " records succesfully imported to the database for " . $_GET['domain'] . " for date: " . $_GET['date'] . ".";
 	
 } else {
 	echo "<p>ERROR: Invalid request.  Domain: " . $_GET['domain'] . ", Date: " . $_GET['date'] . "</p>";
