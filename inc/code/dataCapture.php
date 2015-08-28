@@ -25,36 +25,43 @@
 		public function checkNeededDataGoogleSearchAnalytics($website) {
 			$core = new Core(); //Load core
 			$mysql = new MySQL(); //Load MySQL
-			
+
 			$now = $core->now();
-			
+
 			/* Identify date range */
 			$dateStartOffset = self::GOOGLE_SEARCH_ANALYTICS_MAX_DATE_OFFSET+self::GOOGLE_SEARCH_ANALYTICS_MAX_DAYS;
 			$dateStart = date('Y-m-d', strtotime('-'.$dateStartOffset.' days', $now));
 			$dateEnd = date('Y-m-d', strtotime('-'.self::GOOGLE_SEARCH_ANALYTICS_MAX_DATE_OFFSET.' days', $now));
-			
+
+			/* Query database for dates with data */
+			$query = "SELECT COUNT( DISTINCT date ) AS record, date FROM ".MySQL::DB_TABLE_SEARCH_ANALYTICS." WHERE domain LIKE '".$website."' AND date >= '".$dateStart."' AND date <= '".$dateEnd."' GROUP BY date";
+			$result = $mysql->query( $query );
+
+			/* Create array from database response */
+			$datesWithData = array();
+			foreach( $result as $row ) {
+				array_push( $datesWithData, $row['date'] );
+			}
+
 			/* Get date rante */
 			$dates = $core->getDateRangeArray( $dateStart, $dateEnd );
+
 			/* Loop through dates, removing those with data */
 			foreach( $dates as $index => $date ) {
-/* 				$numRows = $mysql->numRows( 'search_queries_table', array('date'=>$date,'domain'=>$website,'search_engine'=>'google') ); */
-				$numRows = $mysql->numRows( MySQL::DB_TABLE_SEARCH_ANALYTICS, array('date'=>$date,'domain'=>$website,'search_engine'=>'google') );
-				if( $numRows > 0 ) {
+				if( in_array( $date, $datesWithData ) ) {
 					unset( $dates[ $index ] );
 				}
 			}
-			
-			
+
 			/* Reindex dates array */
 			$dates = array_values($dates);
-			
+
 			$returnArray = array(
 				'dateStart' => $dateStart,
 				'dateEnd' => $dateEnd,
 				'datesWithNoData' => $dates
 			);
 
-			
 			return $returnArray;
 		}
 

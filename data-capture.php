@@ -17,8 +17,6 @@
 	</div>
 
 	<?php
-		//$domains = array("www.luggagepros.com/");
-
 		$domains = $mysql->getSettings("sites_google", "1");
 
 		foreach( $domains as $domain => $values ) {

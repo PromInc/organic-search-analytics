@@ -92,6 +92,19 @@
 
 
 		/**
+		 *  Query Database
+		 *
+		 *  @param $query     String   SQL formated query
+		 *
+		 *  @returns   Array   Assosiative array of response
+		 */		
+		public function queryArray( $query ) {
+			$result = self::query( $query );
+			return $result->fetch_array();
+		}
+
+
+		/**
 		 *  Get Number of Rows
 		 *
 		 *  @param $table     String   Table name
