@@ -1,8 +1,6 @@
 # Organic Search Analytics Importer
 Import organic search analytics from Google Search Console (Google Webmaster Tools) into your local database to keep a historical record of your data (past the 30 days that Google offers)
 
-**NOTE: Not a complete repostitory yet**
-
 ## Installation
 1. Setup a hosting environemnt.  PHP and MySQL are required.  If you'd like to install and run this on a local machine, I suggest using [XAMPP](https://www.apachefriends.org/index.html) or [MAMP](https://www.mamp.info/en/).
   - NOTE: The [Google API states](https://developers.google.com/api-client-library/php/) it requires PHP 5.2.1 or higher, however in testing I found that it does NOT work on PHP  5.2.17.  I then upgraded to PHP 5.4.43 and all works great - so I'm not entirely sure what the first stable version of PHP this will operate is.

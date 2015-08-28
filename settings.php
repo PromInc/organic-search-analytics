@@ -33,12 +33,16 @@
 			foreach( $sitesList as $site => $value ) {
 				if( in_array( $site, $_POST['sites_google'] ) ) {
 					/* Set to checked */
-					$mysql->qryDBupdate( $dbTable_settings, array('type'=>'sites_google', 'value'=>$site), array('data',1) );
-					$sitesList[$site] = 1;
+					$response = $mysql->qryDBupdate( $dbTable_settings, array('type'=>'sites_google', 'value'=>$site), array('data'=>1) );
+					if( $response ) {
+						$sitesList[$site] = 1;
+					}
 				} else {
 					/* Set to unchecked */
-					$mysql->qryDBupdate( $dbTable_settings, array('type'=>'sites_google', 'value'=>$site), array('data',"") );
-					$sitesList[$site] = NULL;
+					$response = $mysql->qryDBupdate( $dbTable_settings, array('type'=>'sites_google', 'value'=>$site), array('data'=>0) );
+					if( $response ) {
+						$sitesList[$site] = NULL;
+					}
 				}
 			}
 

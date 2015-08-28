@@ -97,8 +97,6 @@
 					$searchAnalyticsRequest->setSearchType( $searchType );
 
 					/* Send Search Analytics Request */
-/* This next line is where we are failing currently */
-//echo "Script is failing to send the request to Google | inc/code/dataCapture.php";
 					$searchAnalyticsResponse = $searchanalytics->query( $website, $searchAnalyticsRequest);
 
 					/* Import Search Analytics to Database */
