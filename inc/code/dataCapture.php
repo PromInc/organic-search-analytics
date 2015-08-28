@@ -67,6 +67,7 @@
 
 
 		public function downloadGoogleSearchAnalytics($website,$date) {
+			$importCount = 0;
 			/* Website requires a trailing slash */
 //			if( substr( $website, -1 ) != "/" ) { $website .= "/"; }
 
@@ -88,32 +89,27 @@
 
 			/* Build Search Analytics Request */
 			$searchAnalyticsRequest->setDimensions(['query','device']);
-//			$searchAnalyticsRequest->setDimensions( array('query','device') );
 			$searchAnalyticsRequest->setRowLimit( 5000 ); /* Valid options: 1-5000 */
 
-			/* Loop through each of the dates requested */
-/* 			foreach( $dateList as $dateListIndex => $date ) { */
+			/* Set date for Search Analytics Request */
+			$searchAnalyticsRequest->setStartDate( $date );
+			$searchAnalyticsRequest->setEndDate( $date );
+			/* Loop through each of the search types */
+			foreach( $searchTypes as $searchType ) {
+				/* Set search type in Search Analytics Request */
+				$searchAnalyticsRequest->setSearchType( $searchType );
 
-				/* Set date for Search Analytics Request */
-				$searchAnalyticsRequest->setStartDate( $date );
-				$searchAnalyticsRequest->setEndDate( $date );
-				/* Loop through each of the search types */
-				foreach( $searchTypes as $searchTypesIndex => $searchType ) {
+				/* Send Search Analytics Request */
+				$searchAnalyticsResponse = $searchanalytics->query( $website, $searchAnalyticsRequest);
 
-					/* Set search type in Search Analytics Request */
-					$searchAnalyticsRequest->setSearchType( $searchType );
-
-					/* Send Search Analytics Request */
-					$searchAnalyticsResponse = $searchanalytics->query( $website, $searchAnalyticsRequest);
-
-					/* Import Search Analytics to Database */
-					if( is_object( $searchAnalyticsResponse ) ) {
-						$wmtimport = new WMTimport();
-
-						return $wmtimport->importGoogleSearchAnalytics( $website, $date, $searchType, $searchAnalyticsResponse );
-					}
+				/* Import Search Analytics to Database */
+				if( is_object( $searchAnalyticsResponse ) ) {
+					$wmtimport = new WMTimport();
+					$importCount += $wmtimport->importGoogleSearchAnalytics( $website, $date, $searchType, $searchAnalyticsResponse );
 				}
-/* 			} */
+			}
+
+			return $importCount;
 
 		}
 
