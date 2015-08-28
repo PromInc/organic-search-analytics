@@ -36,4 +36,33 @@ console.log( errorThrown );
 
 function postGoogleSearchAnalyticsAjax(catId, domain, date, data) {
 	$("#"+catId+" li[domain='"+domain+"'][date='"+date+"']").empty().append(data);
+
+	/* If import all is set, continue processing */
+	if( window.importAllProcessing == true ) {
+		importAllRun(catId);
+	}
 }
+
+/* Import All functionality | START */
+importAllStop();
+function importAllRun(catId) {
+	window.importAllProcessing = true;
+
+	$(".importAllButtons[category='"+catId+"'] .buttonImportAllRun").hide();
+	$(".importAllButtons[category='"+catId+"'] .buttonImportAllStop").show();
+
+	/* Trigger the first import button */
+	if( $("#"+catId+" .buttonImport").eq(0) ) {
+		$("#"+catId+" .buttonImport").eq(0).trigger("click");
+	} else {
+		console.log("No more data to import");
+		window.importAllProcessing = false;
+	}
+}
+
+function importAllStop() {
+	window.importAllProcessing = false;
+	$(".importAllButtons .buttonImportAllStop").hide();
+	$(".importAllButtons .buttonImportAllRun").show();
+}
+/* Import All functionality | END */
