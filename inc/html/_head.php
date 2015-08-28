@@ -26,7 +26,7 @@
 			<span><a href="search.php">GWT Report Download</a></span>
 			<span><a href="import.php">Import</a></span>
 -->
-			<!-- <span><a href="report.php">Reports</a></span> -->
+			<span><a href="report.php">Reports</a></span>
 		</header>
 
 		<div id="siteContent">
