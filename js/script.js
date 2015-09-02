@@ -52,10 +52,10 @@ function importAllRun(catId) {
 	$(".importAllButtons[category='"+catId+"'] .buttonImportAllStop").show();
 
 	/* Trigger the first import button */
-	if( $("#"+catId+" .buttonImport").eq(0) ) {
+	if( $("#"+catId+" .buttonImport").length > 0 ) {
 		$("#"+catId+" .buttonImport").eq(0).trigger("click");
 	} else {
-		console.log("No more data to import");
+		importAllStop();
 		window.importAllProcessing = false;
 	}
 }

@@ -14,7 +14,36 @@
 	
 		const GOOGLE_SEARCH_ANALYTICS_MAX_DATE_OFFSET = 4;
 		const GOOGLE_SEARCH_ANALYTICS_MAX_DAYS = 90;
-		
+
+
+		/**
+		 *  Get authorized sites from Google Search Console
+		 *
+		 *  @returns   Array   Site URL and permission level
+		 */
+		public function getSitesGoogleSearchConsole() {
+			/* Authorize Google via oAuth 2.0 */
+			$gapiOauth = new GAPIoAuth();
+			$client = $gapiOauth->LogIn();
+
+			/* Load Google Webmasters API */
+			$webmasters = new Google_Service_Webmasters($client);
+
+			/* Load sites functions */
+			$siteServices = $webmasters->sites;
+
+			/* Get list of sites */
+			$gSites = $siteServices ->listSites();
+
+			$return = array();
+			foreach( $gSites->getSiteEntry() as $site ) {
+				$return[] = array( 'url' => $site['siteUrl'], 'permission' => $site['permissionLevel'] );
+			}
+
+			return $return;
+		}
+
+
 		/**
 		 *  Query database.  Retrun all values from a table
 		 *

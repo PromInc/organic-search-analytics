@@ -72,4 +72,6 @@
 		</p>
 	</form>
 
+	<?php include ('inc/html/reportQuickLinks.php'); ?>
+
 <?php include_once('inc/html/_foot.php'); ?>
