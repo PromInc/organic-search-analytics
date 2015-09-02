@@ -1,3 +1,11 @@
+## 1.3.0 - 2015-09-02
+### Changed
+- Instead of manually adding sites in the Settings page, it now pulls in the list of sites that have API access from Google Search Console.
+## Fixed
+- The import all button swithces from "Stop" to "Run" once all of the imports have been completed.
+- The link to the Data Capture page on the homepage was incorrect.
+## Added
+- A quick links file has been added to the reporting page.  At this time it is very rudimentary - this is a file where you can hard-code in any quick links for reports you may want to access on a routine basis.
 ## 1.2.0 - 2015-08-31
 ### Added
 - Basic reporting features added.
