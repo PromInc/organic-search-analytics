@@ -9,7 +9,7 @@
 			<h2>Data Capture and Import</h2>
 			<div>Capture and import data from Organic Search Analytics resources.</div>
 			<div>Note: <i>At this time only Google Search Analytics data is configured to work with this tool.  In the future additional data from Google and Bing will be added, as well as reporting features.</i></div>
-			<div><a href="search.php">Data Capture</a></div>
+			<div><a href="data-capture.php">Data Capture</a></div>
 		</li>
 		
 		<li>
