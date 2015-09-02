@@ -9,16 +9,16 @@
 		<p>
 			<label>Domain: </label><br>
 			<?php
-			$domains = $mysql->getSettings("sites_google", "1");
-			foreach( $domains as $domain => $values ) {
-				echo '<input type="radio" name="domain" id="'.$domain.'" value="'.$domain.'"><label for="'.$domain.'">'.$domain.'</label><br>';
+			$sitesList = $dataCapture->getSitesGoogleSearchConsole();
+			foreach( $sitesList as $key => $site ) {
+				echo '<input type="radio" name="domain" id="'.$site['url'].'" value="'.$site['url'].'"><label for="'.$site['url'].'">'.$site['url'].'</label><br>';
 			}
 			?>
 		</p>
 		<p>
 			<label for="query">Query: </label><input type="text" name="query" id="query" value="">
 		</p>
-		
+
 		<?php
 		$now = time();
 		$queryDateRange = "SELECT max(date) as 'max', min(date) as 'min' FROM `".$mysql::DB_TABLE_SEARCH_ANALYTICS."` WHERE 1";
