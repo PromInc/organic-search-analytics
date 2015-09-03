@@ -6,6 +6,10 @@
 ### Added
 - Alert boxes were added for messages upon saving, etc.
 
+## 1.3.1 - 2015-09-02
+### Fixed
+- The list of domains on the report page uses the sites pulled from Google Search Console instead of the settings table.
+
 ## 1.3.0 - 2015-09-02
 ### Changed
 - Instead of manually adding sites in the Settings page, it now pulls in the list of sites that have API access from Google Search Console.
