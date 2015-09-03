@@ -2,6 +2,7 @@
 
 <?php include_once('inc/html/_head.php'); ?>
 
+	<?php include_once('inc/html/_alert.php'); ?>
 	<h1>Organic Search Analytics | Capture and Import</h1>
 	<div>The below tools expedite grabbing data from Google Webmaster Tools</div>
 	<ul>

@@ -1,3 +1,11 @@
+## 1.4.0 - 2015-09-03
+### Changed
+- Configuration settings can be set via the website under the Settings page as opposed manually creating/editing a file on the server.
+  - README has been updated to reflect these changes.
+
+### Added
+- Alert boxes were added for messages upon saving, etc.
+
 ## 1.3.0 - 2015-09-02
 ### Changed
 - Instead of manually adding sites in the Settings page, it now pulls in the list of sites that have API access from Google Search Console.

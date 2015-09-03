@@ -2,6 +2,7 @@
 
 <?php include_once('inc/html/_head.php'); ?>
 
+	<?php include_once('inc/html/_alert.php'); ?>
 	<h1>Search Analytics Reporting</h1>
 
 	<h2>Generate Report</h2>

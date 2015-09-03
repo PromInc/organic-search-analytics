@@ -3,15 +3,53 @@
 
 <?php include_once('inc/html/_head.php'); ?>
 
+<?php
+if( $isConfigured ) {
+	/* Get list of sites */
+	$siteSettings = $mysql->getSettings("sites_google");
+	$sitesList = $dataCapture->getSitesGoogleSearchConsole();
+
+	/* Update settings table */
+	if( isset( $_POST['sites_google'] ) ) {
+		foreach( $sitesList as $key => $value ) {
+			if( in_array( $value['url'], $_POST['sites_google'] ) ) {
+				/* Set to checked */
+				$siteToAdd = addslashes( $value['url'] );
+
+				if( array_key_exists( $siteToAdd , $siteSettings ) ) {
+					$response = $mysql->qryDBupdate( $dbTable_settings, array('type'=>'sites_google', 'value'=>$siteToAdd), array('data'=>1) );
+				} else {
+					$response = $mysql->qryDBinsert( $dbTable_settings, "NULL, 'sites_google', '".$siteToAdd."', 1" );
+				}
+				if( $response ) {
+					$siteSettings[$value['url']] = 1;
+				}
+			} else {
+				/* Set to unchecked */
+				$response = $mysql->qryDBupdate( $dbTable_settings, array('type'=>'sites_google', 'value'=>$value['url']), array('data'=>0) );
+				if( $response ) {
+					$siteSettings[$value['url']] = NULL;
+				}
+			}
+			$alert = array("type"=>"success", "message"=>"Configuration Succesfully Updated");
+		}
+	}
+}
+?>
+
+	<?php include_once('inc/html/_alert.php'); ?>
 	<h1>Organic Search Analytics | Settings</h1>
 
 	<h2>Configuration</h2>
+	<p>Settings for connecting to MySQL and Google OAuth 2.0.</p>
 	<?php
 
 		if( !$isConfigured ) {
-			echo '<p>Configuration file is missing</p>';
+			echo '<p><b>Status</b>: Configuration file is missing</p>';
+			echo '<p><a href="settings-configure.php">Create Configuration File</a></p>';
 		} else {
-			echo '<p>The configuration file is set.</p>';
+			echo '<p><b>Status</b>: The configuration file is set.</p>';
+			echo '<p><a href="settings-configure.php">Change Configuration</a></p>';
 		}
 	?>
 	<hr>
@@ -22,49 +60,18 @@
 
 	<form action="<?PHP echo $_SERVER['SCRIPT_NAME'] ?>" method="post">
 		<?php
-		/* Get list of sites */
-		$siteSettings = $mysql->getSettings("sites_google");
-		$sitesList = $dataCapture->getSitesGoogleSearchConsole();
-
 		if( count( $sitesList ) == 0 && !isset( $_POST['sites_google'] ) ) {
 			echo '<p><b><i>No sites are configured at this time.  Add a site by typing it in the field below and choosing Save Settings.</i></b></p>';
-		}
-
-		/* Update settings table */
-		if( isset( $_POST['save'] ) && $_POST['save'] == "true" ) {
-			foreach( $sitesList as $key => $value ) {
-				$siteToAdd = addslashes( $value['url'] );
-				if( isset( $_POST['sites_google'] ) && in_array( $value['url'], $_POST['sites_google'] ) ) {
-					if( in_array( $value['url'], $_POST['sites_google'] ) ) {
-						/* Set to checked */
-						if( array_key_exists( $siteToAdd , $siteSettings ) ) {
-							$response = $mysql->qryDBupdate( $dbTable_settings, array('type'=>'sites_google', 'value'=>$siteToAdd), array('data'=>1) );
-						} else {
-							$response = $mysql->qryDBinsert( $dbTable_settings, "NULL, 'sites_google', '".$siteToAdd."', 1" );
-						}
-						if( $response ) {
-							$siteSettings[$value['url']] = 1;
-						}
-					}
-				} else {
-					/* Set to unchecked */
-					$response = $mysql->qryDBupdate( $dbTable_settings, array('type'=>'sites_google', 'value'=>$siteToAdd), array('data'=>0) );
-					if( $response ) {
-						$siteSettings[$value['url']] = NULL;
-					}
-				}
-			}
 		}
 		?>
 
 	<ul id="sites_google">
 		<?php if( $sitesList ) { ?>
 			<?php foreach( $sitesList as $value ) { ?>
-				<li><input type="checkbox" name="sites_google[]" value="<?php echo $value['url'] ?>" <?php echo ( isset( $siteSettings[$value['url']] ) && $siteSettings[$value['url']] == 1 ? " checked" : "" )?> /><?php echo $value['url'] ?></li>
+				<li><input type="checkbox" name="sites_google[]" value="<?php echo $value['url'] ?>" <?php if($siteSettings[$value['url']]==1){echo " checked";}?> /><?php echo $value['url'] ?></li>	
 			<?php } ?>
 		<?php } ?>
 	</ul>
-	<input type="hidden" id="save" name="save" value="true" />
 	<input type="submit" value="Save Settings">
 
 	</form>

@@ -2,6 +2,7 @@
 
 <?php include_once('inc/html/_head.php'); ?>
 
+	<?php include_once('inc/html/_alert.php'); ?>
 	<h1>Organic Search Analytics | Capture Data</h1>
 
 	<h2>Google Search Console</h2>

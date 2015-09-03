@@ -44,7 +44,7 @@
 	}
 	?>
 
-
+	<?php include_once('inc/html/_alert.php'); ?>
 	<h1>Search Analytics Reporting | Results</h1>
 	<h2><?php echo implode( ", ", $pageHeadingItems ); ?></h2>
 

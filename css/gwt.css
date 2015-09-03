@@ -82,3 +82,17 @@ header > span:not(:last-child):after {
 
 
 footer { margin-top: 50px; padding: 20px 20px 15px; background-color:#DDDDDD; }
+
+
+/* Alert Box */
+.alert { margin-top: .5%; padding: .5%; }
+.alert a, .alert a:hover, .alert a:visited, .alert a:active { color: inherit; }
+
+#siteContent div.alert.warning {
+    background-color: #F00;
+    color: #FF0;
+}
+#siteContent div.alert.success {
+    background-color: #008813;
+    color: #FFF;
+}

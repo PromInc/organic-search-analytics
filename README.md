@@ -23,14 +23,7 @@ Import organic search analytics from Google Search Console (Google Webmaster Too
   13. Choose **P12** and click the **Create** button.  Click the **Ok** button to close the popup.
   14. A file should have downloaed automatically - copy that file to your webserver to the **/config** directory.
   15. Copy the **Email address** from the **Service accounts** section and keep this handy - it's needed for a later step.
-6. Setup config file.  Open **/config/config.php** in a text editor and fill in your credentials.
-  1. DB_CONNECTION_DOMAIN = the domain name of the MySQL database connection.  If you are using XAMPP or MAMP this will be *localhost*.
-  2. DB_CONNECTION_USER = the username to connect to the MySQL database.  If you are using XAMPP or MAMP this will be *root*.
-  3. DB_CONNECTION_PASSWORD = the password to connect to the MySQL database.  If you are using XAMPP or MAMP this will be *root*.
-  4. DB_CONNECTION_DATABASE = the MySQL database name as defined in step 3.
-  5. OAUTH_CREDENTIALS_EMAIL = the Google API Access email address from step 5.xv.
-  6. OAUTH_CREDENTIALS_PRIVATE_KEY_FILE_NAME = The file name of the P12 file from step 5.xiv.
-7. [Grant access to Google Search Console](http://promincproductions.com/blog/google-api-access-google-search-analytics-from-google-search-console/).
+6. [Grant access to Google Search Console](http://promincproductions.com/blog/google-api-access-google-search-analytics-from-google-search-console/).
   1. Log into [Google Search Console](https://www.google.com/webmasters/)
   2. For each site you wish to access data from, choose **Manage property -> Add or remove users**.
   3. Click **ADD A NEW USER**
@@ -38,3 +31,10 @@ Import organic search analytics from Google Search Console (Google Webmaster Too
   5. Set the **Permision** dropdown to **Full**.
   6. Click the **Add** button.
   7. To grant access to other sites, click **Search Console** in the top left and repeat steps iii through vi, using the same email address in each step.
+7. Set configuration.  Access the site on your web server and choose **Settings -> Create Configuration File**.  Fill in the following fields and click **Save Configuration**.
+  - Database Host = the domain name of the MySQL database connection.  If you are using XAMPP or MAMP this will be *localhost*.
+  - Database Username = the username to connect to the MySQL database.  If you are using XAMPP or MAMP this will be *root*.
+  - Database Password = the password to connect to the MySQL database.  If you are using XAMPP or MAMP this will be *root*.
+  - Database Name = the MySQL database name as defined in step 3.
+  - OOAuth 2.0 Email Address = the Google API Access email address from step 5.xv.
+  - OAuth 2.0 P12 File Name = The file name of the P12 file from step 5.xiv.

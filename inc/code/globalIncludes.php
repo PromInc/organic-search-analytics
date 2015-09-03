@@ -24,5 +24,7 @@
 		$dataCapture = new DataCapture(); //Load Data Capturing tools
 
 		$GLOBALS['db'] = $core->mysql_connect_db(); // Connect to DB
+	} else {
+		$alert = array("type"=>"warning", "message"=>"Please set your configuration settings before procedding.  <a href=\"settings-configure.php\">Configure Now</a>");
 	}
 ?>
