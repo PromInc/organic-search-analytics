@@ -1,5 +1,14 @@
 # Organic Search Analytics Importer
-Import organic search analytics from Google Search Console (Google Webmaster Tools) into your local database to keep a historical record of your data (past the 30 days that Google offers)
+Import organic search analytics from Google Search Console (Google Webmaster Tools) into your local database to keep a historical record of your data (past the 30 days that Google offers).
+
+This archive of organic search analytics will allow you to study long term SEO trends and shifts and can help to monitor and gauge performance of a websites over time.
+
+Once setup, this tool will do all of the hard work, allowing the 'savy marketer' or the tech guy that wants to impress the boss to quickly get to data that Google no longer provides.
+
+Reporting features allow you to get to data that makes a difference in your marketing decisions.
+
+_**Coming Soon - Bing Webmaster Tools Data!**_
+
 
 ## Installation
 1. Setup a hosting environemnt.  PHP and MySQL are required.  If you'd like to install and run this on a local machine, I suggest using [XAMPP](https://www.apachefriends.org/index.html) or [MAMP](https://www.mamp.info/en/).
