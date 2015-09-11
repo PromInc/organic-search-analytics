@@ -9,18 +9,23 @@ body #siteContent {
 	padding:0 20px;
 }
 
+.clear { clear:both; }
+.floatleft { float:left; }
+.floatright { float:right; }
+
 header {
 	background-color: #303076;
 	padding: 10px;
 }
 header, header a { color: #FFFFFF; }
 
-header > span:not(:last-child):after {
+header div > span:not(:last-child):after {
 	content: '|';
 	margin: 0 10px;
 }
 
-
+.donate { display: inline-block; }
+.donate form { margin: 0; }
 
 .serverResponse {
 	border-color: black;
