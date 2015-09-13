@@ -42,12 +42,12 @@ if( isset( $_GET ) && isset( $_GET['upgrade'] ) ) {
 	<div>Certain versions require special consideration when upgrading.  This page will take care of technical changes that need to be made.</div>
 	<ul>
 		<li>
-			<h2>Verion 1.x to 2.0.0</h2>
+			<h2>Version 1.x to 2.0.0</h2>
 			<ul>
 				<li>Adds the CREDENTIALS_BING_API_KEY constant to the config/config.php file to allow for setting the Bing Webmaster Tools API connection.</li>
 				<li>Updates the Click Through Rate data type in the search_analytics table to correct data inaccuracies.</li>
 			</ul>
-			<div><a href="<?PHP echo $_SERVER['SCRIPT_NAME'] ?>?upgrade=1_x_to_2_0_0">Run Update</a></div>
+			<div><a href="<?PHP echo $_SERVER['SCRIPT_NAME'] ?>?upgrade=1_x_to_2_0_0">Run Update for Version 1.x to 2.0.0</a></div>
 		</li>
 	</ul>
 
