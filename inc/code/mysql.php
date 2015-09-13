@@ -13,6 +13,7 @@
 	{
 	
 		const DB_TABLE_SEARCH_ANALYTICS = 'search_analytics';
+		const DB_TABLE_SETTINGS = 'settings';
 		
 		
 		/**
@@ -31,7 +32,7 @@
 		 *  Insert into Database
 		 *
 		 *  @param $table     String   Table name
-		 *  @param $string     String   A value string to insert into the database. "field1"="value1", "field2"="value2"
+		 *  @param $valueString     String   A value string to insert into the database. "field1"="value1", "field2"="value2"
 		 *
 		 *  @returns   Mixed   true(bool) upon success,
 		 *             else returns error messsage upon failure
@@ -44,27 +45,43 @@
 		
 		
 		/**
-		 *  Get Number of Rows
+		 *  Update record in Database
 		 *
 		 *  @param $table     String   Table name
-		 *  @param $searchParams     Array   Keys = field, Values = value
+		 *  @param $matchParams     Array   Keys = field, Values = value
+		 *  @param $updateParams     Array   Keys = field, Values = value
 		 *
-		 *  @returns   Int   Number of rows
+		 *  @returns   Bool   indicating success
 		 */	
 		public function qryDBupdate( $table, $matchParams, $updateParams ) {
 			$matchstring = self::formQueryString( $matchParams );
 			$updatestring = self::formQueryString( $updateParams );
 
 			$query = "UPDATE ".$table." SET ".$updatestring." WHERE ".$matchstring;
-/* 			$query = "SELECT id FROM ".$table." WHERE ".$querystring; */
 			return self::query( $query );
+		}
+
+
+		/**
+		 *  Delete record from Database
+		 *
+		 *  @param $table     String   Table name
+		 *  @param $valueString     String   A value string to insert into the database. "field1"="value1", "field2"="value2"
+		 *
+		 *  @returns   Mixed   true(bool) upon success,
+		 *             else returns error messsage upon failure
+		 */
+		public function qryDBdelete($table,$valueString) {
+			$GLOBALS['db']->query("DELETE FROM $table WHERE ($valueString)");
+		
+			if(mysqli_error($GLOBALS['db'])) { printf("Errormessage: %s\n", mysqli_error($GLOBALS['db'])); } else { return true; }
 		}
 
 
 		/**
 		 *  Format query string
 		 *
-		 *  @param $searchParams     Array   Keys = field, Values = value
+		 *  @param $params     Array   Keys = field, Values = value
 		 *
 		 *  @returns   Bool   true/false
 		 */	
@@ -92,7 +109,7 @@
 
 
 		/**
-		 *  Query Database
+		 *  Query Database with Array Response
 		 *
 		 *  @param $query     String   SQL formated query
 		 *

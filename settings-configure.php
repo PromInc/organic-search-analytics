@@ -17,6 +17,8 @@ if( isset( $_POST['save'] ) ) {
 	$writeToConfigFile .= "".$nl;
 	$writeToConfigFile .= $t.$t."const OAUTH_CREDENTIALS_EMAIL = '".$_POST['OAUTH_CREDENTIALS_EMAIL']."';".$nl;
 	$writeToConfigFile .= $t.$t."const OAUTH_CREDENTIALS_PRIVATE_KEY_FILE_NAME = '".$_POST['OAUTH_CREDENTIALS_PRIVATE_KEY_FILE_NAME']."';".$nl;
+	$writeToConfigFile .= "".$nl;
+	$writeToConfigFile .= $t.$t."const CREDENTIALS_BING_API_KEY = '".$_POST['CREDENTIALS_BING_API_KEY']."';".$nl;
 	$writeToConfigFile .= $t."}".$nl;
 	$writeToConfigFile .= "?>";
 
@@ -50,8 +52,10 @@ if( isset( $_POST['save'] ) ) {
 			$oauth_credentials_email = config::OAUTH_CREDENTIALS_EMAIL;
 			$oauth_credentials_private_key_file_name = config::OAUTH_CREDENTIALS_PRIVATE_KEY_FILE_NAME;
 
+			$credentials_bing_api_key = config::CREDENTIALS_BING_API_KEY;
+
 		} else {
-			$db_connection_host = $db_connection_user = $db_connection_password = $db_connection_database = $oauth_credentials_private_key_file_name = $oauth_credentials_email = "";
+			$db_connection_host = $db_connection_user = $db_connection_password = $db_connection_database = $oauth_credentials_private_key_file_name = $oauth_credentials_email = $credentials_bing_api_key = "";
 		}
 	?>
 
@@ -89,6 +93,14 @@ if( isset( $_POST['save'] ) ) {
 	<p>
 		<label for="OAUTH_CREDENTIALS_PRIVATE_KEY_FILE_NAME">OAuth 2.0 P12 File Name</label>
 		<input type="text" id="OAUTH_CREDENTIALS_PRIVATE_KEY_FILE_NAME" name="OAUTH_CREDENTIALS_PRIVATE_KEY_FILE_NAME" value="<?php echo $oauth_credentials_private_key_file_name ?>">
+	</p>
+
+	<hr>
+	<h3>Bing Webmaster Tools</h3>
+
+	<p>
+		<label for="CREDENTIALS_BING_API_KEY">API Key</label>
+		<input type="text" id="CREDENTIALS_BING_API_KEY" name="CREDENTIALS_BING_API_KEY" value="<?php echo $credentials_bing_api_key ?>">
 	</p>
 
 	<hr>

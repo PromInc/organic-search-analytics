@@ -11,7 +11,7 @@
 
 	class WMTimport
 	{
-		const DB_TABLE_SEARCH_ANALYTICS = 'search-analytics';
+
 
 		/**
 		 *  Break apart the filename to return the data pieces
@@ -45,8 +45,8 @@
 			return $return;
 
 		}
-		
-		
+
+
 		/**
 		 *  Import array of Google Search Analytics to database
 		 *
@@ -69,6 +69,42 @@
 			}
 			return $countImport;
 		}
+
+
+		/**
+		 *  Import array of Bing Search Keywords to database
+		 *
+		 *  @param $domain     String   Domain name for record
+		 *  @param $searchKeywords     Object   Search Keywords Results
+		 *
+		 *  @returns   Int   Count of records imported
+		 */
+		public function importBingSearchKeywords($domain, $searchKeywords) {
+			$searchKeywords = json_decode($searchKeywords);
+			$countImport = 0;
+		
+			/* Check for prior import in DB */
+			$lastImported = "SELECT MAX(date) AS 'lastImported' FROM ".MySQL::DB_TABLE_SEARCH_ANALYTICS." WHERE domain = '".$domain."' AND search_engine = 'bing'";
+			if( $lastImportedResult = $GLOBALS['db']->query($lastImported) ) {
+				$lastImportedDate = $lastImportedResult->fetch_row()[0];
+
+				foreach( array_reverse( $searchKeywords->d ) as $recordKey => $recordData ) {
+					preg_match( '/\d+/', $recordData->Date, $dateUnixMatch );
+					$ctr = $recordData->Clicks / $recordData->Impressions;
+					$date = date( "Y-m-d", substr($dateUnixMatch[0], 0, strlen($dateUnixMatch[0])-3) );
+					
+					if( $date > $lastImportedDate ) {
+						$import = "INSERT into ".MySQL::DB_TABLE_SEARCH_ANALYTICS."(domain, date, search_engine, query, impressions, clicks, ctr, avg_position, avg_position_click) values('$domain', '$date', 'bing', '{$recordData->Query}','{$recordData->Impressions}','{$recordData->Clicks}','{$ctr}','{$recordData->AvgImpressionPosition}', '{$recordData->AvgClickPosition}')";
+		
+						if( $GLOBALS['db']->query($import) ) {
+							$countImport++;
+						}
+					}
+				}
+			}
+			return $countImport;
+		}
+
 
 	}
 ?>

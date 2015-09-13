@@ -14,6 +14,7 @@ function ajaxScript(catId, script, domain, date, callback) {
 		type : "GET",
 		url : script,
 		data : {
+			type : catId,
 			domain : domain,
 			date : date
 		},
@@ -27,14 +28,69 @@ function ajaxScript(catId, script, domain, date, callback) {
 		},
 		error: function(xhr, status, errorThrown) {
 			$("#"+catId+" li[domain='"+domain+"'][date='"+date+"']").append('<span style="margin-left: 5px;">Error, try again.</span>');
-console.log( xhr );
-console.log( status );
-console.log( errorThrown );
 		}
 	});
 }
 
+
+/**
+ *  Import all pending data
+ */
+importAllStop();
+function importAllRun() {
+	window.importAllProcessing = true;
+
+	$("#importAllButtons .buttonImportAllRun").hide();
+	$("#importAllButtons .buttonImportAllStop").show();
+
+	/* Trigger the first import button */
+	if( $(".buttonImport").length > 0 ) {
+		$(".buttonImport").eq(0).trigger("click");
+	} else {
+		importAllStop();
+		window.importAllProcessing = false;
+	}
+}
+
+
+/**
+ *  Stop importing all data process
+ */
+function importAllStop() {
+	window.importAllProcessing = false;
+	$("#importAllButtons .buttonImportAllStop").hide();
+	$("#importAllButtons .buttonImportAllRun").show();
+}
+
+
+/**
+ *  Callback after Google Search Analytics are imported
+ *  If import all is triggered, iniitiate the next import
+ *
+ *  @param catId     String   Category ID for which data is being captured
+ *  @param domain     String   Domain name to capture data for
+ *  @param date     String   Date to search.  YYYY-MM-DD
+ *  @param data     String   Message to display
+ */
 function postGoogleSearchAnalyticsAjax(catId, domain, date, data) {
+	$("#"+catId+" li[domain='"+domain+"'][date='"+date+"']").empty().append(data);
+
+	if( window.importAllProcessing == true ) {
+		importAllRun();
+	}
+}
+
+
+/**
+ *  Callback after Bing Search Keywords are imported
+ *  If import all is triggered, iniitiate the next import
+ *
+ *  @param catId     String   Category ID for which data is being captured
+ *  @param domain     String   Domain name to capture data for
+ *  @param date     String   Date to search.  YYYY-MM-DD
+ *  @param data     String   Message to display
+ */
+function postBingSearchKeywordsAjax(catId, domain, date, data) {
 	$("#"+catId+" li[domain='"+domain+"'][date='"+date+"']").empty().append(data);
 
 	/* If import all is set, continue processing */
@@ -42,27 +98,3 @@ function postGoogleSearchAnalyticsAjax(catId, domain, date, data) {
 		importAllRun(catId);
 	}
 }
-
-/* Import All functionality | START */
-importAllStop();
-function importAllRun(catId) {
-	window.importAllProcessing = true;
-
-	$(".importAllButtons[category='"+catId+"'] .buttonImportAllRun").hide();
-	$(".importAllButtons[category='"+catId+"'] .buttonImportAllStop").show();
-
-	/* Trigger the first import button */
-	if( $("#"+catId+" .buttonImport").length > 0 ) {
-		$("#"+catId+" .buttonImport").eq(0).trigger("click");
-	} else {
-		importAllStop();
-		window.importAllProcessing = false;
-	}
-}
-
-function importAllStop() {
-	window.importAllProcessing = false;
-	$(".importAllButtons .buttonImportAllStop").hide();
-	$(".importAllButtons .buttonImportAllRun").show();
-}
-/* Import All functionality | END */

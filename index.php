@@ -1,4 +1,4 @@
-<?php $titleTag = "GWT Data Automation"; ?>
+<?php $titleTag = "Organic Search Analytics"; ?>
 
 <?php include_once('inc/html/_head.php'); ?>
 
@@ -9,8 +9,11 @@
 		<li>
 			<h2>Data Capture and Import</h2>
 			<div>Capture and import data from Organic Search Analytics resources.</div>
-			<div>Note: <i>At this time only Google Search Analytics data is configured to work with this tool.  In the future additional data from Google and Bing will be added, as well as reporting features.</i></div>
-			<div><a href="data-capture.php">Data Capture</a></div>
+			<ul>
+				<li>Google Search Console - Search Analytics</li>
+				<li>Bing Webmaster Tools - Search Keywords</li>
+			</ul>
+			<div><a href="data-capture.php">Data Capture and Import</a></div>
 		</li>
 
 		<li>
