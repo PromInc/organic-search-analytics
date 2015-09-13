@@ -17,6 +17,7 @@
 		include_once( $GLOBALS['basedir'].'inc/code/dataCapture.php' ); //Data capturing functions
 
 		include_once( $GLOBALS['basedir'].'apis/Google/autoload.php' ); //Google API
+		include_once( $GLOBALS['basedir'].'apis/Bing/Webmasters.php' ); //Bing Search API
 
 		/* Load classes */
 		$core = new Core(); //Load core

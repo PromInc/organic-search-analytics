@@ -85,7 +85,7 @@
 			}
 		}
 
-		
+
 		/**
 		 *  Get the current date/time
 		 *
@@ -96,24 +96,18 @@
 		 */
 		public function now($format = null) {
 			$now = time();
-			
-/*
-			if( $format ) {
-				switch( $format ) {
-					case "":
-				}
-			}
-*/
-			
 			return $now;
 		}
-		
-		
-		
-		
-		
+
+
+		/**
+		 *  Send CURL request
+		 *
+		 *  @param $url     String   URL to request
+		 *
+		 *  @returns   Mixed   Response from CURL request
+		 */		
 		public function curlRequest($url) {
-/* 			$head = array("Authorization: GoogleLogin auth=".$this->_auth, "GData-Version: 2"); */
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -121,7 +115,6 @@
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 			curl_setopt($ch, CURLOPT_ENCODING, true);
-/* 			curl_setopt($ch, CURLOPT_HTTPHEADER, $head); */
 			$result = curl_exec($ch);
 			$info = curl_getinfo($ch);
 			curl_close($ch);
