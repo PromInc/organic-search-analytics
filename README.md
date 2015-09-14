@@ -13,11 +13,11 @@ Reporting features allow you to get to data that makes a difference in your mark
 -  MySQL
 
 ## Installation
-1. Setup a hosting environemnt.  PHP (5.4.1+) and MySQL are required.  If you'd like to install and run this on a local machine, I suggest using [XAMPP](https://www.apachefriends.org/index.html) or [MAMP](https://www.mamp.info/en/).
-2. Copy the files from this repository to your new hosting environment.
+1. Setup a hosting environemnt.  PHP (5.4.1+) and MySQL are required.  This program can be run on a local machine - using [XAMPP](https://www.apachefriends.org/index.html) or [MAMP](https://www.mamp.info/en/) works great for this configuration.
+2. Copy the repository to the new hosting environment.
 3. Within the new directory, create a directory named `config`.
-4. Add a MySQL Database.  Create it with whatever name you prefer, thought **organic-search-analytics** is suggested.
-5. Import database structure.  Using phpMyAdmin or other MySQL tools, import the file: settings/mysql_structure.sql
+4. Add a MySQL Database.  Any database name can be used, though **organic-search-analytics** is suggested.
+5. Import database structure.  Using phpMyAdmin or other MySQL tools, import the file: organic-search-analytics/organic-search-analytics.sql
 6. Setup Google API Access
   1. Go to the [Google Developers Console](https://console.developers.google.com/project).
   2. Click the **Create Project** button
