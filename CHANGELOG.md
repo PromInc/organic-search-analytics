@@ -1,3 +1,18 @@
+## 2.0.0 - 2015-09-14
+### Added
+- Bing Webmaster Tools integration.
+- Import Bing Search Keywords to the database.  Bing groups their keyword data on a weekly basis.
+- An alternate method of returning Google and Bing data is avaiable by setting a query paramater (mode=return) on the data-capture-run.php request.
+- Ability to customize the request to the Google API via query paramters on the data-capture-run.php request.  groupBy needs to be implemented yet, else all other API features are available.
+- Text file with version number.
+
+### Changed
+- The type (data source) needs to be specified in the request to data-capture-run.php to indicate if data is to be captured from Google Search Console or Bing Webmaster tools. This is automatically set when using the GUI, but when making a manual request to data-capture-run.php the query parameter type needs to be set to either googleSearchAnalytics or bingSearchKeywords.
+
+### Fixed
+- Basic code cleanup where needed.
+- Class descriptions cleanup where needed.
+
 ## 1.4.0 - 2015-09-03
 ### Changed
 - Configuration settings can be set via the website under the Settings page as opposed manually creating/editing a file on the server.
