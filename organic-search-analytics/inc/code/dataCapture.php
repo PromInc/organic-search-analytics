@@ -59,9 +59,9 @@
 		 *
 		 *  @returns   Array   
 		 */
-		public function getSitesBingWebmaster($enabledCheck = FALSE) {		
+		public function getSitesBingWebmaster($enabledCheck = FALSE) {
 			$bing = new BingWebmasters(); // Load Bing Webmasters API
-			
+
 			$bingSites = json_decode( $bing->requestApi( config::CREDENTIALS_BING_API_KEY, 'GetUserSites' ) );
 
 			$return = array();
