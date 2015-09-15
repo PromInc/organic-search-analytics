@@ -165,3 +165,5 @@ footer { margin-top: 50px; padding: 20px 20px 15px; background-color:#DDDDDD; }
     background-color: green;
     color: white;	
 }
+
+#upgradeVersion { margin-left: 5px; color: #FF5400; }
