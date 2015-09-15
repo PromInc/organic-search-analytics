@@ -16,7 +16,7 @@ if( !strpos( $_SERVER['SCRIPT_NAME'], "upgrade.php" ) ) {
 		<script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
 		<script type="text/javascript" src="js/script.js"></script>
 
-		<?php if( $GLOBALS['scriptName'] == "settings.php" ) { ?>
+		<?php if( isset( $GLOBALS['scriptName'] ) && $GLOBALS['scriptName'] == "settings.php" ) { ?>
 			<script type="text/javascript" src="js/settings.js"></script>
 		<?php } ?>
 	</head>
