@@ -32,18 +32,22 @@ class BingWebmasters
 	 */
 	public function requestApi( $api_key, $method, $siteUrl = NULL ) {
 		$url = self::URL_BING_WEBMASTERS_JSON.$method.'?apikey='.$api_key;
-		
+
 		if( $siteUrl ) {
 			$url .= '&siteUrl='.$siteUrl;
 		}
 
 		$ch = curl_init();
-		curl_setopt($ch,CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
-		
-		$result = curl_exec($ch);
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+		if( ! $result = curl_exec($ch) ) {
+			$alert = array("type"=>"error", "message"=>"Error communicating with the Bing API");
+		}
+
 		curl_close($ch);
-		
+
 		return $result;
 	}
 
