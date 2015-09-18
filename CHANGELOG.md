@@ -1,4 +1,4 @@
-## Unreleased
+## 2.1.0 - 2015-09-18
 ### Changed
 - Reports - first domain is checked by default
 - Reports - added query match type (exact or broad)
@@ -10,7 +10,11 @@
 - Reports - Sort by
 - Reports - Sort Direction
 
-## 2.0.2 - 2015-09-14
+## 2.0.2 - 2015-09-15
+### Fixed
+- Bing API was failing under some hosting environments.
+
+## 2.0.0 - 2015-09-14
 ### Added
 - Bing Webmaster Tools integration.
 - Import Bing Search Keywords to the database.  Bing groups their keyword data on a weekly basis.
@@ -64,4 +68,8 @@
 ### Added
 - Initial release of repository with basic functionality.
   - Add sites in settings
+<<<<<<< HEAD
   - Import data from Google Search Analytics for each site
+=======
+  - Import data from Google Search Analytics for each site
+>>>>>>> eb79563da220f230f2fd7c3c8e8aea284076b523
