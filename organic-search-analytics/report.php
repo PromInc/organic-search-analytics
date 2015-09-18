@@ -12,12 +12,17 @@
 			<?php
 			$sitesList = $dataCapture->getSitesGoogleSearchConsole();
 			foreach( $sitesList as $key => $site ) {
-				echo '<input type="radio" name="domain" id="'.$site['url'].'" value="'.$site['url'].'"><label for="'.$site['url'].'">'.$site['url'].'</label><br>';
+				echo '<input type="radio" name="domain" id="'.$site['url'].'" value="'.$site['url'].'" '.($key==0?' checked':'').'><label for="'.$site['url'].'">'.$site['url'].'</label><br>';
 			}
 			?>
 		</p>
 		<p>
 			<label for="query">Query: </label><input type="text" name="query" id="query" value="">
+			<div>
+				Query Match Type:
+				<span style="margin-left: 10px;"><input type="radio" name="queryMatch" id="queryMatchBroad" value="broad" checked><label for="queryMatchBroad">Broad</label></span>
+				<span style="margin-left: 10px;"><input type="radio" name="queryMatch" id="queryMatchExact" value="exact"><label for="queryMatchExact">Exact</label></span>
+			</div>
 		</p>
 
 		<?php
@@ -68,6 +73,36 @@
 				<?php for( $d = $startOffset; $d < $numDays; $d++ ) { echo '<option value="' . date( 'Y-m-d', $now - ( 86400 * $d ) ) . '">' . date( 'Y-m-d', $now - ( 86400 * $d ) ) . '</option>'; } ?>
 			</select>
 		</p>
+
+		<!--
+		<p>
+			<div>
+				Group By:
+				<span style="margin-left: 10px;"><input type="radio" name="groupBy" id="groupByDate" value="date" checked><label for="groupByDate">Date</label></span>
+				<span style="margin-left: 10px;"><input type="radio" name="groupBy" id="groupByQuery" value="query"><label for="groupByQuery">Query</label></span>
+			</div>
+		</p>
+		-->
+
+		<p>
+			<div>
+				Sort By:
+				<span style="margin-left: 10px;"><input type="radio" name="sortBy" id="sortByDate" value="date" checked><label for="sortByDate">Date</label></span>
+				<span style="margin-left: 10px;"><input type="radio" name="sortBy" id="sortByQuery" value="query"><label for="sortByQuery">Query</label></span>
+				<span style="margin-left: 10px;"><input type="radio" name="sortBy" id="sortByImpressions" value="impression"><label for="sortByImpressions">Impression</label></span>
+				<span style="margin-left: 10px;"><input type="radio" name="sortBy" id="sortByAvgPos" value="avgpos"><label for="sortByAvgPos">Average Position</label></span>
+				<span style="margin-left: 10px;"><input type="radio" name="sortBy" id="sortByCtr" value="ctr"><label for="sortByCtr">Click Through Rate</label></span>
+			</div>
+		</p>
+
+		<p>
+			<div>
+				Sort Direction:
+				<span style="margin-left: 10px;"><input type="radio" name="sortDir" id="sortDirAsc" value="asc" checked><label for="sortDirAsc">Ascending</label></span>
+				<span style="margin-left: 10px;"><input type="radio" name="sortDir" id="sortDirDesc" value="desc"><label for="sortDirDesc">Descending</label></span>
+			</div>
+		</p>
+
 		<p>
 			<input type="submit" value="Generate Report">
 		</p>
