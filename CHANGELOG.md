@@ -10,6 +10,9 @@
 - Reports - Sort by
 - Reports - Sort Direction
 
+### Fixed
+- Upgrade notice was not working right
+
 ## 2.0.2 - 2015-09-15
 ### Fixed
 - Bing API was failing under some hosting environments.

@@ -10,10 +10,10 @@
 				<script type="text/javascript">
 				$.get('https://api.github.com/repos/prominc/organic-search-analytics/releases/latest', function (data) {
 					var latestVersion = data.tag_name;
-					if( latestVersion != '<?php echo $currerntVersion ?>' ) {
-						$('#upgradeVersion a').attr('href', data.zipball_url);	
-						$('#upgradeVersion a span#upgradeVersionNumber').text(latestVersion);	
-						$('#upgradeVersion').show();	
+					if( latestVersion > '<?php echo $currerntVersion ?>' ) {
+						$('#upgradeVersion a').attr('href', data.zipball_url);
+						$('#upgradeVersion a span#upgradeVersionNumber').text(latestVersion);
+						$('#upgradeVersion').show();
 					}
 				});
 				</script>
