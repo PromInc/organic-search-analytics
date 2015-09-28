@@ -1,3 +1,22 @@
+## 2.1.0 - 2015-09-18
+### Changed
+- Reports - first domain is checked by default
+- Reports - added query match type (exact or broad)
+- jQuery and jQuery UI added to the code repository as opposed to loading from 3rd party servers
+
+### Added
+- jqPlot library
+- Reports - Graph added
+- Reports - Sort by
+- Reports - Sort Direction
+
+### Fixed
+- Upgrade notice was not working right
+
+## 2.0.2 - 2015-09-15
+### Fixed
+- Bing API was failing under some hosting environments.
+
 ## 2.0.0 - 2015-09-14
 ### Added
 - Bing Webmaster Tools integration.
@@ -52,4 +71,8 @@
 ### Added
 - Initial release of repository with basic functionality.
   - Add sites in settings
+<<<<<<< HEAD
   - Import data from Google Search Analytics for each site
+=======
+  - Import data from Google Search Analytics for each site
+>>>>>>> eb79563da220f230f2fd7c3c8e8aea284076b523

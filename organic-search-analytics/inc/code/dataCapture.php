@@ -11,7 +11,7 @@
 
 	class DataCapture
 	{
-	
+
 		const GOOGLE_SEARCH_ANALYTICS_MAX_DATE_OFFSET = 4;
 		const GOOGLE_SEARCH_ANALYTICS_MAX_DAYS = 90;
 
@@ -23,7 +23,7 @@
 			'dimensions' => array('query','device'),
 			'row_limit' => 5000 /* Number of rows to capture from Google.  Valid options: 1-5000 */
 		);
-		
+
 		/**
 		 *  Get authorized sites from Google Search Console
 		 *
@@ -59,16 +59,18 @@
 		 *
 		 *  @returns   Array   
 		 */
-		public function getSitesBingWebmaster($enabledCheck = FALSE) {		
+		public function getSitesBingWebmaster($enabledCheck = FALSE) {
 			$bing = new BingWebmasters(); // Load Bing Webmasters API
-			
+
 			$bingSites = json_decode( $bing->requestApi( config::CREDENTIALS_BING_API_KEY, 'GetUserSites' ) );
 
 			$return = array();
-			foreach( $bingSites->d as $site ) {
-				$return[] = array( 'url' => $site->Url );
+			if( $bingSites ) {
+				foreach( $bingSites->d as $site ) {
+					$return[] = array( 'url' => $site->Url );
+				}
 			}
-			
+
 			return $return;
 		}
 
