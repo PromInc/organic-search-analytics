@@ -11,8 +11,6 @@ $mailTo = "someone@example.com";
 $mailSubject = "Search Analytics Data Automation Report";
 $mailHeaders = "From: someone@example.com";
 
-
-/* capture arguments passed on from cronjob */
 if (isset($_SERVER['argv'][1]) && isset($_SERVER['argv'][2]) ) {
 	/* Set the max allowed execution time for the page to allow for longer procesing times. */
 	ini_set('max_execution_time', 600);  //300 seconds = 5 minutes
@@ -51,10 +49,7 @@ if (isset($_SERVER['argv'][1]) && isset($_SERVER['argv'][2]) ) {
 		}
 
 	echo $mailMessage = "<p>Success!! These are cron arguments: " . "Argv 1/Type: " . $_SERVER['argv'][1] . "; Argv 2/Domain: " . $_SERVER['argv'][2] . "; Argv 3/Date of execution: " . $serveExecuteDate . "; Data will be extracted up to: " . $serveToDate . ".</p>";
-
 	mail($mailTo, $mailSubject, $mailMessage, $mailHeaders);
-
-	# code...
 } else {
 //	echo "<p>ERROR: Invalid request.  Domain: " . $_GET['domain'] . ", Date: " . $_GET['date'] . "</p>";
 	echo "<p>Failed!! ERROR: Invalid request.  Type: " . $_SERVER['argv'][1] . "; Domain: " . $_SERVER['argv'][2] . "; Date of execution: " . $serveExecuteDate . ".</p>";
