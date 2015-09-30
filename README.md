@@ -13,10 +13,10 @@ Reporting features allow you to get to data that makes a difference in your mark
 -  MySQL
 
 ## Installation
-[Installation Instractions can be found in the Wiki](https://github.com/PromInc/organic-search-analytics/wiki/Installation).
+[Installation Instructions can be found in the Wiki](https://github.com/PromInc/organic-search-analytics/wiki/Installation).
 
 ## Upgrade Information
-Upgrading between various versions, in particular version 1.x.x to 2.0.0 requires an additional step.  Instructions on how to perform the upgrade can be found in the ['Upgrading between versions' Wiki page](https://github.com/PromInc/organic-search-analytics/wiki/Upgrading-between-Versions).
+Upgrading between certain versions requires an additional step.  Instructions on how to perform the upgrade can be found in the ['Upgrading between versions' Wiki page](https://github.com/PromInc/organic-search-analytics/wiki/Upgrading-between-Versions).
 
 ## Additional Information
 More information can be found in the [Wiki](https://github.com/PromInc/organic-search-analytics/wiki).
