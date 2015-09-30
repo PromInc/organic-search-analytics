@@ -106,7 +106,7 @@
 		 *  @param $url     String   URL to request
 		 *
 		 *  @returns   Mixed   Response from CURL request
-		 */		
+		 */
 		public function curlRequest($url) {
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url);
@@ -121,7 +121,27 @@
 			
 			return $result;
 		}
-		
+
+
+		/**
+		 *  Parse Query String into Array
+		 *
+		 *  @param $queryString     String   Query string to be parsed
+		 *
+		 *  @returns   Array   Key = query parameter.  Value = parameter value.
+		 */
+		public function parseQueryString($queryString) {
+			if( $queryString ) {
+				$queryParams = array();
+				$pairs = explode( "&", $queryString );
+				foreach( $pairs as $pair ) {
+					$keyValue = explode( "=", $pair );
+					$queryParams[ $keyValue[0] ] = $keyValue[1];
+				}
+			}
+			return $queryParams;
+		}
+
 
 	}
 ?>

@@ -1,59 +1,90 @@
+<?php ini_set('max_execution_time', 600);  //300 seconds = 5 minutes ?>
+
 <?php $titleTag = "Reporting | Custom Report"; ?>
 
 <?php include_once('inc/html/_head.php'); ?>
 
-
 	<?php
-	$useQuery = false; if( isset( $_GET['query'] ) && $_GET['query'] > "" ) { $useQuery = true; }
+	if( isset( $_GET['savedReport'] ) ) {
+		/* Used save report parameters */
+		/* Load Reporting Class */
+		$reports = new Reports();
+		/* Get parameters for report */
+		$reportParams = $reports->getSavedReport($_GET['savedReport']);
+	} else {
+		/* Use query parameters */
+		$reportParams = $_GET;
+	}
+
+	$useQuery = false; if( isset( $reportParams['query'] ) && $reportParams['query'] > "" ) { $useQuery = true; }
 	$whereClause = $chartLabel = "";
-	if( $_GET ) {
+	if( $reportParams ) {
 		$whereClauseItemsTable = $whereClauseItemsChart = $pageHeadingItems = [];
-		if( isset( $_GET['domain'] ) && $_GET['domain'] > "" ) {
-			$whereClauseItemsTable[] = $whereClauseItemsChart[] = "domain = '" . $_GET['domain'] . "'";
-			$pageHeadingItems[] = "Domain: " . $_GET['domain'];
+		if( isset( $reportParams['domain'] ) && $reportParams['domain'] > "" ) {
+			$whereClauseItemsTable[] = $whereClauseItemsChart[] = "domain = '" . $reportParams['domain'] . "'";
+			$pageHeadingItems[] = "Domain: " . $reportParams['domain'];
 		}
-		if( isset( $_GET['query'] ) && $_GET['query'] > "" ) {
-			switch( $_GET['queryMatch'] ) {
+		if( isset( $reportParams['query'] ) && $reportParams['query'] > "" ) {
+			switch( $reportParams['queryMatch'] ) {
 				case "broad":
 				default:
-					$whereClauseItemsTable[] = $whereClauseItemsChart[] = "query LIKE '%" . $_GET['query'] . "%'";
+					$whereClauseItemsTable[] = $whereClauseItemsChart[] = "query LIKE '%" . $reportParams['query'] . "%'";
 					break;
 				case "exact":
-					$whereClauseItemsTable[] = $whereClauseItemsChart[] = "query = '" . $_GET['query'] . "'";
+					$whereClauseItemsTable[] = $whereClauseItemsChart[] = "query = '" . $reportParams['query'] . "'";
 					break;
 			}
-			$pageHeadingItems[] = "Query: " . $_GET['query'] . (isset($_GET['queryMatch'])?" (".$_GET['queryMatch'].")":"");
-			$chartLabel = $_GET['query'] . (isset($_GET['queryMatch'])?" (".$_GET['queryMatch'].")":"");
+			$pageHeadingItems[] = "Query: " . $reportParams['query'] . (isset($reportParams['queryMatch'])?" (".$reportParams['queryMatch'].")":"");
+			$chartLabel = $reportParams['query'] . (isset($reportParams['queryMatch'])?" (".$reportParams['queryMatch'].")":"");
 		}
-		if( isset( $_GET['search_type'] ) && $_GET['search_type'] > "" ) {
-			if( $_GET['search_type'] != "ALL" ) {
-				$whereClauseItemsTable[] = $whereClauseItemsChart[] = "search_type = '" . $_GET['search_type'] . "'";
+		if( isset( $reportParams['search_type'] ) && $reportParams['search_type'] > "" ) {
+			if( $reportParams['search_type'] != "ALL" ) {
+				$whereClauseItemsTable[] = $whereClauseItemsChart[] = "search_type = '" . $reportParams['search_type'] . "'";
 			}
-			$pageHeadingItems[] = "Search Type: " . $_GET['search_type'];
+			$pageHeadingItems[] = "Search Type: " . $reportParams['search_type'];
 		}
-		if( isset( $_GET['device_type'] ) && $_GET['device_type'] > "" ) {
-			if( $_GET['device_type'] != "ALL" ) {
-				$whereClauseItemsTable[] = $whereClauseItemsChart[] = "device_type = '" . $_GET['device_type'] . "'";
+		if( isset( $reportParams['device_type'] ) && $reportParams['device_type'] > "" ) {
+			if( $reportParams['device_type'] != "ALL" ) {
+				$whereClauseItemsTable[] = $whereClauseItemsChart[] = "device_type = '" . $reportParams['device_type'] . "'";
 			}
-			$pageHeadingItems[] = "Device Type: " . $_GET['device_type'];
+			$pageHeadingItems[] = "Device Type: " . $reportParams['device_type'];
 		}
-		if( isset( $_GET['date_start'] ) && $_GET['date_start'] > 0 ) {
-			if( isset( $_GET['date_end'] ) && $_GET['date_end'] > 0 ) {
-				$whereClauseItemsTable[] = "date >= '" . $_GET['date_start'] . "' AND date <= '" . $_GET['date_end'] . "'";
-				$whereClauseItemsChart[] = "date >= '" . $_GET['date_start'] . "' AND date <= '" . $_GET['date_end'] . "'";
-				$pageHeadingItems[] = "Dates: " . $_GET['date_start'] . " to " . $_GET['date_end'];
+		if( isset( $reportParams['date_start'] ) && $reportParams['date_start'] > 0 && $reportParams['date_type'] == 'hard_set' ) {
+			if( isset( $reportParams['date_end'] ) && $reportParams['date_end'] > 0 ) {
+				$whereClauseItemsTable[] = "date >= '" . $reportParams['date_start'] . "' AND date <= '" . $reportParams['date_end'] . "'";
+				$whereClauseItemsChart[] = "date >= '" . $reportParams['date_start'] . "' AND date <= '" . $reportParams['date_end'] . "'";
+				$pageHeadingItems[] = "Dates: " . $reportParams['date_start'] . " to " . $reportParams['date_end'];
 			} else {
-				$whereClauseItemsTable[] = "date = '" . $_GET['date_start'] . "'";
-				$whereClauseItemsChart[] = "date = '" . $_GET['date_start'] . "'";
-				$pageHeadingItems[] = "Date: " . $_GET['date_start'];
+				$whereClauseItemsTable[] = "date = '" . $reportParams['date_start'] . "'";
+				$whereClauseItemsChart[] = "date = '" . $reportParams['date_start'] . "'";
+				$pageHeadingItems[] = "Date: " . $reportParams['date_start'];
+			}
+		} elseif( $reportParams['date_type'] != 'hard_set' ) {
+			$queryMaxDate = "SELECT max(date) as 'max' FROM `".$mysql::DB_TABLE_SEARCH_ANALYTICS."` WHERE 1";
+			if( $result = $GLOBALS['db']->query($queryMaxDate) ) {
+				$maxDate = $result->fetch_row();
+				$dateEnd = $maxDate[0];
+				$dateStartOffset = preg_replace("/[^0-9,.]/", "", $reportParams['date_type'] );
+				$dateStart = date('Y-m-d', strtotime('-'.$dateStartOffset.' days', strtotime( $dateEnd ) ) );
+				$whereClauseItemsTable[] = "date >= '" . $dateStart . "' AND date <= '" . $dateEnd . "'";
+				$pageHeadingItems[] = "Dates: Past " . $dateStartOffset . " days (" . $dateStart . " to " . $dateEnd . ")";
 			}
 		}
 		$whereClauseTable = " WHERE " . implode( " AND ", $whereClauseItemsTable ) . " ";
 		$whereClauseChart = " WHERE " . implode( " AND ", $whereClauseItemsChart ) . " ";
 
-		if( isset( $_GET['sortDir'] ) ) { $sortDir = $_GET['sortDir']; } else { $sortDir = 'asc'; }
-		if( isset( $_GET['sortBy'] ) ) { $sortBy = $_GET['sortBy']; } else { $sortBy = 'date'; }
-		//if( isset( $_GET['groupBy'] ) ) { $groupBy = $_GET['groupBy']; } else { $groupBy = 'date'; }
+		if( isset( $reportParams['sortDir'] ) ) { $sortDir = $reportParams['sortDir']; } else { $sortDir = 'asc'; }
+		if( isset( $reportParams['sortBy'] ) ) { $sortBy = $reportParams['sortBy']; } else { $sortBy = 'date'; }
+		//if( isset( $reportParams['groupBy'] ) ) { $groupBy = $reportParams['groupBy']; } else { $groupBy = 'date'; }
+
+		$groupByDate = 'date';
+		if( isset( $reportParams['granularity'] ) && $reportParams['granularity'] != 'day' ) {
+			$groupBy = strtoupper( $reportParams['granularity'] ) . '(' . $groupByDate . ')';
+			$pageHeadingItems[] = "Granularity: " . $reportParams['granularity'];
+		} else {
+			$groupBy = $groupByDate;
+		}
+
 	}
 	?>
 
@@ -62,13 +93,35 @@
 	<h2><?php echo implode( ", ", $pageHeadingItems ); ?></h2>
 
 	<?php
-		if( !$useQuery ) {
-			$reportQueryTable = "SELECT date, count(DISTINCT query) as 'queries', avg(avg_position) as 'avg_position' FROM ".$mysql::DB_TABLE_SEARCH_ANALYTICS." " . $whereClauseTable . "GROUP BY date ORDER BY date ASC";
-			$reportQueryChart = "SELECT date, sum(impressions) as 'impressions', sum(clicks) as 'clicks' FROM ".$mysql::DB_TABLE_SEARCH_ANALYTICS." " . $whereClauseChart . "GROUP BY date ORDER BY date ASC";
-		} else {
-			$reportQueryTable = "SELECT date, count(DISTINCT query) as 'queries', sum(impressions) as 'impressions', sum(clicks) as 'clicks', avg(avg_position) as 'avg_position' FROM ".$mysql::DB_TABLE_SEARCH_ANALYTICS." " . $whereClauseTable . "GROUP BY date ORDER BY " . $sortBy . " ASC";
-		}
+	$reports = new Reports(); //Load Reporting Class
 
+	/* Get saved report categories */
+	$reportCategories = '<select name="reportCatExisting">';
+	foreach( $reports->getSavedReportCategories() as $key => $category ) {
+		$reportCategories .= '<option value="' . $key . '">'. $category['name'] . '</option>';
+	}
+	$reportCategories .= '</select>';
+
+	/* Get save report form and insert dynamic values */
+	$saveReportContent = file_get_contents( $GLOBALS['basedir'] . "/inc/html/_saveReport.php" );
+	$saveReportContent = preg_replace( '/{{report_params}}/', urlencode( json_encode( $reportParams ) ), $saveReportContent );
+	$saveReportContent = preg_replace( '/{{report_categories}}/', $reportCategories, $saveReportContent );
+	?>
+
+	<?php if( ! isset( $_GET['savedReport'] ) ) { ?>
+		<?php echo $saveReportContent; ?>
+	<?php } ?>
+
+	<?php
+		if( !$useQuery ) {
+			$reportQueryTable = "SELECT date, count(DISTINCT query) as 'queries', avg(avg_position) as 'avg_position' FROM ".$mysql::DB_TABLE_SEARCH_ANALYTICS." " . $whereClauseTable . "GROUP BY " . $groupBy . " ORDER BY " . $sortBy . " ASC";
+			$reportQueryChart = "SELECT date, sum(impressions) as 'impressions', sum(clicks) as 'clicks' FROM ".$mysql::DB_TABLE_SEARCH_ANALYTICS." " . $whereClauseChart . "GROUP BY " . $groupBy . " ORDER BY " . $sortBy . " ASC";
+		} else {
+			$reportQueryTable = "SELECT date, count(DISTINCT query) as 'queries', sum(impressions) as 'impressions', sum(clicks) as 'clicks', avg(avg_position) as 'avg_position' FROM ".$mysql::DB_TABLE_SEARCH_ANALYTICS." " . $whereClauseTable . "GROUP BY " . $groupBy . " ORDER BY " . $sortBy . " ASC";
+		}
+	?>
+
+	<?php
 		/* Get MySQL Results */
 		$outputTable = $outputChart = array();
 		if( $resultTable = $GLOBALS['db']->query($reportQueryTable) ) {

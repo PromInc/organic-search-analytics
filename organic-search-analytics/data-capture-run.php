@@ -25,7 +25,7 @@ if( isset($_GET) && isset($_GET['type']) && isset($_GET['domain']) && isset($_GE
 
 	switch( $_GET['type'] ) {
 		case 'googleSearchAnalytics':
-			$recordsImported = $dataCapture->downloadGoogleSearchAnalytics($_GET['domain'],$_GET['date'], $overrideSettings);
+			$recordsImported = $dataCapture->downloadGoogleSearchAnalytics( $_GET['domain'],$_GET['date'], $overrideSettings );
 			if( !isset( $_GET['mode'] ) || $_GET['mode'] != 'return' ) {
 				echo number_format( $recordsImported ) . " records succesfully imported to the database for " . $_GET['domain'] . " for date: " . $_GET['date'] . ".";
 			}

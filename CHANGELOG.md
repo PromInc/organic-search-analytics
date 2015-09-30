@@ -1,3 +1,24 @@
+## 2.2.0 - 2015-09-30
+### Fixed
+- Bing API call code cleanup and allow return mode to work correctly
+- Reports - bug fix for sorting
+- Reports - increased execution time to 5 minutes for large exhaustive queries/reports
+
+### Added
+- Reports - Added granularity for reports by day, week, month, or year
+- Reports - Pull report by a predefined timeframe like past 7 days, past 30 days, etc.
+- Reports - Quick Links functionality that allow saving of a report to easily pull up the same report.
+- Created DB table structure for quick links
+- A parse query parameters method was added to the Core class
+- A reporting class was added to handle funtions in the reports
+- A link to upgrade scripts on the home page
+- An upgrade script to migrate to version 2.2.0
+- Robots.txt file to discourage bots from crawling this site (only necessary if hosted on a publically accessible server, but added by default to all installs)
+
+### Changed
+- Moved the organic-search-analytics.sql file out of the site files
+- Moved the installation instructions from the readme.txt to the wiki
+
 ## 2.1.0 - 2015-09-18
 ### Changed
 - Reports - first domain is checked by default

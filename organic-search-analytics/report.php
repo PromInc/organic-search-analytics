@@ -60,18 +60,39 @@
 		</p>
 
 		<p>
+			<div>
+				Date Range Type:
+				<span style="margin-left: 10px;"><input type="radio" name="date_type" id="date_type_recent_7" value="recent_7" checked><label for="date_type_recent_7">Past 7 Days</label></span>
+				<span style="margin-left: 10px;"><input type="radio" name="date_type" id="date_type_recent_30" value="recent_30"><label for="date_type_recent_30">Past 30 Days</label></span>
+				<span style="margin-left: 10px;"><input type="radio" name="date_type" id="date_type_recent_90" value="recent_90"><label for="date_type_recent_90">Past 90 Days</label></span>
+				<span style="margin-left: 10px;"><input type="radio" name="date_type" id="date_type_hard_set" value="hard_set"><label for="date_type_hard_set">Specific Dates</label></span>
+			</div>
+		</p>
+
+		<p>
 			<label for="date_start">Date Start: </label>
 			<select name="date_start" id="date_start">
 				<option value=""></option>
 				<?php for( $d = $startOffset; $d < $numDays; $d++ ) { echo '<option value="' . date( 'Y-m-d', $now - ( 86400 * $d ) ) . '">' . date( 'Y-m-d', $now - ( 86400 * $d ) ) . '</option>'; } ?>
 			</select>
 		</p>
+
 		<p>
 			<label for="date_end">Date End: </label>
 			<select name="date_end" id="date_end">
 				<option value=""></option>
 				<?php for( $d = $startOffset; $d < $numDays; $d++ ) { echo '<option value="' . date( 'Y-m-d', $now - ( 86400 * $d ) ) . '">' . date( 'Y-m-d', $now - ( 86400 * $d ) ) . '</option>'; } ?>
 			</select>
+		</p>
+
+		<p>
+			<div>
+				Granularity:
+				<span style="margin-left: 10px;"><input type="radio" name="granularity" id="granularityDay" value="day" checked><label for="granularityDay">Day</label></span>
+				<span style="margin-left: 10px;"><input type="radio" name="granularity" id="granularityWeek" value="week"><label for="granularityWeek">Week</label></span>
+				<span style="margin-left: 10px;"><input type="radio" name="granularity" id="granularityMonth" value="month"><label for="granularityMonth">Month</label></span>
+				<span style="margin-left: 10px;"><input type="radio" name="granularity" id="granularityYear" value="year"><label for="granularityYear">Year</label></span>
+			</div>
 		</p>
 
 		<!--
@@ -108,6 +129,27 @@
 		</p>
 	</form>
 
-	<?php include ('inc/html/reportQuickLinks.php'); ?>
+	<h2>Report Custom Links</h2>
+	<p>To add a report to Quick Links, generate a report using the parameters above and choose the <i>Save this Report to Quick Links</i> link.</p>
+	<?php
+	/* Load Reporting Class */
+	$reports = new Reports();
+	/* Get saved reports by category */
+	$saveReportsByCategory = $reports->getSavedReportsByCategory();
+
+	/* Loop through categories */
+	foreach( $saveReportsByCategory['categories'] as $cat => $catData ) {
+		/* If category has reports */
+		if( isset( $catData['reports'] ) ) {
+			/* Display category listing */
+			echo '<h3>'.$catData['name'].'</h3>';
+			/* Loop through reports */
+			foreach( $catData['reports'] as $report ) {
+				/* Display report link */
+				echo '<p><a href="report-custom.php?savedReport='.$report['id'].'">'.$report['name'].'</a></p>';
+			}
+		}
+	}
+	?>
 
 <?php include_once('inc/html/_foot.php'); ?>

@@ -98,3 +98,51 @@ function postBingSearchKeywordsAjax(catId, domain, date, data) {
 		importAllRun(catId);
 	}
 }
+
+
+/**
+ *  Toggle of showing save to quick links form on report-custom.php
+ */
+function showReportSave( elem ) {
+	jQuery( elem ).parent().find(".ajaxFromContent").toggle();
+}
+
+
+/**
+ *  Submit form via AJAX
+ */
+jQuery(document).ready(function(){
+	jQuery(".ajaxForm").on("submit", function(e){
+		e.preventDefault(); /* prevent form submission */
+		var form = jQuery(this);
+		jQuery.ajax({
+			type : "POST",
+			url : "ajax.php",
+			data : {
+				requestType: form.attr( "type" ),
+				formData: form.serialize()
+			},
+			beforeSend: function( xhr ) {
+				form.find( "input[type=submit]" ).val( "Saving..." );
+			},
+			success: function( data ) {
+				ajaxFormCallback( form, 'SUCCESS', 'successText' );
+			},
+			error: function( xhr, status, errorThrown ) {
+				ajaxFormCallback( form, 'ERROR', 'errorText' );
+			}
+		});
+	});
+});
+
+
+/**
+ *  Display message after form saved via AJAX
+ *
+ *  @param elem     Object   Form element
+ *  @param message     String   Message to display
+ *  @param status     String   Class name to apply to message.  success, error, successText, errorText
+ */
+function ajaxFormCallback( elem, message, status ) {
+	jQuery( elem ).parents( ".ajaxFormWrapper" ).empty().addClass( status ).text( message );
+}

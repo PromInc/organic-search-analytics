@@ -45,6 +45,20 @@ header div > span:not(:last-child):after {
 	color: #FFF;
 }
 
+.successText {
+	color: #4DAE42;
+}
+
+.errorText {
+	color: #CB1616;
+}
+
+.cta_text {
+	font-weight: bold;
+	font-size: 1.2em;
+	color: green;
+	cursor: pointer;
+}
 
 .button {
 	display: inline-block;

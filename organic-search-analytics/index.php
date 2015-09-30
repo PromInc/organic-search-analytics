@@ -27,6 +27,14 @@
 			<div>View reports of imported Data.</div>
 			<div><a href="report.php">View Reports</a></div>
 		</li>
+
+		<li>
+			<h2>Upgrade</h2>
+			<div>When updating between certain versions, database or other changes may have occured which will require an additional step to complete the upgrade process.</div>
+			<div>After updating the codebase from <a href="https://github.com/PromInc/organic-search-analytics" target="_blank">Github</a>, check this upgrade page to see if the version upgrade you performed requires this additional step.</div>
+			<div>If it does, it's as simple as clicking on the upgrade for your specific version to have the necessary updates implemented.</div>
+			<div><a href="upgrade.php">Upgrade Scripts</a></div>
+		</li>
 	</ul>
 
 <?php include_once('inc/html/_foot.php'); ?>

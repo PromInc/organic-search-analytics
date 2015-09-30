@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.0.10.10
+-- version 4.0.9
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 27, 2015 at 12:56 PM
--- Server version: 5.1.69-community-log
--- PHP Version: 5.3.29
+-- Generation Time: Sep 29, 2015 at 11:43 PM
+-- Server version: 5.5.34
+-- PHP Version: 5.4.22
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -19,6 +19,34 @@ SET time_zone = "+00:00";
 --
 -- Database: `organic-search-analytics`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `report_saved`
+--
+
+CREATE TABLE IF NOT EXISTS `report_saved` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `domain` varchar(256) NOT NULL,
+  `name` varchar(256) NOT NULL,
+  `category` int(11) NOT NULL,
+  `paramaters` varchar(1000) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=0 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `report_saved_categories`
+--
+
+CREATE TABLE IF NOT EXISTS `report_saved_categories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(256) NOT NULL,
+  `description` varchar(1000) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=0 ;
 
 -- --------------------------------------------------------
 
@@ -40,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `search_analytics` (
   `avg_position` int(11) NOT NULL,
   `avg_position_click` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=14798 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=0 ;
 
 -- --------------------------------------------------------
 
@@ -54,7 +82,7 @@ CREATE TABLE IF NOT EXISTS `settings` (
   `value` varchar(256) NOT NULL,
   `data` varchar(500) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=0 ;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

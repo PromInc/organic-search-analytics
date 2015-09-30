@@ -15,6 +15,7 @@
 		include_once( $GLOBALS['basedir'].'inc/code/gapiOauth.php' ); //Google API Oauth
 		include_once( $GLOBALS['basedir'].'inc/code/wmtimport.php' ); //WMT CSV import functions
 		include_once( $GLOBALS['basedir'].'inc/code/dataCapture.php' ); //Data capturing functions
+		include_once( $GLOBALS['basedir'].'inc/code/reports.php' ); //Reporting functions
 
 		include_once( $GLOBALS['basedir'].'apis/Google/autoload.php' ); //Google API
 		include_once( $GLOBALS['basedir'].'apis/Bing/Webmasters.php' ); //Bing Search API
