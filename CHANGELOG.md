@@ -5,10 +5,10 @@
 
 ### Changed / Added
 - A redesigned code structure for the reports that offers several enhancements:
--- Report Custom Links are available from the report page to quickly switich from one report to another
--- Ability to modify a reports parameters from the report display screen
--- Preset date ranges for a report (past 7 days, past 30 days, etc.)
--- Group By.  Group your reports by Query (no longer just Date!!!!!)
+  - Report Custom Links are available from the report page to quickly switich from one report to another
+  - Ability to modify a reports parameters from the report display screen
+  - Preset date ranges for a report (past 7 days, past 30 days, etc.)
+  - Group By.  Group your reports by Query (no longer just Date!!!!!)
 
 ### Added
 - FontAwesome library
