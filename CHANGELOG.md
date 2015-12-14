@@ -1,3 +1,23 @@
+## 2.3.0 - 2015-12-14
+### Updated
+- Some CSS design improvements thanks to contributions from @ctseo
+- General code tidyness
+
+### Changed / Added
+- A redesigned code structure for the reports that offers several enhancements:
+-- Report Custom Links are available from the report page to quickly switich from one report to another
+-- Ability to modify a reports parameters from the report display screen
+-- Preset date ranges for a report (past 7 days, past 30 days, etc.)
+-- Group By.  Group your reports by Query (no longer just Date!!!!!)
+
+### Added
+- FontAwesome library
+- Added an ID to the <body> tag identifying the page currently loaded.  page_{file_name}
+
+### NOTICE
+- This update removes the inc/html/reportQuickLinks.php file that you may have saved report links to.  If so, be sure to back up this file before performing the update as the file may be removed and you will loose all information in this file.
+- The file report-custom.php is removed and no longer in use.
+
 ## 2.2.0 - 2015-09-30
 ### Fixed
 - Bing API call code cleanup and allow return mode to work correctly

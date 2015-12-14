@@ -3,7 +3,8 @@
 
 	$GLOBALS['basedirWebServer'] = $_SERVER['DOCUMENT_ROOT']."/";
 	$GLOBALS['basedir'] = preg_replace( '/\\\/', '/', realpath(dirname(__FILE__).'/../../').'/' );
-	$GLOBALS['appInstallDir'] = str_replace( $GLOBALS['basedirWebServer'], "", $GLOBALS['basedir'] );	
+	$GLOBALS['appInstallDir'] = str_replace( $GLOBALS['basedirWebServer'], "", $GLOBALS['basedir'] );
+	$GLOBALS['file_name'] = basename( $_SERVER['SCRIPT_FILENAME'], ".php" );
 
 	$isConfigured = file_exists($GLOBALS['basedir'].'config/config.php');
 
