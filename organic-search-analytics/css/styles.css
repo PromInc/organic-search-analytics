@@ -128,8 +128,8 @@ table.sidebysidetable.sidebysidetable_col tr:first-child {
 	color:#f1f1f1;
 	font-weight:bold;
 }
-table.sidebysidetable.sidebysidetable_col1 { width:29%; text-align: left; }
-table.sidebysidetable.sidebysidetable_col2 { width:60%; }
+table.sidebysidetable.sidebysidetable_col1 { width:49%; text-align: left; }
+table.sidebysidetable.sidebysidetable_col2 { width:40%; }
 table.sidebysidetable.sidebysidetable_col3 { width:10%; }
 table.sidebysidetable_col tr:nth-child(odd) {
 	background-color: #fff;
