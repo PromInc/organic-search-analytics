@@ -112,8 +112,4 @@
 ### Added
 - Initial release of repository with basic functionality.
   - Add sites in settings
-<<<<<<< HEAD
   - Import data from Google Search Analytics for each site
-=======
-  - Import data from Google Search Analytics for each site
->>>>>>> eb79563da220f230f2fd7c3c8e8aea284076b523
