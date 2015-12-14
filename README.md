@@ -1,4 +1,7 @@
 # Organic Search Analytics Importer
+## Version 2.3.0 Just released!!! (December 14th, 2015)
+Just in time for the holidays, a new verion has been released offering some much needed and requested reporting updates!
+
 ## Features
 Import organic search analytics from Google Search Console (Google Webmaster Tools) and Bing Search Keywords (Bing Webmaster Tools) into a local database to keep a historical, local, and combined record of your (past the 30 days that Google offers).
 
