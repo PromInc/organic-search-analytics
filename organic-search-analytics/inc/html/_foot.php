@@ -1,4 +1,11 @@
 		</div>
+
+		<?php if( isset( $GLOBALS['scriptName'] ) ) { ?>
+			<?php if( $GLOBALS['scriptName'] == "report.php" ) { ?>
+				<script type="text/javascript" src="js/report.js"></script>
+			<?php } ?>
+		<?php } ?>
+
 		<footer>
 			<div class="floatleft">
 				Developed by <a href="http://www.promincproductions.com/blog" target="_blank">Brian Prom</a>

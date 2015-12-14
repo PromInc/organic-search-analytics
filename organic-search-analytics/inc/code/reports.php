@@ -76,6 +76,9 @@
 			}
 			$params = serialize($params);
 
+			$name = addslashes($name);
+			$category = addslashes($category);
+
 			/* Prepare request */
 			$valueString = "NULL, '{$domain}', '{$name}', '{$category}', '{$params}'";
 
@@ -98,6 +101,9 @@
 		 *  @returns   Integer, Bool(True)   New Categories return integer.  Existing categories return true(bool).
 		 */
 		public function saveReportCategory($id = NULL, $name, $description, $new = false) {
+			$name = addslashes($name);
+			$description = addslashes($description);
+
 			if( $new ) {
 				/* Format values */
 				$valueString = "NULL, '{$name}', '{$description}'";
@@ -143,7 +149,7 @@
 
 
 		/**
-		 *  Get Save Reports by category
+		 *  Get Saved Reports by category
 		 *
 		 *  @returns   array
 		 */
@@ -171,6 +177,120 @@
 			/* Return values */
 			return $return;
 		}
+
+
+		/**
+		 *  Get HTML display of Saved Reports by Category
+		 *
+		 *  @param $reportsByCategory     Array    Array of reports saved by category as returned by getSavedReportsByCategory
+		 *
+		 *  @returns   Html
+		 */
+		public function getSavedReportsByCategoryHtml( $reportsByCategory ) {
+			$return = "";
+			if( is_array( $reportsByCategory ) ) {
+				/* Loop through categories */
+				foreach( $reportsByCategory['categories'] as $cat => $catData ) {
+					/* If category has reports */
+					if( isset( $catData['reports'] ) ) {
+						/* Display category listing */
+						$return .= '<h3>'.$catData['name'].'</h3>';
+						$return .= '<ul>';
+						/* Loop through reports */
+						foreach( $catData['reports'] as $report ) {
+							/* Display report link */
+							$return .= '<li><a href="report.php?savedReport='.$report['id'].'">'.$report['name'].'</a></li>';
+						}
+						$return .= '</ul>';
+					}
+				}
+			}
+			return $return;
+		}
+
+
+		/**
+		 *  Get HTML display of Saved Reports by Category
+		 *
+		 *  @param $reportParams     Array    Array of reports saved by category as returned by getSavedReportsByCategory
+		 *
+		 *  @returns   Html
+		 */
+		public function getReportQueryAndHeading( $reportParams ) {
+			$return = array();
+			if( is_array( $reportParams ) ) {
+
+				$whereClause = $return['chartLabel'] = "";
+				$return['whereClauseItemsTable'] = $return['pageHeadingItems'] = [];
+				if( isset( $reportParams['domain'] ) && $reportParams['domain'] > "" ) {
+					$return['whereClauseItemsTable'][] = "domain = '" . $reportParams['domain'] . "'";
+					$return['pageHeadingItems'][] = "Domain: " . $reportParams['domain'];
+				}
+				if( isset( $reportParams['query'] ) && $reportParams['query'] > "" ) {
+					switch( $reportParams['queryMatch'] ) {
+						case "broad":
+						default:
+							$return['whereClauseItemsTable'][] = "query LIKE '%" . $reportParams['query'] . "%'";
+							break;
+						case "exact":
+							$return['whereClauseItemsTable'][] = "query = '" . $reportParams['query'] . "'";
+							break;
+					}
+					$return['pageHeadingItems'][] = "Query: " . $reportParams['query'] . (isset($reportParams['queryMatch'])?" (".$reportParams['queryMatch'].")":"");
+					$return['chartLabel'] = $reportParams['query'] . (isset($reportParams['queryMatch'])?" (".$reportParams['queryMatch'].")":"");
+				}
+				if( isset( $reportParams['search_type'] ) && $reportParams['search_type'] > "" ) {
+					if( $reportParams['search_type'] != "ALL" ) {
+						$return['whereClauseItemsTable'][] = "search_type = '" . $reportParams['search_type'] . "'";
+					}
+					$return['pageHeadingItems'][] = "Search Type: " . $reportParams['search_type'];
+				}
+				if( isset( $reportParams['device_type'] ) && $reportParams['device_type'] > "" ) {
+					if( $reportParams['device_type'] != "ALL" ) {
+						$return['whereClauseItemsTable'][] = "device_type = '" . $reportParams['device_type'] . "'";
+					}
+					$return['pageHeadingItems'][] = "Device Type: " . $reportParams['device_type'];
+				}
+				if( isset( $reportParams['date_start'] ) && $reportParams['date_start'] > 0 && $reportParams['date_type'] == 'hard_set' ) {
+					if( isset( $reportParams['date_end'] ) && $reportParams['date_end'] > 0 ) {
+						$return['whereClauseItemsTable'][] = "date >= '" . $reportParams['date_start'] . "' AND date <= '" . $reportParams['date_end'] . "'";
+						$return['pageHeadingItems'][] = "Dates: " . $reportParams['date_start'] . " to " . $reportParams['date_end'];
+					} else {
+						$return['whereClauseItemsTable'][] = "date = '" . $reportParams['date_start'] . "'";
+						$return['pageHeadingItems'][] = "Date: " . $reportParams['date_start'];
+					}
+				} elseif( isset( $reportParams['date_type'] ) && $reportParams['date_type'] != 'hard_set' ) {
+					$queryMaxDate = "SELECT max(date) as 'max' FROM `".MySQL::DB_TABLE_SEARCH_ANALYTICS."` WHERE 1";
+					if( $result = $GLOBALS['db']->query($queryMaxDate) ) {
+						$maxDate = $result->fetch_row();
+						$dateEnd = $maxDate[0];
+						$dateStartOffset = preg_replace("/[^0-9,.]/", "", $reportParams['date_type'] );
+						$dateStart = date('Y-m-d', strtotime('-'.$dateStartOffset.' days', strtotime( $dateEnd ) ) );
+						$return['whereClauseItemsTable'][] = "date >= '" . $dateStart . "' AND date < '" . $dateEnd . "'";
+						$return['pageHeadingItems'][] = "Dates: Past " . $dateStartOffset . " days (" . $dateStart . " to " . $dateEnd . ")";
+					}
+				}
+				$return['whereClauseTable'] = " WHERE " . implode( " AND ", $return['whereClauseItemsTable'] ) . " ";
+
+				if( isset( $reportParams['sortDir'] ) ) { $return['sortDir'] = $reportParams['sortDir']; } else { $return['sortDir'] = 'asc'; }
+				if( isset( $reportParams['sortBy'] ) ) { $return['sortBy'] = $reportParams['sortBy']; } else { $return['sortBy'] = 'date'; }
+
+				$groupByDate = 'date';
+				if( isset( $reportParams['granularity'] ) && $reportParams['granularity'] != 'day' ) {
+					$return['groupBy'] = strtoupper( $reportParams['granularity'] ) . '(' . $groupByDate . ')';
+					$return['pageHeadingItems'][] = "Granularity: " . $reportParams['granularity'];
+				} else {
+					$return['groupBy'] = $groupByDate;
+				}
+
+				if( isset( $reportParams['groupBy'] ) && $reportParams['groupBy'] == "query" ) {
+					// $return['groupBy'] = $return['sortBy'] = "query";
+					$return['groupBy'] = "query";
+				}
+			}
+			return $return;
+		}
+
 
 	}
 ?>

@@ -11,35 +11,44 @@ if( !strpos( $_SERVER['SCRIPT_NAME'], "upgrade.php" ) ) {
 
 		<link rel="stylesheet" href="css/styles.css">
 		<link rel="stylesheet" href="css/lib/jquery/jquery-ui-1.11.2.css">
+		<link rel="stylesheet" href="css/lib/font-awesome/font-awesome.min.css">
 
 		<script language="javascript" type="text/javascript" src="js/lib/jquery/jquery-1.11.3.min.js"></script>
 		<script src="js/lib/jquery/jquery-ui-1.11.2.js"></script>
 		<script type="text/javascript" src="js/script.js"></script>
 
-		<?php if( isset( $GLOBALS['scriptName'] ) && $GLOBALS['scriptName'] == "report-custom.php" ) { ?>
-			<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="js/lib/jqplot/excanvas.js"></script><![endif]-->
-			<script language="javascript" type="text/javascript" src="js/lib/jqplot/jquery.jqplot.min.js"></script>
-			<script language="javascript" type="text/javascript" src="js/lib/jqplot/plugins/jqplot.cursor.min.js"></script>
-			<script language="javascript" type="text/javascript" src="js/lib/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
-			<script language="javascript" type="text/javascript" src="js/lib/jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"></script>
-			<script language="javascript" type="text/javascript" src="js/lib/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
-			<script language="javascript" type="text/javascript" src="js/lib/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
-			<script language="javascript" type="text/javascript" src="js/lib/jqplot/plugins/jqplot.highlighter.min.js"></script>
-			<link rel="stylesheet" type="text/css" href="css/lib/jqplot/jquery.jqplot.css" />
-		<?php } ?>
+		<?php if( isset( $GLOBALS['scriptName'] ) ) { ?>
+			<?php if( $GLOBALS['scriptName'] == "report.php" ) { ?>
+				<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="js/lib/jqplot/excanvas.js"></script><![endif]-->
+				<script language="javascript" type="text/javascript" src="js/lib/jqplot/jquery.jqplot.min.js"></script>
+				<script language="javascript" type="text/javascript" src="js/lib/jqplot/plugins/jqplot.cursor.min.js"></script>
+				<script language="javascript" type="text/javascript" src="js/lib/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
+				<script language="javascript" type="text/javascript" src="js/lib/jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"></script>
+				<script language="javascript" type="text/javascript" src="js/lib/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
+				<script language="javascript" type="text/javascript" src="js/lib/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
+				<script language="javascript" type="text/javascript" src="js/lib/jqplot/plugins/jqplot.highlighter.min.js"></script>
+				<!-- Bar Charts -->
+				<script language="javascript" type="text/javascript" src="js/lib/jqplot/plugins/jqplot.pieRenderer.min.js"></script>
+				<script language="javascript" type="text/javascript" src="js/lib/jqplot/plugins/jqplot.barRenderer.min.js"></script>
+				<script language="javascript" type="text/javascript" src="js/lib/jqplot/plugins/jqplot.categoryAxisRenderer.min.js"></script>
+				<link rel="stylesheet" type="text/css" href="css/lib/jqplot/jquery.jqplot.css" />
+			<?php } ?>
 
-		<?php if( isset( $GLOBALS['scriptName'] ) && $GLOBALS['scriptName'] == "settings.php" ) { ?>
-			<script type="text/javascript" src="js/settings.js"></script>
+			<?php if( $GLOBALS['scriptName'] == "settings.php" ) { ?>
+				<script type="text/javascript" src="js/settings.js"></script>
+			<?php } ?>
 		<?php } ?>
 	</head>
 
-	<body>
+	<body id="page_<?php echo $GLOBALS['file_name'] ?>">
 		<header>
-			<div class="floatleft">
-				<span><a href="index.php">Home</a></span>
-				<span><a href="data-capture.php">Data Capture</a></span>
-				<span><a href="settings.php">Settings</a></span>
-				<span><a href="report.php">Reports</a></span>
+			<div id="nav_primary" class="floatleft">
+				<ul>
+				<li><a href="index.php">Home</a></li>
+				<li><a href="data-capture.php">Data Capture</a></li>
+				<li><a href="settings.php">Settings</a></li>
+				<li><a href="report.php">Reports</a></li>
+				</ul>
 			</div>
 			<div class="floatright">
 				<span class="donate">

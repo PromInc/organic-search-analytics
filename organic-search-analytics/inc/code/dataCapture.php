@@ -57,7 +57,7 @@
 		 *
 		 *  @param $enabledCheck     Bool   If enabled sites only should be returned.  Default false
 		 *
-		 *  @returns   Array   
+		 *  @returns   Array
 		 */
 		public function getSitesBingWebmaster($enabledCheck = FALSE) {
 			$bing = new BingWebmasters(); // Load Bing Webmasters API

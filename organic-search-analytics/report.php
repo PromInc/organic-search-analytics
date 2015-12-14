@@ -1,155 +1,261 @@
 <?php $titleTag = "Reporting | Organic Search Analytics"; ?>
 
+<?php $displayReport = ( count( $_GET ) > 0 ); ?>
+<?php $displayReportToggleHide = ( $displayReport ? ' style="display:none;"' : '' ); ?>
+
 <?php include_once('inc/html/_head.php'); ?>
 
+<?php $reports = new Reports(); ?>
+
+<?php
+	if( isset( $_GET['savedReport'] ) ) {
+		/* Used save report parameters */
+		/* Load Reporting Class */
+		$reports = new Reports();
+		/* Get parameters for report */
+		$reportParams = $reports->getSavedReport($_GET['savedReport']);
+	} else {
+		/* Use query parameters */
+		$reportParams = $_GET;
+	}
+?>
+
 	<?php include_once('inc/html/_alert.php'); ?>
-	<h1>Search Analytics Reporting</h1>
+	<h1>Organic Search Analytics Reporting</h1>
 
-	<h2>Generate Report</h2>
-	<form action="report-custom.php" method="get">
-		<p>
-			<label>Domain: </label><br>
-			<?php
-			$sitesList = $dataCapture->getSitesGoogleSearchConsole();
-			foreach( $sitesList as $key => $site ) {
-				echo '<input type="radio" name="domain" id="'.$site['url'].'" value="'.$site['url'].'" '.($key==0?' checked':'').'><label for="'.$site['url'].'">'.$site['url'].'</label><br>';
-			}
-			?>
-		</p>
-		<p>
-			<label for="query">Query: </label><input type="text" name="query" id="query" value="">
-			<div>
-				Query Match Type:
-				<span style="margin-left: 10px;"><input type="radio" name="queryMatch" id="queryMatchBroad" value="broad" checked><label for="queryMatchBroad">Broad</label></span>
-				<span style="margin-left: 10px;"><input type="radio" name="queryMatch" id="queryMatchExact" value="exact"><label for="queryMatchExact">Exact</label></span>
-			</div>
-		</p>
+	<div id="reportSettings" class="expandable col col50">
+		<h2>Report Settings</h2>
+		<div class="expandingBox"<?php echo $displayReportToggleHide ?>>
+			<?php include_once( 'inc/html/reportSettings.php' ); ?>
+		</div>
+	</div>
 
-		<?php
-		$now = time();
-		$queryDateRange = "SELECT max(date) as 'max', min(date) as 'min' FROM `".$mysql::DB_TABLE_SEARCH_ANALYTICS."` WHERE 1";
-		if( $result = $GLOBALS['db']->query($queryDateRange) ) {
-			$row = $result->fetch_assoc();
-			$diff = strtotime( $row["max"] ) - strtotime( $row["min"] );
-			$numDays = floor( $diff / (60*60*24) );
-			$row["max"] - $row["min"];
-			$startOffset = $now - strtotime( $row["max"] );
-			$startOffset = floor( $startOffset / (60*60*24) );
-			$numDays = $numDays + $startOffset + 2;
-		}
-		?>
+	<div id="reportQuickLinks" class="expandable col col50">
+		<h2>Report Custom Links</h2>
+		<div class="expandingBox"<?php echo $displayReportToggleHide ?>>
+			<p>To add a report to Quick Links, generate a report using the parameters above and choose the <i>Save this Report to Quick Links</i> link.</p>
+			<?php echo $reports->getSavedReportsByCategoryHtml( $reports->getSavedReportsByCategory() ); ?>
+		</div>
+	</div>
+	<div class="clear"></div>
 
-		<p>
-			<label for="search_type">Search Type: </label>
-			<select name="search_type" id="search_type">
-				<option value="ALL">ALL</option>
-				<option value="web">WEB</option>
-				<option value="image">IMAGE</option>
-				<option value="video">VIDEO</option>
-			</select>
-		</p>
-
-		<p>
-			<label for="device_type">Device Type: </label>
-			<select name="device_type" id="device_type">
-				<option value="ALL">ALL</option>
-				<option value="desktop">Desktop</option>
-				<option value="mobile">MOBILE</option>
-				<option value="tablet">Tablet</option>
-			</select>
-		</p>
-
-		<p>
-			<div>
-				Date Range Type:
-				<span style="margin-left: 10px;"><input type="radio" name="date_type" id="date_type_recent_7" value="recent_7" checked><label for="date_type_recent_7">Past 7 Days</label></span>
-				<span style="margin-left: 10px;"><input type="radio" name="date_type" id="date_type_recent_30" value="recent_30"><label for="date_type_recent_30">Past 30 Days</label></span>
-				<span style="margin-left: 10px;"><input type="radio" name="date_type" id="date_type_recent_90" value="recent_90"><label for="date_type_recent_90">Past 90 Days</label></span>
-				<span style="margin-left: 10px;"><input type="radio" name="date_type" id="date_type_hard_set" value="hard_set"><label for="date_type_hard_set">Specific Dates</label></span>
-			</div>
-		</p>
-
-		<p>
-			<label for="date_start">Date Start: </label>
-			<select name="date_start" id="date_start">
-				<option value=""></option>
-				<?php for( $d = $startOffset; $d < $numDays; $d++ ) { echo '<option value="' . date( 'Y-m-d', $now - ( 86400 * $d ) ) . '">' . date( 'Y-m-d', $now - ( 86400 * $d ) ) . '</option>'; } ?>
-			</select>
-		</p>
-
-		<p>
-			<label for="date_end">Date End: </label>
-			<select name="date_end" id="date_end">
-				<option value=""></option>
-				<?php for( $d = $startOffset; $d < $numDays; $d++ ) { echo '<option value="' . date( 'Y-m-d', $now - ( 86400 * $d ) ) . '">' . date( 'Y-m-d', $now - ( 86400 * $d ) ) . '</option>'; } ?>
-			</select>
-		</p>
-
-		<p>
-			<div>
-				Granularity:
-				<span style="margin-left: 10px;"><input type="radio" name="granularity" id="granularityDay" value="day" checked><label for="granularityDay">Day</label></span>
-				<span style="margin-left: 10px;"><input type="radio" name="granularity" id="granularityWeek" value="week"><label for="granularityWeek">Week</label></span>
-				<span style="margin-left: 10px;"><input type="radio" name="granularity" id="granularityMonth" value="month"><label for="granularityMonth">Month</label></span>
-				<span style="margin-left: 10px;"><input type="radio" name="granularity" id="granularityYear" value="year"><label for="granularityYear">Year</label></span>
-			</div>
-		</p>
-
-		<!--
-		<p>
-			<div>
-				Group By:
-				<span style="margin-left: 10px;"><input type="radio" name="groupBy" id="groupByDate" value="date" checked><label for="groupByDate">Date</label></span>
-				<span style="margin-left: 10px;"><input type="radio" name="groupBy" id="groupByQuery" value="query"><label for="groupByQuery">Query</label></span>
-			</div>
-		</p>
-		-->
-
-		<p>
-			<div>
-				Sort By:
-				<span style="margin-left: 10px;"><input type="radio" name="sortBy" id="sortByDate" value="date" checked><label for="sortByDate">Date</label></span>
-				<span style="margin-left: 10px;"><input type="radio" name="sortBy" id="sortByQuery" value="query"><label for="sortByQuery">Query</label></span>
-				<span style="margin-left: 10px;"><input type="radio" name="sortBy" id="sortByImpressions" value="impression"><label for="sortByImpressions">Impression</label></span>
-				<span style="margin-left: 10px;"><input type="radio" name="sortBy" id="sortByAvgPos" value="avgpos"><label for="sortByAvgPos">Average Position</label></span>
-				<span style="margin-left: 10px;"><input type="radio" name="sortBy" id="sortByCtr" value="ctr"><label for="sortByCtr">Click Through Rate</label></span>
-			</div>
-		</p>
-
-		<p>
-			<div>
-				Sort Direction:
-				<span style="margin-left: 10px;"><input type="radio" name="sortDir" id="sortDirAsc" value="asc" checked><label for="sortDirAsc">Ascending</label></span>
-				<span style="margin-left: 10px;"><input type="radio" name="sortDir" id="sortDirDesc" value="desc"><label for="sortDirDesc">Descending</label></span>
-			</div>
-		</p>
-
-		<p>
-			<input type="submit" value="Generate Report">
-		</p>
-	</form>
-
-	<h2>Report Custom Links</h2>
-	<p>To add a report to Quick Links, generate a report using the parameters above and choose the <i>Save this Report to Quick Links</i> link.</p>
 	<?php
-	/* Load Reporting Class */
-	$reports = new Reports();
-	/* Get saved reports by category */
-	$saveReportsByCategory = $reports->getSavedReportsByCategory();
-
-	/* Loop through categories */
-	foreach( $saveReportsByCategory['categories'] as $cat => $catData ) {
-		/* If category has reports */
-		if( isset( $catData['reports'] ) ) {
-			/* Display category listing */
-			echo '<h3>'.$catData['name'].'</h3>';
-			/* Loop through reports */
-			foreach( $catData['reports'] as $report ) {
-				/* Display report link */
-				echo '<p><a href="report-custom.php?savedReport='.$report['id'].'">'.$report['name'].'</a></p>';
-			}
-		}
+	if( $reportParams ) {
+		$reportDetails = $reports->getReportQueryAndHeading( $reportParams );
+		$groupBy = $reportDetails['groupBy'];
 	}
 	?>
+
+	<?php if( isset( $reportDetails ) ) { ?>
+		<h2><?php echo implode( ", ", $reportDetails['pageHeadingItems'] ); ?></h2>
+
+		<?php
+		$reports = new Reports(); //Load Reporting Class
+
+		/* Get saved report categories */
+		$reportCategories = '<select name="reportCatExisting">';
+		foreach( $reports->getSavedReportCategories() as $key => $category ) {
+			$reportCategories .= '<option value="' . $key . '">'. $category['name'] . '</option>';
+		}
+		$reportCategories .= '</select>';
+
+		/* Get save report form and insert dynamic values */
+		$saveReportContent = file_get_contents( $GLOBALS['basedir'] . "/inc/html/_saveReport.php" );
+		$saveReportContent = preg_replace( '/{{report_params}}/', urlencode( json_encode( $reportParams ) ), $saveReportContent );
+		$saveReportContent = preg_replace( '/{{report_categories}}/', $reportCategories, $saveReportContent );
+		?>
+
+		<?php if( ! isset( $_GET['savedReport'] ) ) { ?>
+			<?php echo $saveReportContent; ?>
+		<?php } ?>
+
+		<?php
+			$reportQuery = "SELECT " . $groupBy . ", count(" . ( $groupBy != "query" ? 'DISTINCT ' : '' ) . "query) as 'queries', sum(impressions) as 'impressions', sum(clicks) as 'clicks', avg(avg_position) as 'avg_position' FROM ".$mysql::DB_TABLE_SEARCH_ANALYTICS." " . $reportDetails['whereClauseTable'] . "GROUP BY " . $groupBy . " ORDER BY " . $reportDetails['sortBy'] . " ASC";
+
+			/* Get MySQL Results */
+			$outputTable = $outputChart = array();
+			if( $resultTable = $GLOBALS['db']->query($reportQuery) ) {
+				while ( $rowsTable = $resultTable->fetch_assoc() ) {
+					$outputTable[] = $rowsTable;
+				}
+			}
+
+			/* If Results */
+			if( count($outputTable) > 0 ) {
+				/* Put MySQL Results into an array */
+				$rows = array();
+				for( $r=0; $r < count($outputTable); $r++ ) {
+					$rows[ $outputTable[$r][$groupBy] ] = array( "queries" => $outputTable[$r]["queries"], "impressions" => $outputTable[$r]["impressions"], "clicks" => $outputTable[$r]["clicks"], "avg_position" => $outputTable[$r]["avg_position"] );
+				}
+
+				/* Build an array for chart data */
+				$jqData = array( $groupBy => array(), "impressions" => array(), "clicks" => array(), "ctr" => array(), "avg_position" => array() );
+
+				foreach ( $rows as $index => $values ) {
+					$jqData[$groupBy][] = $index;
+					$jqData['impressions'][] = $values["impressions"];
+					$jqData['clicks'][] = $values["clicks"];
+					$jqData['ctr'][] = ( $values["clicks"] / $values["impressions"] ) * 100;
+					$jqData['avg_position'][] = $values["avg_position"];
+				}
+
+				$num = count( $jqData[$groupBy] );
+				$posString = "";
+				$posMax = 0;
+				for( $c=0; $c<$num; $c++ ) {
+					if( $c != 0 ) {
+						$posString .= ",";
+					}
+					$posString .= "['".$jqData[$groupBy][$c]."',".$jqData['avg_position'][$c]."]";
+					if( $jqData['avg_position'][$c] > $posMax ) { $posMax = $jqData['avg_position'][$c]; }
+				}
+				?>
+
+				<div id="reportchart"></div>
+				<div id="reportChartContainer">
+					<div class="button" id="zoomReset">Reset Zoom</div>
+					<div id="chartDataCallout"></div>
+				</div>
+				<div class="clear"></div>
+
+				<script type="text/javascript">
+				$(document).ready(function(){
+					<?php if( preg_match( '/date/', $groupBy ) ) { ?>
+							var line1=[<?php echo $posString ?>];
+							var plot2 = $.jqplot('reportchart', [line1], {
+									title:'Average Position<?php echo ( strlen( $reportDetails['chartLabel'] ) > 0 ?" | " . $reportDetails['chartLabel'] . "":"") ?>',
+									axes:{
+										xaxis:{
+											renderer:$.jqplot.DateAxisRenderer,
+											tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+											tickOptions:{
+												formatString:'%m-%d-%y',
+												angle: -30
+											},
+										},
+										yaxis:{
+											max: 1,
+											min: <?php echo $posMax ?>,
+											tickOptions:{
+												formatString:'%i'
+											},
+											label:'SERP Position',
+											labelRenderer: $.jqplot.CanvasAxisLabelRenderer
+										}
+									},
+									highlighter: {
+										show: true,
+										tooltipAxes: 'xy',
+										useAxesFormatters: true,
+										showTooltip: true
+									},
+									series:[{lineWidth:4, markerOptions:{style:'square'}}],
+									cursor:{
+										show: true,
+										zoom: true,
+									}
+							});
+							
+					<?php } elseif( $groupBy ==  "query" ) { ?>
+							var plot2 = $.jqplot('reportchart', [[<?php echo $posString ?>]], {
+									title:'Default Bar Chart',
+									// animate: !$.jqplot.use_excanvas,
+									seriesDefaults:{
+											renderer:$.jqplot.BarRenderer,
+											rendererOptions: {
+												varyBarColor: true,
+												showDataLabels: true
+											},
+									},
+									legent: {
+										show: true
+									},
+									axesDefaults: {
+											tickRenderer: $.jqplot.CanvasAxisTickRenderer ,
+											tickOptions: {
+												angle: 30,
+												fontSize: '10pt'
+											}
+									},
+									axes:{
+										xaxis:{
+											renderer: $.jqplot.CategoryAxisRenderer,
+											pointLabels: { show: true }
+										}
+									},
+									cursor:{
+										show: true,
+										zoom: true,
+									},
+									highlighter: {
+										show: true,
+										tooltipAxes: 'xy',
+										useAxesFormatters: false,
+										showTooltip: true,
+										tooltipFormatString: '%s'
+									}
+							});
+
+							/* Click displays information on HTML page */
+							$('#reportchart').bind('jqplotDataClick', 
+									function (ev, seriesIndex, pointIndex, data) {
+											$('#chartDataCallout').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data);
+									}
+							);
+					<?php } ?>
+
+					/* Zoom Reset */
+					$('#zoomReset').click(function() { plot2.resetZoom() });
+				});
+				</script>
+
+
+				<?php if( $reportDetails['sortDir'] == 'desc' ) { $rows = array_reverse( $rows ); } ?>
+
+				<?php
+					if( preg_match( '/\(date\)/', $groupBy ) ) {
+						$colHeadingPrimary = substr( $groupBy, 0, strpos( $groupBy, '(' ) );
+					} else {
+						$colHeadingPrimary = $groupBy;
+					}
+				?>
+
+				<table class="sidebysidetable sidebysidetable_col sidebysidetable_col1">
+					<tr>
+						<td><?php echo ucfirst( strtolower( $colHeadingPrimary ) ) ?></td>
+					</tr>
+					<?php
+					foreach ( $rows as $index => $values ) {
+						echo '<tr><td>' . $index . '</td></tr>';
+					}
+					?>
+				</table>
+
+				<table class="sidebysidetable sidebysidetable_col sidebysidetable_col2">
+					<tr>
+						<td>Queries</td><td>Impressions</td><td>Clicks</td><td>Avg Position</td>
+					</tr>
+					<?php
+					foreach ( $rows as $index => $values ) {
+						echo '<tr><td>' . number_format( $values["queries"] ) . '</td><td>' . number_format( $values["impressions"] ) . '</td><td>' . number_format( $values["clicks"] ) . '</td><td>' . number_format( $values["avg_position"], 2 ) . '</td></tr>';
+					}
+					?>
+				</table>
+
+				<table class="sidebysidetable sidebysidetable_col sidebysidetable_col3">
+					<tr>
+						<td>CTR</td>
+					</tr>
+					<?php
+					foreach ( $rows as $index => $values ) {
+						echo '<tr><td>' . number_format( ( $values["clicks"] / $values["impressions"] ) * 100, 2 ) . '%</td></tr>';
+					}
+					?>
+				</table>
+			<?php
+			}
+		?>
+	<?php } ?>
+	<div class="clear"></div>
 
 <?php include_once('inc/html/_foot.php'); ?>
