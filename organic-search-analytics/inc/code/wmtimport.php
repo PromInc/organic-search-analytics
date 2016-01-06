@@ -60,8 +60,13 @@
 		public function importGoogleSearchAnalytics($domain, $date, $searchType, $searchAnalytics) {
 			$countImport = 0;
 			foreach( $searchAnalytics->rows as $recordKey => $recordData ) {
-				$deviceType = strtolower( $recordData['keys'][1] );
-				$import = "INSERT into ".MySQL::DB_TABLE_SEARCH_ANALYTICS."(domain, date, search_engine, search_type, device_type, query, impressions, clicks, ctr, avg_position) values('$domain', '$date', 'google', '$searchType', '$deviceType', '{$recordData['keys'][0]}','{$recordData['impressions']}','{$recordData['clicks']}','{$recordData['ctr']}','{$recordData['position']}')";
+				/* Prep data */
+				$domain = addslashes( $domain );
+				$searchType = addslashes( $searchType );
+				$deviceType = addslashes( strtolower( $recordData['keys'][1] ) );
+				$query = addslashes( $recordData['keys'][0] );
+
+				$import = "INSERT into ".MySQL::DB_TABLE_SEARCH_ANALYTICS."(domain, date, search_engine, search_type, device_type, query, impressions, clicks, ctr, avg_position) values('$domain', '$date', 'google', '$searchType', '$deviceType', '{$query}','{$recordData['impressions']}','{$recordData['clicks']}','{$recordData['ctr']}','{$recordData['position']}')";
 
 				if( $GLOBALS['db']->query($import) ) {
 					$countImport++;
@@ -92,10 +97,12 @@
 					preg_match( '/\d+/', $recordData->Date, $dateUnixMatch );
 					$ctr = $recordData->Clicks / $recordData->Impressions;
 					$date = date( "Y-m-d", substr($dateUnixMatch[0], 0, strlen($dateUnixMatch[0])-3) );
-					
+					$query = addslashes( $recordData->Query );
+					$domain = addslashes( $domain );
+
 					if( $date > $lastImportedDate ) {
-						$import = "INSERT into ".MySQL::DB_TABLE_SEARCH_ANALYTICS."(domain, date, search_engine, query, impressions, clicks, ctr, avg_position, avg_position_click) values('$domain', '$date', 'bing', '{$recordData->Query}','{$recordData->Impressions}','{$recordData->Clicks}','{$ctr}','{$recordData->AvgImpressionPosition}', '{$recordData->AvgClickPosition}')";
-		
+						$import = "INSERT into ".MySQL::DB_TABLE_SEARCH_ANALYTICS."(domain, date, search_engine, query, impressions, clicks, ctr, avg_position, avg_position_click) values('$domain', '$date', 'bing', '{$query}','{$recordData->Impressions}','{$recordData->Clicks}','{$ctr}','{$recordData->AvgImpressionPosition}', '{$recordData->AvgClickPosition}')";
+
 						if( $GLOBALS['db']->query($import) ) {
 							$countImport++;
 						}
