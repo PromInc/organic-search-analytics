@@ -60,8 +60,13 @@
 		public function importGoogleSearchAnalytics($domain, $date, $searchType, $searchAnalytics) {
 			$countImport = 0;
 			foreach( $searchAnalytics->rows as $recordKey => $recordData ) {
-				$deviceType = strtolower( $recordData['keys'][1] );
-				$import = "INSERT into ".MySQL::DB_TABLE_SEARCH_ANALYTICS."(domain, date, search_engine, search_type, device_type, query, impressions, clicks, ctr, avg_position) values('$domain', '$date', 'google', '$searchType', '$deviceType', '{$recordData['keys'][0]}','{$recordData['impressions']}','{$recordData['clicks']}','{$recordData['ctr']}','{$recordData['position']}')";
+				/* Prep data */
+				$domain = addslashes( $domain );
+				$searchType = addslashes( $searchType );
+				$deviceType = addslashes( strtolower( $recordData['keys'][1] ) );
+				$query = addslashes( $recordData['keys'][0] );
+
+				$import = "INSERT into ".MySQL::DB_TABLE_SEARCH_ANALYTICS."(domain, date, search_engine, search_type, device_type, query, impressions, clicks, ctr, avg_position) values('$domain', '$date', 'google', '$searchType', '$deviceType', '{$query}','{$recordData['impressions']}','{$recordData['clicks']}','{$recordData['ctr']}','{$recordData['position']}')";
 
 				if( $GLOBALS['db']->query($import) ) {
 					$countImport++;
