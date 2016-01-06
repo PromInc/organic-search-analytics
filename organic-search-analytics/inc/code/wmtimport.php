@@ -97,10 +97,12 @@
 					preg_match( '/\d+/', $recordData->Date, $dateUnixMatch );
 					$ctr = $recordData->Clicks / $recordData->Impressions;
 					$date = date( "Y-m-d", substr($dateUnixMatch[0], 0, strlen($dateUnixMatch[0])-3) );
-					
+					$query = addslashes( $recordData->Query );
+					$domain = addslashes( $domain );
+
 					if( $date > $lastImportedDate ) {
-						$import = "INSERT into ".MySQL::DB_TABLE_SEARCH_ANALYTICS."(domain, date, search_engine, query, impressions, clicks, ctr, avg_position, avg_position_click) values('$domain', '$date', 'bing', '{$recordData->Query}','{$recordData->Impressions}','{$recordData->Clicks}','{$ctr}','{$recordData->AvgImpressionPosition}', '{$recordData->AvgClickPosition}')";
-		
+						$import = "INSERT into ".MySQL::DB_TABLE_SEARCH_ANALYTICS."(domain, date, search_engine, query, impressions, clicks, ctr, avg_position, avg_position_click) values('$domain', '$date', 'bing', '{$query}','{$recordData->Impressions}','{$recordData->Clicks}','{$ctr}','{$recordData->AvgImpressionPosition}', '{$recordData->AvgClickPosition}')";
+
 						if( $GLOBALS['db']->query($import) ) {
 							$countImport++;
 						}
