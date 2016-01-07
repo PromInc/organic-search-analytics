@@ -1,3 +1,11 @@
+## 2.3.4 - 2016-01-07
+### Updated
+- Longer execution time on the data-delete.php page
+
+### Bug Fix
+- Query checking if Google needed data didn't exclude Bing
+- On data-delete.php clicking on the labels did not select the checkbox.
+
 ## 2.3.3 - 2016-01-07
 ### Added
 - A page that allows the user to delete data from Google for dates that the data can be recaptured from Google.

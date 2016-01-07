@@ -99,7 +99,7 @@
 		*/
 		public function getGoogleDatesWithData($website, $availableToDownload=false) {
 			/* Query database for dates with data */
-			$query = "SELECT COUNT( DISTINCT date ) AS record, date FROM ".MySQL::DB_TABLE_SEARCH_ANALYTICS." WHERE domain LIKE '".$website."'";
+			$query = "SELECT COUNT( DISTINCT date ) AS record, date FROM ".MySQL::DB_TABLE_SEARCH_ANALYTICS." WHERE search_engine = 'google' AND domain LIKE '".$website."'";
 			if( $availableToDownload ) {
 				/* Identify date range */
 				$dateRange = $this->getGoogleAvailableDates();
