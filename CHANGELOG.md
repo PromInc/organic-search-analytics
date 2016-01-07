@@ -1,3 +1,26 @@
+## 2.3.3 - 2016-01-07
+### Added
+- A page that allows the user to delete data from Google for dates that the data can be recaptured from Google.
+- Session based alerts
+- Redirect function in the Core class
+
+## 2.3.2 - 2016-01-07
+### Added
+- search_type was added to the data-capture-run.php parameters to allow overriding the default Search Types
+- Totals for report columns!!
+- Sort by links on the report column headings
+
+### Updated
+- Changed look of "Save this Report to Quick Links" button on report page
+- Changed how the tables on the report page get built from three separate tables into one.
+
+### Bug Fix
+- Removed "Query" from displaying as a default "Sort By" option on the report page as it's an invalid option unless the "Group By" is changed.
+
+## 2.3.1 - 2016-01-06
+### Fixed
+- The data import to the database was failing for queries with special characters.  addslashes was added to the MySQL data to resolve this bug.
+
 ## 2.3.0 - 2015-12-14
 ### Updated
 - Some CSS design improvements thanks to contributions from @ctseo
