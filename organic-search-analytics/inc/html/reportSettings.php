@@ -115,9 +115,9 @@
 		Sort By:
 		<?php $displayCheck = true;  if( isset( $reportParams['groupBy'] ) && strtolower( $reportParams['groupBy'] )  == 'query' ) { $displayCheck = false; } ?>
 		<span<?php if( ! $displayCheck ) { echo ' style="display:none;"'; } ?>><input type="radio" name="sortBy" id="sortByDate" value="date"<?php echo ( !isset( $reportParams['sortBy'] ) || isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'date' ? $checkedTrue : $checkedFalse ) ?><?php if( ! $displayCheck ) { echo ' disabled'; } ?>><label for="sortByDate">Date</label></span>
-		<?php $displayCheck = true;  if( isset( $reportParams['groupBy'] ) && strtolower( $reportParams['groupBy'] )  == 'date' ) { $displayCheck = false; } ?>
+		<?php $displayCheck = true;  if( ! $reportParams || isset( $reportParams['groupBy'] ) && strtolower( $reportParams['groupBy'] )  == 'date' ) { $displayCheck = false; } ?>
 		<span<?php if( ! $displayCheck ) { echo ' style="display:none;"'; } ?>><input type="radio" name="sortBy" id="sortByQuery" value="query"<?php echo ( isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'query' ? $checkedTrue : $checkedFalse ) ?><?php if( ! $displayCheck ) { echo ' disabled'; } ?>><label for="sortByQuery">Query</label></span>
-		<span><input type="radio" name="sortBy" id="sortByQueries" value="queries"<?php echo ( isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'queries' ? $checkedTrue : $checkedFalse ) ?>><label for="sortByQueries">Queries</label></span>
+		<span><input type="radio" name="sortBy" id="sortByQueries" value="queries"<?php echo ( isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'queries' ? $checkedTrue : $checkedFalse ) ?>><label for="sortByQueries"><?php echo $colHeadingSecondary ?></label></span>
 		<span><input type="radio" name="sortBy" id="sortByImpressions" value="impressions"<?php echo ( isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'impressions' ? $checkedTrue : $checkedFalse ) ?>><label for="sortByImpressions">Impressions</label></span>
 		<span><input type="radio" name="sortBy" id="sortByClicks" value="clicks"<?php echo ( isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'clicks' ? $checkedTrue : $checkedFalse ) ?>><label for="sortByClicks">Clicks</label></span>
 		<span><input type="radio" name="sortBy" id="sortByAvgPos" value="avg_position"<?php echo ( isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'avg_position' ? $checkedTrue : $checkedFalse ) ?>><label for="sortByAvgPos">Avg Position</label></span>
@@ -131,6 +131,6 @@
 	</div>
 
 	<div id="paramGroup_submit" class="report-parameter-group">
-		<input type="submit" value="Generate Report">
+		<input type="submit" value="Generate Report" class="button">
 	</div>
 </form>

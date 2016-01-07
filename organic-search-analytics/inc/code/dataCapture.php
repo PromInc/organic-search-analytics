@@ -21,7 +21,8 @@
 		private $defaultGoogleSearchAnalyticsSettings = array(
 			'mode' => 'import', /* What to do with the data.  Valid options: import, return */
 			'dimensions' => array('query','device'),
-			'row_limit' => 5000 /* Number of rows to capture from Google.  Valid options: 1-5000 */
+			'row_limit' => 5000, /* Number of rows to capture from Google.  Valid options: 1-5000 */
+			'search_type' => array('web','image','video')
 		);
 
 		/**
@@ -145,7 +146,9 @@
 			$client = $gapiOauth->LogIn();
 
 			/* Define what search types to request from Google Search Analytics */
-			$searchTypes = array('web','image','video');
+			// $searchTypes = array('web','image','video');
+			// $searchTypes = array('web');
+			$searchTypes = $params['search_type'];
 
 			/* Load Google Webmasters API */
 			$webmasters = new Google_Service_Webmasters($client);
@@ -206,6 +209,8 @@
 							$importCount += $wmtimport->importGoogleSearchAnalytics( $website, $date, $searchType, $searchAnalyticsResponse );
 							break;
 						case 'return':
+						echo "Search Types: ";
+						var_dump( $params['search_type'] );
 							var_dump( $searchAnalyticsResponse );
 							break;
 					}
