@@ -14,6 +14,13 @@
 				<li>Bing Webmaster Tools - Search Keywords</li>
 			</ul>
 			<div><a href="data-capture.php">Data Capture and Import</a></div>
+			<ul>
+				<li>Delete Data</li>
+				<ul>
+					<li>On rare occasions you may need to delete data for a given day.  This utility will allow you to delete the data for a particular day for a domain.  You can then re-capture the data for that day.  Warning: This will remove data from your database - use at your own risk.</li>
+					<li><a href="data-delete.php">Delete Data</a></li>
+				</ul>
+			</ul>
 		</li>
 
 		<li>

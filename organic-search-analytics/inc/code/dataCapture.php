@@ -14,6 +14,14 @@
 
 		const GOOGLE_SEARCH_ANALYTICS_MAX_DATE_OFFSET = 4;
 		const GOOGLE_SEARCH_ANALYTICS_MAX_DAYS = 90;
+		
+		public $core;
+		public $mysql;
+		
+		function __construct() {
+			$this->core = new Core(); //Load core
+			$this->mysql = new MySQL(); //Load MySQL
+		}
 
 		/**
 		 *  Default settings for Google Search Analytics
@@ -21,8 +29,7 @@
 		private $defaultGoogleSearchAnalyticsSettings = array(
 			'mode' => 'import', /* What to do with the data.  Valid options: import, return */
 			'dimensions' => array('query','device'),
-			'row_limit' => 5000, /* Number of rows to capture from Google.  Valid options: 1-5000 */
-			'search_type' => array('web','image','video')
+			'row_limit' => 5000 /* Number of rows to capture from Google.  Valid options: 1-5000 */
 		);
 
 		/**
@@ -77,6 +84,34 @@
 
 
 		/**
+		*
+		*/
+		public function getGoogleAvailableDates() {
+			$dateStartOffset = self::GOOGLE_SEARCH_ANALYTICS_MAX_DATE_OFFSET+self::GOOGLE_SEARCH_ANALYTICS_MAX_DAYS;
+			$dateStart = date('Y-m-d', strtotime('-'.$dateStartOffset.' days', $this->core->now()));
+			$dateEnd = date('Y-m-d', strtotime('-'.self::GOOGLE_SEARCH_ANALYTICS_MAX_DATE_OFFSET.' days', $this->core->now()));
+			return array( 'start' => $dateStart, 'end' => $dateEnd );
+		}
+		
+		
+		/**
+		*
+		*/
+		public function getGoogleDatesWithData($website, $availableToDownload=false) {
+			/* Query database for dates with data */
+			$query = "SELECT COUNT( DISTINCT date ) AS record, date FROM ".MySQL::DB_TABLE_SEARCH_ANALYTICS." WHERE domain LIKE '".$website."'";
+			if( $availableToDownload ) {
+				/* Identify date range */
+				$dateRange = $this->getGoogleAvailableDates();
+				$dateStart = $dateRange['start'];
+				$dateEnd = $dateRange['end'];
+				$query .= " AND date >= '".$dateStart."' AND date <= '".$dateEnd."' GROUP BY date";
+			}
+			return $this->mysql->query( $query );
+		}
+
+
+		/**
 		 *  Query database.  Retrun all values from a table
 		 *
 		 *  @param $table     String   Table name
@@ -84,19 +119,13 @@
 		 *  @returns   Object   Database records.  MySQL object
 		 */
 		public function checkNeededDataGoogleSearchAnalytics($website) {
-			$core = new Core(); //Load core
-			$mysql = new MySQL(); //Load MySQL
-
-			$now = $core->now();
-
 			/* Identify date range */
-			$dateStartOffset = self::GOOGLE_SEARCH_ANALYTICS_MAX_DATE_OFFSET+self::GOOGLE_SEARCH_ANALYTICS_MAX_DAYS;
-			$dateStart = date('Y-m-d', strtotime('-'.$dateStartOffset.' days', $now));
-			$dateEnd = date('Y-m-d', strtotime('-'.self::GOOGLE_SEARCH_ANALYTICS_MAX_DATE_OFFSET.' days', $now));
+			$dateRange = $this->getGoogleAvailableDates();
+			$dateStart = $dateRange['start'];
+			$dateEnd = $dateRange['end'];
 
 			/* Query database for dates with data */
-			$query = "SELECT COUNT( DISTINCT date ) AS record, date FROM ".MySQL::DB_TABLE_SEARCH_ANALYTICS." WHERE domain LIKE '".$website."' AND date >= '".$dateStart."' AND date <= '".$dateEnd."' GROUP BY date";
-			$result = $mysql->query( $query );
+			$result = $this->getGoogleDatesWithData($website, true);
 
 			/* Create array from database response */
 			$datesWithData = array();
@@ -105,7 +134,7 @@
 			}
 
 			/* Get date rante */
-			$dates = $core->getDateRangeArray( $dateStart, $dateEnd );
+			$dates = $this->core->getDateRangeArray( $dateStart, $dateEnd );
 
 			/* Loop through dates, removing those with data */
 			foreach( $dates as $index => $date ) {
@@ -146,9 +175,7 @@
 			$client = $gapiOauth->LogIn();
 
 			/* Define what search types to request from Google Search Analytics */
-			// $searchTypes = array('web','image','video');
-			// $searchTypes = array('web');
-			$searchTypes = $params['search_type'];
+			$searchTypes = array('web','image','video');
 
 			/* Load Google Webmasters API */
 			$webmasters = new Google_Service_Webmasters($client);
@@ -209,8 +236,6 @@
 							$importCount += $wmtimport->importGoogleSearchAnalytics( $website, $date, $searchType, $searchAnalyticsResponse );
 							break;
 						case 'return':
-						echo "Search Types: ";
-						var_dump( $params['search_type'] );
 							var_dump( $searchAnalyticsResponse );
 							break;
 					}

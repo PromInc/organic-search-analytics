@@ -143,5 +143,29 @@
 		}
 
 
+		/**
+		 *  Redirect page to specified URL with specified HTTP response header
+		 *
+		 *  @param $url    String   URL to redirect to
+		 *  $param $code    int   Response code
+		 */
+		public function redirect($url, $code) {
+			switch( $code ) {
+				case 301:
+					$msg = "HTTP/1.1 301 Moved Permanently";
+					break;
+				case 302:
+					$msg = "HTTP/1.1 302 Found";
+					break;
+				default:
+					$msg = "HTTP/1.1 301 Moved Permanently";
+					break;
+			}
+			header( $msg );
+			header("Location: ". $url );
+			exit;
+		}
+
+
 	}
 ?>
