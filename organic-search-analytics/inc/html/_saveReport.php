@@ -1,5 +1,5 @@
 <div id="saveReportForm" class="ajaxFormWrapper">
-	<div id="saveReportCTA" class="button" onclick="showReportSave(this)">Save this Report to Quick Links >></div>
+	<div id="saveReportCTA" class="cta_text" onclick="showReportSave(this)">Save this Report to Quick Links >></div>
 	<div class="ajaxFromContent" style="display:none;">
 		<form id="save_report" class="ajaxForm" type="saveReport">
 			<input type="hidden" name="reportParams" value="{{report_params}}">

@@ -1,3 +1,9 @@
+## 2.3.3 - 2016-01-07
+### Added
+- A page that allows the user to delete data from Google for dates that the data can be recaptured from Google.
+- Session based alerts
+- Redirect function in the Core class
+
 ## 2.3.2 - 2016-01-07
 ### Added
 - search_type was added to the data-capture-run.php parameters to allow overriding the default Search Types

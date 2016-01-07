@@ -165,9 +165,9 @@
 		public function getSettings( $settingType, $valueMatch = NULL ) {
 			/* Set query */
 			if( $valueMatch ) {
-				$query = "SELECT id,value,data FROM settings WHERE type='".$settingType."' AND data='".$valueMatch."'";
+				$query = "SELECT id,value,data FROM settings WHERE type='".$settingType."' AND data='".$valueMatch."' ORDER BY value asc";
 			} else {
-				$query = "SELECT id,value,data FROM settings WHERE type='".$settingType."'";
+				$query = "SELECT id,value,data FROM settings WHERE type='".$settingType."' ORDER BY value asc";
 			}
 			/* Query Database */
 			$result = self::query( $query );
