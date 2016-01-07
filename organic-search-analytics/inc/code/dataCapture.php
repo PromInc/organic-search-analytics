@@ -14,6 +14,14 @@
 
 		const GOOGLE_SEARCH_ANALYTICS_MAX_DATE_OFFSET = 4;
 		const GOOGLE_SEARCH_ANALYTICS_MAX_DAYS = 90;
+		
+		public $core;
+		public $mysql;
+		
+		function __construct() {
+			$this->core = new Core(); //Load core
+			$this->mysql = new MySQL(); //Load MySQL
+		}
 
 		/**
 		 *  Default settings for Google Search Analytics
@@ -76,6 +84,34 @@
 
 
 		/**
+		*
+		*/
+		public function getGoogleAvailableDates() {
+			$dateStartOffset = self::GOOGLE_SEARCH_ANALYTICS_MAX_DATE_OFFSET+self::GOOGLE_SEARCH_ANALYTICS_MAX_DAYS;
+			$dateStart = date('Y-m-d', strtotime('-'.$dateStartOffset.' days', $this->core->now()));
+			$dateEnd = date('Y-m-d', strtotime('-'.self::GOOGLE_SEARCH_ANALYTICS_MAX_DATE_OFFSET.' days', $this->core->now()));
+			return array( 'start' => $dateStart, 'end' => $dateEnd );
+		}
+		
+		
+		/**
+		*
+		*/
+		public function getGoogleDatesWithData($website, $availableToDownload=false) {
+			/* Query database for dates with data */
+			$query = "SELECT COUNT( DISTINCT date ) AS record, date FROM ".MySQL::DB_TABLE_SEARCH_ANALYTICS." WHERE domain LIKE '".$website."'";
+			if( $availableToDownload ) {
+				/* Identify date range */
+				$dateRange = $this->getGoogleAvailableDates();
+				$dateStart = $dateRange['start'];
+				$dateEnd = $dateRange['end'];
+				$query .= " AND date >= '".$dateStart."' AND date <= '".$dateEnd."' GROUP BY date";
+			}
+			return $this->mysql->query( $query );
+		}
+
+
+		/**
 		 *  Query database.  Retrun all values from a table
 		 *
 		 *  @param $table     String   Table name
@@ -83,19 +119,13 @@
 		 *  @returns   Object   Database records.  MySQL object
 		 */
 		public function checkNeededDataGoogleSearchAnalytics($website) {
-			$core = new Core(); //Load core
-			$mysql = new MySQL(); //Load MySQL
-
-			$now = $core->now();
-
 			/* Identify date range */
-			$dateStartOffset = self::GOOGLE_SEARCH_ANALYTICS_MAX_DATE_OFFSET+self::GOOGLE_SEARCH_ANALYTICS_MAX_DAYS;
-			$dateStart = date('Y-m-d', strtotime('-'.$dateStartOffset.' days', $now));
-			$dateEnd = date('Y-m-d', strtotime('-'.self::GOOGLE_SEARCH_ANALYTICS_MAX_DATE_OFFSET.' days', $now));
+			$dateRange = $this->getGoogleAvailableDates();
+			$dateStart = $dateRange['start'];
+			$dateEnd = $dateRange['end'];
 
 			/* Query database for dates with data */
-			$query = "SELECT COUNT( DISTINCT date ) AS record, date FROM ".MySQL::DB_TABLE_SEARCH_ANALYTICS." WHERE domain LIKE '".$website."' AND date >= '".$dateStart."' AND date <= '".$dateEnd."' GROUP BY date";
-			$result = $mysql->query( $query );
+			$result = $this->getGoogleDatesWithData($website, true);
 
 			/* Create array from database response */
 			$datesWithData = array();
@@ -104,7 +134,7 @@
 			}
 
 			/* Get date rante */
-			$dates = $core->getDateRangeArray( $dateStart, $dateEnd );
+			$dates = $this->core->getDateRangeArray( $dateStart, $dateEnd );
 
 			/* Loop through dates, removing those with data */
 			foreach( $dates as $index => $date ) {
