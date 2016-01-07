@@ -58,6 +58,7 @@
 		 *  @returns   Int   Count of records imported
 		 */
 		public function importGoogleSearchAnalytics($domain, $date, $searchType, $searchAnalytics) {
+			echo "<h3>Import data for search type: ".$searchType."</h3>";
 			$countImport = 0;
 			foreach( $searchAnalytics->rows as $recordKey => $recordData ) {
 				/* Prep data */
@@ -68,10 +69,24 @@
 
 				$import = "INSERT into ".MySQL::DB_TABLE_SEARCH_ANALYTICS."(domain, date, search_engine, search_type, device_type, query, impressions, clicks, ctr, avg_position) values('$domain', '$date', 'google', '$searchType', '$deviceType', '{$query}','{$recordData['impressions']}','{$recordData['clicks']}','{$recordData['ctr']}','{$recordData['position']}')";
 
-				if( $GLOBALS['db']->query($import) ) {
+				echo "Record #".$countImport."<br>";
+				echo $import."<br>";
+				$result = $GLOBALS['db']->query($import);
+				var_dump($result);
+				echo "<br>";
+
+				if( $result ) {
 					$countImport++;
+				} else {
+					echo "<pre>";
+					var_dump($result);
+					echo "</pre>";
 				}
+				
+				echo "----------<br>";
+
 			}
+			echo "<h3>Total records imported: ".$countImport."</h3>";
 			return $countImport;
 		}
 
