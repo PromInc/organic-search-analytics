@@ -20,6 +20,25 @@
 	}
 ?>
 
+<?php
+$colHeadingSecondary = "Queries";
+if( $reportParams ) {
+	$reportDetails = $reports->getReportQueryAndHeading( $reportParams );
+	$groupBy = $reportDetails['groupBy'];
+}
+?>
+
+<?php
+/* Set labels */
+if( isset( $groupBy ) ) {
+	if( preg_match( '/\(date\)/', $groupBy ) ) {
+		$colHeadingPrimary = substr( $groupBy, 0, strpos( $groupBy, '(' ) );
+	} else {
+		$colHeadingPrimary = $groupBy;
+	}
+}
+?>
+
 	<?php include_once('inc/html/_alert.php'); ?>
 	<h1>Organic Search Analytics Reporting</h1>
 
@@ -38,13 +57,6 @@
 		</div>
 	</div>
 	<div class="clear"></div>
-
-	<?php
-	if( $reportParams ) {
-		$reportDetails = $reports->getReportQueryAndHeading( $reportParams );
-		$groupBy = $reportDetails['groupBy'];
-	}
-	?>
 
 	<?php if( isset( $reportDetails ) ) { ?>
 		<h2><?php echo implode( ", ", $reportDetails['pageHeadingItems'] ); ?></h2>
@@ -83,10 +95,24 @@
 			/* If Results */
 			if( count($outputTable) > 0 ) {
 				/* Put MySQL Results into an array */
+				$totals = array( 'rows' => 0, 'queries' => 0, 'impressions' => 0, 'clicks' => 0, 'avg_position' => 0, 'avg_ctr' => 0 );
 				$rows = array();
 				for( $r=0; $r < count($outputTable); $r++ ) {
 					$rows[ $outputTable[$r][$groupBy] ] = array( "queries" => $outputTable[$r]["queries"], "impressions" => $outputTable[$r]["impressions"], "clicks" => $outputTable[$r]["clicks"], "avg_position" => $outputTable[$r]["avg_position"] );
+					/* Add to totals */
+					$totals['queries'] += $outputTable[$r]["queries"];
+					$totals['impressions'] += $outputTable[$r]["impressions"];
+					$totals['clicks'] += $outputTable[$r]["clicks"];
+					$totals['avg_position'] += $outputTable[$r]["avg_position"];
 				}
+				/* Calculate averages */
+				$totals['avg_position'] = number_format( $totals['avg_position'] / count($outputTable), 2 );
+				$totals['avg_ctr'] = number_format( ( $totals["clicks"] / $totals["impressions"] ) * 100, 2 );
+				/* Format numbers */
+				$totals['rows'] = number_format( count($outputTable), 0 );
+				$totals['queries'] = number_format( $totals['queries'], 0 );
+				$totals['impressions'] = number_format( $totals['impressions'], 0 );
+				$totals['clicks'] = number_format( $totals['clicks'], 0 );
 
 				/* Build an array for chart data */
 				$jqData = array( $groupBy => array(), "impressions" => array(), "clicks" => array(), "ctr" => array(), "avg_position" => array() );
@@ -113,7 +139,7 @@
 
 				<div id="reportchart"></div>
 				<div id="reportChartContainer">
-					<div class="button" id="zoomReset">Reset Zoom</div>
+					<div id="zoomReset" class="button floatR">Reset Zoom</div>
 					<div id="chartDataCallout"></div>
 				</div>
 				<div class="clear"></div>
@@ -212,49 +238,123 @@
 
 				<?php if( $reportDetails['sortDir'] == 'desc' ) { $rows = array_reverse( $rows ); } ?>
 
-				<?php
-					if( preg_match( '/\(date\)/', $groupBy ) ) {
-						$colHeadingPrimary = substr( $groupBy, 0, strpos( $groupBy, '(' ) );
-					} else {
-						$colHeadingPrimary = $groupBy;
-					}
-				?>
-
-				<table class="sidebysidetable sidebysidetable_col sidebysidetable_col1">
+				<table class="sidebysidetable sidebysidetable_col mT2p mB2p">
 					<tr>
-						<td><?php echo ucfirst( strtolower( $colHeadingPrimary ) ) ?></td>
+						<?php foreach ( $totals as $index => $values ) { ?>
+							<td><?php echo ucfirst( strtolower( $index ) ) ?></td>
+						<?php } ?>
 					</tr>
-					<?php
-					foreach ( $rows as $index => $values ) {
-						echo '<tr><td>' . $index . '</td></tr>';
-					}
-					?>
+					<tr>
+						<?php foreach ( $totals as $index => $values ) { ?>
+							<td><?php echo $values ?></td>
+						<?php } ?>
+					</tr>
+				</table>
+				<div class="clear">
+
+				<table class="sidebysidetable sidebysidetable_col">
+					<tr id="data_headings">
+						<td id="data_heading_<?php echo strtolower( $colHeadingPrimary ) ?>" class="taL">
+							<span class="data_heading" datatype="<?php echo strtolower( $colHeadingPrimary ) ?>"><?php echo ucfirst( strtolower( $colHeadingPrimary ) ) ?></span>
+							<span class="sort sort_asc"></span>
+							<span class="sort sort_desc"></span>
+						</td>
+						<td id="data_heading_queries">
+							<span class="data_heading" datatype="queries"><?php echo $colHeadingSecondary ?></span>
+							<span class="sort sort_asc"></span>
+							<span class="sort sort_desc"></span>
+						</td>
+						<td id="data_heading_impressions">
+							<span class="data_heading" datatype="impressions">Impressions</span>
+							<span class="sort sort_asc"></span>
+							<span class="sort sort_desc"></span>
+						</td>
+						<td id="data_heading_clicks">
+							<span class="data_heading" datatype="clicks">Clicks</span>
+							<span class="sort sort_asc"></span>
+							<span class="sort sort_desc"></span>
+						</td>
+						<td id="data_heading_avg_position">
+							<span class="data_heading" datatype="avg_position">Avg Position</span>
+							<span class="sort sort_asc"></span>
+							<span class="sort sort_desc"></span>
+						</td>
+						<td id="data_heading_ctr">
+							<span class="data_heading" datatype="ctr">CTR</span>
+							<span class="sort sort_asc"></span>
+							<span class="sort sort_desc"></span>
+						</td>
+					</tr>
+					<?php foreach ( $rows as $index => $values ) { ?>
+						<tr>
+							<td class="taL"><?php echo $index ?></td>
+							<td><?php echo number_format( $values["queries"] ) ?></td>
+							<td><?php echo number_format( $values["impressions"] ) ?></td>
+							<td><?php echo number_format( $values["clicks"] ) ?></td>
+							<td><?php echo number_format( $values["avg_position"], 2 ) ?></td>
+							<td><?php echo number_format( ( $values["clicks"] / $values["impressions"] ) * 100, 2 ) ?>%</td>
+						</tr>
+					<?php } ?>
 				</table>
 
-				<table class="sidebysidetable sidebysidetable_col sidebysidetable_col2">
-					<tr>
-						<td>Queries</td><td>Impressions</td><td>Clicks</td><td>Avg Position</td>
-					</tr>
-					<?php
-					foreach ( $rows as $index => $values ) {
-						echo '<tr><td>' . number_format( $values["queries"] ) . '</td><td>' . number_format( $values["impressions"] ) . '</td><td>' . number_format( $values["clicks"] ) . '</td><td>' . number_format( $values["avg_position"], 2 ) . '</td></tr>';
-					}
-					?>
-				</table>
+				<script type="text/javascript">
+					/* Get current sort settings */
+					var curSortBy = getCurrentSelection('sortBy');
+					var curSortDir = getCurrentSelection('sortDir');
+					/* Set appropriate sort icon */
+					jQuery("#data_headings #data_heading_"+curSortBy+" .sort.sort_"+curSortDir).addClass("sort_active");
 
-				<table class="sidebysidetable sidebysidetable_col sidebysidetable_col3">
-					<tr>
-						<td>CTR</td>
-					</tr>
-					<?php
-					foreach ( $rows as $index => $values ) {
-						echo '<tr><td>' . number_format( ( $values["clicks"] / $values["impressions"] ) * 100, 2 ) . '%</td></tr>';
+					/* Sort icon click */
+					jQuery("#data_headings span.sort").click(function(){
+						var sortBy = jQuery(this).siblings(".data_heading").attr("datatype");
+						var sortDir = "";
+						var regexpattern = /sort_/g;
+						/* Get selected sort direction */
+						this.classList.forEach(function(eaClass){
+							if( regexpattern.exec(eaClass) ) {
+								sortDir = eaClass.replace( regexpattern, '' );
+							}
+						});
+						/* Perform the sort */
+						setCurrentSelection('sortBy', sortBy);
+						setCurrentSelection('sortDir', sortDir);
+						submitForm();
+					});
+
+					/* Heading title click */
+					jQuery("#data_headings span.data_heading").click(function(){
+						/* Get current settings */
+						var curSortBy = getCurrentSelection('sortBy');
+						var curSortDir = getCurrentSelection('sortDir');
+						/* Get new sort by */
+						var sortBy = jQuery(this).attr("datatype");
+						/* Determine and set sort direction */
+						var sortDir = "";
+						if( sortBy == curSortBy ) {
+							if( curSortDir == "asc" ) { sortDir = "desc"; } else { sortDir = "asc"; }
+						} else {
+							sortDir = curSortDir;
+						}
+						/* Perform sort */
+						setCurrentSelection('sortBy', sortBy);
+						setCurrentSelection('sortDir', sortDir);
+						submitForm();
+					});
+
+					function getCurrentSelection(type) {
+						return jQuery("input[type='radio'][name='"+type+"']:checked").val();
 					}
-					?>
-				</table>
-			<?php
-			}
-		?>
+
+					function setCurrentSelection(type, value) {
+						return jQuery("input[type='radio'][name='"+type+"'][value='"+value+"']").prop("checked", true);
+					}
+
+					function submitForm() {
+						jQuery("#report-custom").submit();
+					}
+				</script>
+
+		<?php } ?>
 	<?php } ?>
 	<div class="clear"></div>
 

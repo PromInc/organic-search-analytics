@@ -10,6 +10,7 @@ if( isset($_GET) && isset($_GET['type']) && isset($_GET['domain']) && isset($_GE
 	if( isset( $_GET['mode'] ) ) { $overrideSettings['mode'] = $_GET['mode']; }
 	if( isset( $_GET['row_limit'] ) ) { $overrideSettings['row_limit'] = $_GET['row_limit']; }
 	if( isset( $_GET['dimensions'] ) ) { $overrideSettings['dimensions'] = explode( ',', $_GET['dimensions'] ); }
+	if( isset( $_GET['search_type'] ) ) { $overrideSettings['search_type'] = explode( ',', $_GET['search_type'] ); }
 	if( isset( $_GET['filters'] ) ) {
 		$filters = explode( '|', $_GET['filters'] );
 		foreach( $filters as $filter ) {
