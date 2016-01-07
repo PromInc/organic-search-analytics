@@ -69,7 +69,7 @@
 
 				$import = "INSERT into ".MySQL::DB_TABLE_SEARCH_ANALYTICS."(domain, date, search_engine, search_type, device_type, query, impressions, clicks, ctr, avg_position) values('$domain', '$date', 'google', '$searchType', '$deviceType', '{$query}','{$recordData['impressions']}','{$recordData['clicks']}','{$recordData['ctr']}','{$recordData['position']}')";
 
-				echo "Record #".$countImport."<br>";
+				echo "Record #".$recordKey."<br>";
 				echo $import."<br>";
 				$result = $GLOBALS['db']->query($import);
 				var_dump($result);
