@@ -15,6 +15,8 @@
 	<?php
 	/* Process deletion of data */
 	if( isset( $_POST ) && isset( $_POST['data_delete_btn'] ) && $_POST['data_delete_btn'] == "Delete Records" ) {
+		ini_set('max_execution_time', 600);  //300 seconds = 5 minutes
+
 		/* Remove button from POST variables */
 		unset( $_POST['data_delete_btn'] );
 
@@ -77,7 +79,7 @@
 						<p domainid="<?php echo $domain_id ?>" class="button toggler" mode="Select"><span>Select</span> all dates for <?php echo $domain_url ?></p>
 						<ul>
 							<?php foreach( $googleSearchAnalyticsDates as $date ) { ?>
-								<label for="<?php echo $domain_id ?>_<?php echo $date['date'] ?>"><?php echo $date['date'] ?></label>
+								<label for="<?php echo $domain_id ?>_<?php echo $search_engine ?>_<?php echo $date['date'] ?>"><?php echo $date['date'] ?></label>
 								<input type="checkbox" id="<?php echo $domain_id ?>_<?php echo $search_engine ?>_<?php echo $date['date'] ?>" name="<?php echo $domain_id ?>_<?php echo $search_engine ?>_<?php echo $date['date'] ?>" value="<?php echo $date['date'] ?>" domainid="<?php echo $domain_id ?>">
 								<br/>
 							<?php } ?>
