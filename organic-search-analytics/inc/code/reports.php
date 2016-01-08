@@ -265,8 +265,9 @@
 						$maxDate = $result->fetch_row();
 						$dateEnd = $maxDate[0];
 						$dateStartOffset = preg_replace("/[^0-9,.]/", "", $reportParams['date_type'] );
-						$dateStart = date('Y-m-d', strtotime('-'.$dateStartOffset.' days', strtotime( $dateEnd ) ) );
-						$return['whereClauseItemsTable'][] = "date >= '" . $dateStart . "' AND date < '" . $dateEnd . "'";
+
+						$dateStart = date('Y-m-d', strtotime('-'.($dateStartOffset-1).' days', strtotime( $dateEnd ) ) );
+						$return['whereClauseItemsTable'][] = "date >= '" . $dateStart . "' AND date <= '" . $dateEnd . "'";
 						$return['pageHeadingItems'][] = "Dates: Past " . $dateStartOffset . " days (" . $dateStart . " to " . $dateEnd . ")";
 					}
 				}

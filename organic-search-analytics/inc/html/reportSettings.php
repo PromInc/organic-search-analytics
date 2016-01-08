@@ -59,17 +59,17 @@
 
 	<div id="paramGroup_dateType" class="report-parameter-group">
 		<span class="groupLabel">Date Range:</span>
-		<?php $tooltip = date( "D M jS, Y", strtotime( $row["max"] . ' -7 days' ) ) . ' to ' . date( "D M jS, Y", strtotime( $row["max"] ) ) ?>
+		<?php $tooltip = date( "D M jS, Y", strtotime( $row["max"] . ' -6 days' ) ) . ' to ' . date( "D M jS, Y", strtotime( $row["max"] ) ) ?>
 		<span>
 			<input type="radio" name="date_type" id="date_type_recent_7" value="recent_7"<?php echo ( !isset( $reportParams['date_type'] ) || isset( $reportParams['date_type'] ) && $reportParams['date_type'] == 'recent_7' ? $checkedTrue : $checkedFalse ) ?>>
 			<label for="date_type_recent_7" tooltip="<?php echo $tooltip ?>">Past 7 Days</label>
 		</span>
-		<?php $tooltip = date( "D M jS, Y", strtotime( $row["max"] . ' -30 days' ) ) . ' to ' . date( "D M jS, Y", strtotime( $row["max"] ) ) ?>
+		<?php $tooltip = date( "D M jS, Y", strtotime( $row["max"] . ' -29 days' ) ) . ' to ' . date( "D M jS, Y", strtotime( $row["max"] ) ) ?>
 		<span>
 			<input type="radio" name="date_type" id="date_type_recent_30" value="recent_30"<?php echo ( isset( $reportParams['date_type'] ) && $reportParams['date_type'] == 'recent_30' ? $checkedTrue : $checkedFalse ) ?>>
 			<label for="date_type_recent_30=" tooltip="<?php echo $tooltip ?>">Past 30 Days</label>
 		</span>
-		<?php $tooltip = date( "D M jS, Y", strtotime( $row["max"] . ' -90 days' ) ) . ' to ' . date( "D M jS, Y", strtotime( $row["max"] ) ) ?>
+		<?php $tooltip = date( "D M jS, Y", strtotime( $row["max"] . ' -89 days' ) ) . ' to ' . date( "D M jS, Y", strtotime( $row["max"] ) ) ?>
 		<span>
 			<input type="radio" name="date_type" id="date_type_recent_90" value="recent_90"<?php echo ( isset( $reportParams['date_type'] ) && $reportParams['date_type'] == 'recent_90' ? $checkedTrue : $checkedFalse ) ?>>
 			<label for="date_type_recent_90" tooltip="<?php echo $tooltip ?>">Past 90 Days</label>
@@ -84,7 +84,7 @@
 	<div id="paramGroup_dateStart" class="floatL report-parameter-group"<?php echo ( isset( $reportParams['date_type'] ) && $reportParams['date_type'] == 'hard_set' ? $selectedFalse : $hideContent ) ?>>
 		<?php
 		/* Get default date */
-		$defaultDate = date( "Y-m-d", strtotime( $row["max"] . ' -7 days' ) );
+		$defaultDate = date( "Y-m-d", strtotime( $row["max"] . ' -6 days' ) );
 		if( $defaultDate < $row["min"] ) { $defaultDate = $row["min"]; }
 		?>
 		<label for="date_start" class="groupLabel">Date Start: </label>
@@ -102,6 +102,18 @@
 		</div>
 	</div>
 
+	<?php
+	if( isset( $reportParams['date_start'] ) && $reportParams['date_start'] > $row["min"] && $reportParams['date_start'] < $row["max"] ) {
+		$datePicker_start = $reportParams['date_start'];
+	} else {
+		$datePicker_start = $defaultDate;
+	}
+
+	if( isset( $reportParams['date_end'] ) && $reportParams['date_end'] > $row["min"] && $reportParams['date_end'] < $row["max"] ) {
+		$datePicker_end = $reportParams['date_end'];
+	}
+	?>
+	
 	<script>
 		$(function() {
 			/* Date Picker - Start */
@@ -109,7 +121,7 @@
 				changeMonth: true,
 				changeYear: true,
 				altField: "#date_start",
-				defaultDate: "<?php echo $defaultDate ?>",
+				defaultDate: "<?php echo $datePicker_start ?>",
 				dateFormat: "yy-mm-dd",
 				minDate: "<?php echo $row["min"] ?>",
 				maxDate: "<?php echo $row["max"] ?>"
@@ -119,6 +131,9 @@
 				changeMonth: true,
 				changeYear: true,
 				altField: "#date_end",
+				<?php if( isset( $datePicker_end ) ) { ?>
+				defaultDate: "<?php echo $datePicker_end ?> ",
+				<?php } ?>
 				dateFormat: "yy-mm-dd",
 				minDate: "<?php echo $row["min"] ?>",
 				maxDate: "<?php echo $row["max"] ?>",

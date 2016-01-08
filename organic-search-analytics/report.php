@@ -113,7 +113,7 @@ if( isset( $groupBy ) ) {
 				}
 				/* Calculate averages */
 				$totals['avg_position'] = number_format( $totals['avg_position'] / count($outputTable), 2 );
-				$totals['avg_ctr'] = number_format( ( $totals["clicks"] / $totals["impressions"] ) * 100, 2 );
+				$totals['avg_ctr'] = number_format( ( $totals["clicks"] / $totals["impressions"] ) * 100, 2 )."%";
 				/* Format numbers */
 				$totals['rows'] = number_format( count($outputTable), 0 );
 				$totals['queries'] = number_format( $totals['queries'], 0 );

@@ -1,3 +1,9 @@
+## 2.3.6 - 2016-01-08
+### Bug Fix
+- The preset date range pickers were adding a day and the report wasn't displaying the accurate date range
+- Modifying the date range on the report page for a custom date range was not setting correctly
+- Missing a percent sign on the report totals table for CTR
+
 ## 2.3.5 - 2016-01-08
 ### Updated
 - jQuery UI - custom theme and options
