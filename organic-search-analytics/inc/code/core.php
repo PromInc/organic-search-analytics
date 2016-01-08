@@ -73,10 +73,9 @@
 				$iDateTo = mktime( 1, 0, 0, substr( $strDateTo, 5, 2), substr( $strDateTo, 8, 2 ), substr( $strDateTo, 0, 4 ) );
 
 				if( $iDateTo >= $iDateFrom ) {
-						array_push( $aryRange, date( 'Y-m-d', $iDateFrom ) ); // first entry
 						while( $iDateFrom<$iDateTo ) {
-							$iDateFrom += 86400; // add 24 hours
 							array_push( $aryRange, date( 'Y-m-d',$iDateFrom ) );
+							$iDateFrom += 86400; // add 24 hours
 						}
 				}
 				return $aryRange;
@@ -118,7 +117,7 @@
 			$result = curl_exec($ch);
 			$info = curl_getinfo($ch);
 			curl_close($ch);
-			
+
 			return $result;
 		}
 

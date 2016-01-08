@@ -93,8 +93,12 @@ header, header a { color: #FFFFFF; }
 	margin: .2%;
 	border: none;
 }
+input.button {
+	font-size: 16px;
+	padding: 1% 1.5%;
+}
 
-
+#report-custom .report-parameter-group .groupLabel { font-weight: bold; margin: 0; }
 
 .filelist a {
 	margin-bottom: 1%;
@@ -191,6 +195,11 @@ table.sidebysidetable td {
 
 .col { float:left; }
 .col40 { width: 40%; }
+.col45 { width: 45%; }
+.col46 { width: 46%; }
+.col47 { width: 47%; }
+.col48 { width: 48%; }
+.col49 { width: 49%; }
 .col50 { width: 50%; }
 .col60 { width: 60%; }
 
@@ -285,9 +294,25 @@ footer { margin-top: 50px; padding: 20px 20px 15px; background-color:#DDDDDD; }
     margin-left: 2%;
 }
 
-.expandable > h2 { cursor: pointer; }
-
-
+.expandable > h2 {
+	cursor: pointer;
+	background: #337ab7;
+	color: #FFF;
+	padding: .8%;
+	font-weight: normal;
+	margin-top: 0;
+}
+.expandable .expandingBox {
+	padding: 0 2%;
+}
+.expandable {
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	border-width: 0 1px 1px 1px;
+	border-style: solid;
+	border-color: #333;
+}
 
 
 
@@ -455,3 +480,4 @@ footer { margin-top: 50px; padding: 20px 20px 15px; background-color:#DDDDDD; }
 /* Spacing | END */
 
 
+.ui-tooltip.ui-widget.tooltips { font-size: .8em; font-weight: normal; }

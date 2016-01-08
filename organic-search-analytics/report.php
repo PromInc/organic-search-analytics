@@ -29,6 +29,12 @@ if( $reportParams ) {
 ?>
 
 <?php
+if( isset( $reportDetails ) ) {
+	ini_set('max_execution_time', 600);  //300 seconds = 5 minutes
+}
+?>
+
+<?php
 /* Set labels */
 if( isset( $groupBy ) ) {
 	if( preg_match( '/\(date\)/', $groupBy ) ) {
@@ -42,14 +48,14 @@ if( isset( $groupBy ) ) {
 	<?php include_once('inc/html/_alert.php'); ?>
 	<h1>Organic Search Analytics Reporting</h1>
 
-	<div id="reportSettings" class="expandable col col50">
+	<div id="reportSettings" class="expandable col col49 mR1p">
 		<h2>Report Settings</h2>
 		<div class="expandingBox"<?php echo $displayReportToggleHide ?>>
 			<?php include_once( 'inc/html/reportSettings.php' ); ?>
 		</div>
 	</div>
 
-	<div id="reportQuickLinks" class="expandable col col50">
+	<div id="reportQuickLinks" class="expandable col col49 mL1p">
 		<h2>Report Custom Links</h2>
 		<div class="expandingBox"<?php echo $displayReportToggleHide ?>>
 			<p>To add a report to Quick Links, generate a report using the parameters above and choose the <i>Save this Report to Quick Links</i> link.</p>
@@ -250,7 +256,7 @@ if( isset( $groupBy ) ) {
 						<?php } ?>
 					</tr>
 				</table>
-				<div class="clear">
+				<div class="clear"></div>
 
 				<table class="sidebysidetable sidebysidetable_col">
 					<tr id="data_headings">

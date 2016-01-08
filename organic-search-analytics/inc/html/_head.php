@@ -11,11 +11,11 @@ if( !strpos( $_SERVER['SCRIPT_NAME'], "upgrade.php" ) ) {
 		<title><?php echo $titleTag; ?></title>
 
 		<link rel="stylesheet" href="css/styles.css">
-		<link rel="stylesheet" href="css/lib/jquery/jquery-ui-1.11.2.css">
+		<link rel="stylesheet" href="css/lib/jquery/jquery-ui.1.11.4.custom.min.css">
 		<link rel="stylesheet" href="css/lib/font-awesome/font-awesome.min.css">
 
 		<script language="javascript" type="text/javascript" src="js/lib/jquery/jquery-1.11.3.min.js"></script>
-		<script src="js/lib/jquery/jquery-ui-1.11.2.js"></script>
+		<script src="js/lib/jquery/jquery-ui.1.11.4.custom.min.js"></script>
 		<script type="text/javascript" src="js/script.js"></script>
 
 		<?php if( isset( $GLOBALS['scriptName'] ) ) { ?>

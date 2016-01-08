@@ -1,3 +1,14 @@
+## 2.3.5 - 2016-01-08
+### Updated
+- jQuery UI - custom theme and options
+- Date picker for reports is now a selectable calendar view
+- CSS styling for reports
+
+### Bug Fix
+- The date range that Google data is avaiable was off by 1 day
+- Increased the max execution time for the report page
+- Missing closing </div> tag on report page
+
 ## 2.3.4 - 2016-01-07
 ### Updated
 - Longer execution time on the data-delete.php page

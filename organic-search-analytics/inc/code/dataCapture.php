@@ -92,8 +92,8 @@
 			$dateEnd = date('Y-m-d', strtotime('-'.self::GOOGLE_SEARCH_ANALYTICS_MAX_DATE_OFFSET.' days', $this->core->now()));
 			return array( 'start' => $dateStart, 'end' => $dateEnd );
 		}
-		
-		
+
+
 		/**
 		*
 		*/
@@ -133,7 +133,7 @@
 				array_push( $datesWithData, $row['date'] );
 			}
 
-			/* Get date rante */
+			/* Get date range */
 			$dates = $this->core->getDateRangeArray( $dateStart, $dateEnd );
 
 			/* Loop through dates, removing those with data */
