@@ -89,7 +89,7 @@
 		?>
 		<label for="date_start" class="groupLabel">Date Start: </label>
 		<div class="mT1p">
-			<input type="text" id="date_start" style="width: 100%;">
+			<input type="text" name="date_start" id="date_start" style="width: 100%;">
 			<div id="date_start_inline"></div>
 		</div>
 	</div>
@@ -97,7 +97,7 @@
 	<div id="paramGroup_dateEnd" class="floatL report-parameter-group"<?php echo ( isset( $reportParams['date_type'] ) && $reportParams['date_type'] == 'hard_set' ? $selectedFalse : $hideContent ) ?>>
 		<label for="date_end" class="groupLabel">Date End: </label>
 		<div class="mT1p">
-			<input type="text" id="date_end" style="width: 100%;">
+			<input type="text" name="date_end" id="date_end" style="width: 100%;">
 			<div id="date_end_inline"></div>
 		</div>
 	</div>
