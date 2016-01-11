@@ -14,7 +14,7 @@
 
 		const GOOGLE_SEARCH_ANALYTICS_MAX_DATE_OFFSET = 4;
 		const GOOGLE_SEARCH_ANALYTICS_MAX_DAYS = 90;
-		
+
 		public $core;
 		public $mysql;
 		

@@ -74,6 +74,7 @@ jQuery("#report-custom input:radio[name=groupBy]").change(function(e){
 jQuery("#report-custom input:radio[name=date_type]").change(function(e){
 	if( e.target.id == "date_type_hard_set" ) {
 		jQuery( "#paramGroup_dateStart, #paramGroup_dateEnd" ).show();
+		updateDateRange();
 	} else {
 		jQuery( "#paramGroup_dateStart, #paramGroup_dateEnd" ).hide();
 	}
@@ -92,4 +93,50 @@ jQuery(".expandable").each(function(){
 	jQuery( '#' + element.id + ' h2' ).click(function() {
 		jQuery( '#' + element.id + ' .expandingBox').toggle();
 	});
+});
+
+
+/**
+*  Date Picker
+*
+*  Prevent start date from being later than end date
+*
+*  Directly modifies the jQuery UI element
+*
+*  @param element     String   Element to modify
+*  @param endDate     Date   Last date avaialble for selection
+*/
+/* Date Picker - Prevent start date from being later than end date */
+function updateStartDate( element, endDate ) {
+	$( element ).datepicker( "option", "maxDate", endDate );
+}
+
+
+/**
+*  Date Picker
+*
+*  Update display for number of days in the date range
+*/
+/* Date Picker - Count number of days */
+function updateDateRange() {
+	var date_start = $( "#date_start_inline" ).datepicker( "getDate" );
+	var date_end = $( "#date_end_inline" ).datepicker( "getDate" );
+	var date_range = Math.round( Math.abs( ( date_start.getTime() - date_end.getTime() ) / ( 24*60*60*1000 ) ) ) + 1;
+	var date_range_display = " (" + date_range + " day" + ( date_range > 1 ? "s" : "" ) + ")";
+	$("#date_range_count").empty().text( date_range_display );
+}
+
+
+/**
+*  Tooltips
+*
+*  jQuery UI tool tips
+*
+*  Add a tooltip to any <label> element with an attribute setting of "tooltip"
+*/
+/* Date Picker - Count number of days */
+$( "label" ).tooltip({
+	items: "label[tooltip]",
+	content: function() { return $( this ).attr('tooltip'); },
+	tooltipClass: "tooltips"
 });

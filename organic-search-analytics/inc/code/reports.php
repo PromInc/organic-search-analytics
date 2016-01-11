@@ -23,6 +23,12 @@
 	class Reports
 	{
 
+		public $core;
+
+		function __construct() {
+			$this->core = new Core(); //Load core
+		}
+
 		/**
 		 *  Import array of Bing Search Keywords to database
 		 *
@@ -254,7 +260,8 @@
 				if( isset( $reportParams['date_start'] ) && $reportParams['date_start'] > 0 && $reportParams['date_type'] == 'hard_set' ) {
 					if( isset( $reportParams['date_end'] ) && $reportParams['date_end'] > 0 ) {
 						$return['whereClauseItemsTable'][] = "date >= '" . $reportParams['date_start'] . "' AND date <= '" . $reportParams['date_end'] . "'";
-						$return['pageHeadingItems'][] = "Dates: " . $reportParams['date_start'] . " to " . $reportParams['date_end'];
+						$num_days = $this->core->getNumDays( $reportParams['date_start'], $reportParams['date_end'] );
+						$return['pageHeadingItems'][] = "Dates: " . $reportParams['date_start'] . " to " . $reportParams['date_end'] . " (" . $num_days . " day" . ( $num_days > 1 ? "s" : "" ) . ")";
 					} else {
 						$return['whereClauseItemsTable'][] = "date = '" . $reportParams['date_start'] . "'";
 						$return['pageHeadingItems'][] = "Date: " . $reportParams['date_start'];

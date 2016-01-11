@@ -86,6 +86,22 @@
 
 
 		/**
+		 *  Calculate the number of days between two dates
+		 *
+		 *  @param $start     String   Start date
+		 *  @param $end     String   End Date
+		 *  @param $include_end_day     Bool   Whether or not to include the end date in calculation
+		 *                              Default: true
+		 *
+		 *  @returns   Int   Number of days between the two dates
+		 */
+		public function getNumDays( $start, $end, $include_end_day = true) {
+			$num_days = floor( ( strtotime( $end ) - strtotime( $start ) ) / ( 60*60*24 ) );
+			if( $include_end_day ) { $num_days = $num_days + 1; }
+			return $num_days;
+		}
+
+		/**
 		 *  Get the current date/time
 		 *
 		 *  @param $format(optional)     String   Format to be returned

@@ -77,7 +77,14 @@
 		<?php $tooltip = "Select to set a date range" ?>
 		<span>
 			<input type="radio" name="date_type" id="date_type_hard_set" value="hard_set"<?php echo ( isset( $reportParams['date_type'] ) && $reportParams['date_type'] == 'hard_set' ? $checkedTrue : $checkedFalse ) ?>>
-			<label for="date_type_hard_set" tooltip="<?php echo $tooltip ?>">Specific Dates</label>
+			<?php
+			$date_range_display = "";
+			if( isset( $reportParams['date_type'] ) && $reportParams['date_type'] == 'hard_set' ) {
+				$num_days = $core->getNumDays( $reportParams['date_start'], $reportParams['date_end'] );
+				$date_range_display = " (" . $num_days . " day" . ( $num_days > 1 ? "s" : "" ) . ")";
+			}
+			?>
+			<label for="date_type_hard_set" tooltip="<?php echo $tooltip ?>">Specific Dates<span id="date_range_count"><?php echo $date_range_display ?></span></label>
 		</span>
 	</div>
 
@@ -124,7 +131,10 @@
 				defaultDate: "<?php echo $datePicker_start ?>",
 				dateFormat: "yy-mm-dd",
 				minDate: "<?php echo $row["min"] ?>",
-				maxDate: "<?php echo $row["max"] ?>"
+				maxDate: "<?php echo $row["max"] ?>",
+				onSelect: function( selectedDate ) {
+					updateDateRange();
+				}
 			});
 			/* Date Picker - End */
 			$( "#date_end_inline" ).datepicker({
@@ -138,19 +148,9 @@
 				minDate: "<?php echo $row["min"] ?>",
 				maxDate: "<?php echo $row["max"] ?>",
 				onSelect: function( selectedDate ) {
-					updateStartDate( selectedDate );
+					updateStartDate( '#date_start_inline', selectedDate );
+					updateDateRange();
 				}
-			});
-			/* Date Picker - Prevent start date from being later than end date */
-			function updateStartDate( endDate ) {
-				$( "#date_start_inline" ).datepicker( "option", "maxDate", endDate );
-			}
-
-			/* Tooltips */
-			$( "label" ).tooltip({
-				items: "label[tooltip]",
-				content: function() { return $( this ).attr('tooltip'); },
-				tooltipClass: "tooltips"
 			});
 		});
 	</script>

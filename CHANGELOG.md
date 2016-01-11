@@ -1,3 +1,7 @@
+## 2.3.7 - 2016-01-11
+### Added
+- Display date range on report and datepicker for number of days selected
+
 ## 2.3.6 - 2016-01-08
 ### Bug Fix
 - The preset date range pickers were adding a day and the report wasn't displaying the accurate date range
