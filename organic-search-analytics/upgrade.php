@@ -52,6 +52,20 @@ if( isset( $_GET ) && isset( $_GET['upgrade'] ) ) {
 
 			$alert = array("type"=>"success", "message"=>"Upgrade performed succesfully.");
 			break;
+		case "2_x_x_to_2_4_0":
+			/* Include resources */
+			include_once( 'inc/code/core.php' ); //Core functions
+			include_once( 'inc/code/mysql.php' ); //Database Connection
+			$core = new Core(); //Load core
+			$mysql = new MySQL(); //Load MySQL
+			$GLOBALS['db'] = $core->mysql_connect_db(); // Connect to DB
+
+			/* Add Country to the search_analytics table */
+			$query = "ALTER TABLE `search_analytics` ADD `country` VARCHAR(10) NULL AFTER `device_type`";
+			$result = $mysql->query( $query );
+
+			$alert = array("type"=>"success", "message"=>"Upgrade performed succesfully.");
+			break;
 	}
 }
 ?>
@@ -75,6 +89,13 @@ if( isset( $_GET ) && isset( $_GET['upgrade'] ) ) {
 				<li>Adds the CREDENTIALS_BING_API_KEY constant to the config/config.php file to allow for setting the Bing Webmaster Tools API connection.</li>
 				<li>Updates the Click Through Rate data type in the search_analytics table to correct data inaccuracies.</li>
 				<li><a href="<?PHP echo $_SERVER['SCRIPT_NAME'] ?>?upgrade=1_x_to_2_0_0">Run Update for Version 1.x to 2.0.0</a></li>
+			</ul>
+		</li>
+		<li>
+			<h2>Version 2.x.x to 2.4.0</h2>
+			<ul>
+				<li>Adds column <b>country</b> to the search_analytics table.</li>
+				<li><a href="<?PHP echo $_SERVER['SCRIPT_NAME'] ?>?upgrade=2_x_x_to_2_4_0">Run Update for Version 2.x.x to 2.4.0</a></li>
 			</ul>
 		</li>
 	</ul>

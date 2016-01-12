@@ -57,6 +57,55 @@
 		</select>
 	</div>
 
+	<div class="report-parameter-group">
+		<label for="country" class="groupLabel">Country: </label>
+		<select name="country" id="country">
+			<option value="ALL"<?php echo ( !isset( $reportParams['country'] ) || isset( $reportParams['country'] ) && $reportParams['country'] == 'ALL' ? $selectedTrue : $selectedFalse ) ?>>ALL</option>
+			<?php
+				$countriesWhereClauses = array(); $countriesWhereClause = "";
+
+				if( isset( $reportParams['domain'] ) ) {
+					$countriesWhereClauses[] = 'domain = "' . addslashes( $reportParams['domain'] ) . '"';
+				}
+
+				if( isset( $reportParams['query'] ) ) {
+					$countriesWhereClauses[] = 'query LIKE "%' . addslashes( $reportParams['query'] ) . '%"';
+				}
+
+				if( isset( $reportParams['date_type'] ) && $reportParams['date_type'] == 'hard_set' ) {
+					$countriesWhereClauses[] = 'date >= "' . $reportParams['date_start'] . '" AND date <= "' . $reportParams['date_end'] . '"';
+				} elseif( isset( $reportParams['date_type'] ) ) {
+					$maxDate = $result->fetch_row();
+					$dateEnd = $row['max'];
+					$dateStartOffset = preg_replace("/[^0-9,.]/", "", $reportParams['date_type'] );
+					$dateStart = date('Y-m-d', strtotime('-'.($dateStartOffset-1).' days', strtotime( $row['max'] ) ) );
+					$countriesWhereClauses[] = 'date >= "' . $dateStart . '" AND date <= "' . $row['max'] . '"';
+				}
+
+				if( isset( $reportParams['search_type'] ) && strtolower( $reportParams['search_type'] ) != "all" ) {
+					$countriesWhereClauses[] = 'search_type = "' . addslashes( $reportParams['search_type'] ) . '"';
+				}
+
+				if( isset( $reportParams['device_type'] ) && strtolower( $reportParams['device_type'] ) != "all" ) {
+					$countriesWhereClauses[] = 'device_type = "' . addslashes( $reportParams['device_type'] ) . '"';
+				}
+
+				if( count( $countriesWhereClauses ) > 0 ) {
+					$countriesWhereClause = ' WHERE ' . implode( ' AND ', $countriesWhereClauses );
+				}
+
+				$queryCountries = "SELECT DISTINCT(country) as countries FROM `".$mysql::DB_TABLE_SEARCH_ANALYTICS."`".$countriesWhereClause." ORDER BY countries ASC";
+			?>
+			<?php if( $resultCountries = $GLOBALS['db']->query($queryCountries) ) { ?>
+				<?php while ( $rowsCountries = $resultCountries->fetch_assoc() ) { ?>
+					<?php if( ! is_null( $rowsCountries['countries'] ) ) { ?>
+						<option value="<?php echo $rowsCountries['countries'] ?>"<?php echo ( isset( $reportParams['country'] ) && $reportParams['country'] == $rowsCountries['countries'] ? $selectedTrue : $selectedFalse ) ?>><?php echo strtoupper( $rowsCountries['countries'] ) ?></option>
+					<?php } ?>
+				<?php } ?>
+			<?php } ?>
+		</select>
+	</div>
+
 	<div id="paramGroup_dateType" class="report-parameter-group">
 		<span class="groupLabel">Date Range:</span>
 		<?php $tooltip = date( "D M jS, Y", strtotime( $row["max"] . ' -6 days' ) ) . ' to ' . date( "D M jS, Y", strtotime( $row["max"] ) ) ?>

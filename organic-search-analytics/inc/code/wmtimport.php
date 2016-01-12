@@ -64,9 +64,10 @@
 				$domain = addslashes( $domain );
 				$searchType = addslashes( $searchType );
 				$deviceType = addslashes( strtolower( $recordData['keys'][1] ) );
+				$country = addslashes( strtolower( $recordData['keys'][2] ) );
 				$query = addslashes( $recordData['keys'][0] );
 
-				$import = "INSERT into ".MySQL::DB_TABLE_SEARCH_ANALYTICS."(domain, date, search_engine, search_type, device_type, query, impressions, clicks, ctr, avg_position) values('$domain', '$date', 'google', '$searchType', '$deviceType', '{$query}','{$recordData['impressions']}','{$recordData['clicks']}','{$recordData['ctr']}','{$recordData['position']}')";
+				$import = "INSERT into ".MySQL::DB_TABLE_SEARCH_ANALYTICS."(domain, date, search_engine, search_type, device_type, country, query, impressions, clicks, ctr, avg_position) values('$domain', '$date', 'google', '$searchType', '$deviceType', '$country', '{$query}','{$recordData['impressions']}','{$recordData['clicks']}','{$recordData['ctr']}','{$recordData['position']}')";
 
 				if( $GLOBALS['db']->query($import) ) {
 					$countImport++;

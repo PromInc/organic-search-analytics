@@ -1,9 +1,9 @@
 <?php
 @session_start();
-if( !strpos( $_SERVER['SCRIPT_NAME'], "upgrade.php" ) ) {
+// if( !strpos( $_SERVER['SCRIPT_NAME'], "upgrade.php" ) ) {
 	include_once realpath(dirname(__FILE__).'/../code/globalIncludes.php'); /* Load classes */
 	$GLOBALS['scriptName'] = str_replace( "/".$GLOBALS['appInstallDir'], "", $_SERVER['SCRIPT_NAME'] );
-}
+// }
 ?>
 
 <html>

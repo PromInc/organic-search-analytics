@@ -1,3 +1,8 @@
+## 2.4.0 - 2016-01-12
+### Added
+- Capture country from Google Search Console on a query level
+- Fitler reports by country
+
 ## 2.3.7 - 2016-01-11
 ### Added
 - Display date range on report and datepicker for number of days selected

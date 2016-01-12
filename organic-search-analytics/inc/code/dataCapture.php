@@ -28,7 +28,7 @@
 		 */
 		private $defaultGoogleSearchAnalyticsSettings = array(
 			'mode' => 'import', /* What to do with the data.  Valid options: import, return */
-			'dimensions' => array('query','device'),
+			'dimensions' => array('query','device','country'),
 			'row_limit' => 5000 /* Number of rows to capture from Google.  Valid options: 1-5000 */
 		);
 

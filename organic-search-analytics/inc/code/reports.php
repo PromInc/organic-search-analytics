@@ -257,6 +257,15 @@
 					}
 					$return['pageHeadingItems'][] = "Device Type: " . $reportParams['device_type'];
 				}
+
+				/* Country */
+				if( isset( $reportParams['country'] ) && $reportParams['country'] > "" ) {
+					if( $reportParams['country'] != "ALL" ) {
+						$return['whereClauseItemsTable'][] = "country = '" . $reportParams['country'] . "'";
+					}
+					$return['pageHeadingItems'][] = "Country: " . strtoupper( $reportParams['country'] );
+				}
+
 				if( isset( $reportParams['date_start'] ) && $reportParams['date_start'] > 0 && $reportParams['date_type'] == 'hard_set' ) {
 					if( isset( $reportParams['date_end'] ) && $reportParams['date_end'] > 0 ) {
 						$return['whereClauseItemsTable'][] = "date >= '" . $reportParams['date_start'] . "' AND date <= '" . $reportParams['date_end'] . "'";
