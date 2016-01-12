@@ -1,6 +1,8 @@
 # Organic Search Analytics Importer
-## Version 2.3.0 Just released!!! (December 14th, 2015)
-Just in time for the holidays, a new verion has been released offering some much needed and requested reporting updates!
+## Version 2.3.7 Now Available!!! (January 12th, 2016)
+> This is a highly recommended update for all users.  This update fixes a bug where queries from Google that contain special characters are not being saved to the database.  It is suggested that you update to this version immediately.
+
+> Once updated, there is a **Delete Data** option found on the home page.  This page can be used to delete data that was affected by this bug.  Once deleted, you can re-capture data for that date.  This process ensures your data is as accurate as possible.
 
 ## Features
 Import organic search analytics from Google Search Console (Google Webmaster Tools) and Bing Search Keywords (Bing Webmaster Tools) into a local database to keep a historical, local, and combined record of your (past the 30 days that Google offers).
