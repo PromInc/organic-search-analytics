@@ -1,3 +1,7 @@
+## 2.4.1 - 2016-01-27
+### Bug Fix
+- On the report page, the chart would fail to display if a query contained a single quote.  Escaped the quote to allow for the chart to reder properly.
+
 ## 2.4.0 - 2016-01-12
 ### Added
 - Capture country from Google Search Console on a query level

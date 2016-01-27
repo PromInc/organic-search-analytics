@@ -138,7 +138,7 @@ if( isset( $groupBy ) ) {
 					if( $c != 0 ) {
 						$posString .= ",";
 					}
-					$posString .= "['".$jqData[$groupBy][$c]."',".$jqData['avg_position'][$c]."]";
+					$posString .= "['".addslashes($jqData[$groupBy][$c])."',".$jqData['avg_position'][$c]."]";
 					if( $jqData['avg_position'][$c] > $posMax ) { $posMax = $jqData['avg_position'][$c]; }
 				}
 				?>
