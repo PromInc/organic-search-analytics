@@ -28,9 +28,11 @@
 	<?php
 		$domains = $mysql->getSettings("sites_google", "1");
 		$catId = "googleSearchAnalytics";
-
+	?>
+	<div id="<?php echo $catId ?>">
+	<?php
 		foreach( $domains as $domain => $values ) {
-			echo '<ul class="searchEngine" id="'.$catId.'">';
+			echo '<ul class="searchEngine">';
 				echo '<li>'.$domain.'</li>';
 
 				$googleSearchAnalyticsDates = $dataCapture->checkNeededDataGoogleSearchAnalytics($domain);
@@ -47,11 +49,11 @@
 				}
 			echo '</ul>';
 		}
-
 	?>
+	</div>
 	<hr>
-	
-	
+
+
 	<h2>Bing Webmaster Tools</h2>
 	<hr>
 	<h3>Search Keywords</h3>
@@ -65,9 +67,11 @@
 	<?php
 		$domains = $mysql->getSettings("sites_bing", "1");
 		$catId = "bingSearchKeywords";
-
+	?>
+	<div id="<?php echo $catId ?>">
+	<?php
 		foreach( $domains as $domain => $values ) {
-			echo '<ul class="searchEngine" id="'.$catId.'">';
+			echo '<ul class="searchEngine">';
 				echo '<li>'.$domain.'</li>';
 					$date = date( "Y-m-d", $now );
 
@@ -76,8 +80,8 @@
 					echo '</ul>';
 			echo '</ul>';
 		}
-
 	?>
+	</div>
 	<hr>
 
 <?php include_once('inc/html/_foot.php'); ?>

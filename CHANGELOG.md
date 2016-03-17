@@ -1,3 +1,7 @@
+## 2.4.2 - 2016-03-17
+### Bug Fix
+- On the data capture page, if multiple domains are present for a search engine, the capture action text may not display for the second or greater domain, and this may result in inaccurate data capture from the search engine.  This fix corrects that issue.
+
 ## 2.4.1 - 2016-01-27
 ### Bug Fix
 - On the report page, the chart would fail to display if a query contained a single quote.  Escaped the quote to allow for the chart to reder properly.
