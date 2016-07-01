@@ -1,3 +1,7 @@
+## 2.4.3 - 2016-07-01
+### Bug Fix
+- Data Capture would not import any records for new installs (non-upgraded) of this tool.  A MySQL error was thrown in the background due to a field not being available in the database.
+
 ## 2.4.2 - 2016-03-17
 ### Bug Fix
 - On the data capture page, if multiple domains are present for a search engine, the capture action text may not display for the second or greater domain, and this may result in inaccurate data capture from the search engine.  This fix corrects that issue.
