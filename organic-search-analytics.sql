@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS `search_analytics` (
   `search_engine` varchar(50) NOT NULL,
   `search_type` varchar(24) NOT NULL,
   `device_type` varchar(24) NOT NULL,
+  `country` varchar(10) NULL,
   `query` varchar(500) NOT NULL,
   `impressions` int(11) NOT NULL,
   `clicks` int(11) NOT NULL,
