@@ -27,7 +27,7 @@ Reporting features allow you to get to data that makes a difference in your mark
 
 ## Requirements
 - PHP (5.4.1+)
--  MySQL
+- MySQL
 
 ## Installation
 [Installation Instructions can be found in the Wiki](https://github.com/PromInc/organic-search-analytics/wiki/Installation).
@@ -37,3 +37,6 @@ Upgrading between certain versions requires an additional step.  Instructions on
 
 ## Additional Information
 More information can be found in the [Wiki](https://github.com/PromInc/organic-search-analytics/wiki).
+
+## Related Information
+- [Google's definition of it's Search Analytics metrics](https://support.google.com/webmasters/answer/7042828)
