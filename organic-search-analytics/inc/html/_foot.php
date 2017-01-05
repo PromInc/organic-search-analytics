@@ -11,7 +11,7 @@
 				Developed by <a href="http://www.promincproductions.com/blog" target="_blank">Brian Prom</a>
 			</div>
 			<div id="versionBlock" class="floatright">
-				<?php $currerntVersion = file_get_contents( ( isset( $GLOBALS['basedir'] ) ? $GLOBALS['basedir'] : '' ) . 'version.txt' ); ?>
+				<?php $currerntVersion = trim(file_get_contents( ( isset( $GLOBALS['basedir'] ) ? $GLOBALS['basedir'] : '' ) . 'version.txt' )); ?>
 				<span>ver <?php echo $currerntVersion; ?></span>
 				<span id="upgradeVersion" class="floatright" style="display:none;">A newer version is available.  <a>Download <span id="upgradeVersionNumber"></span> now!</a></span>
 				<script type="text/javascript">
