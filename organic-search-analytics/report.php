@@ -88,7 +88,7 @@ if( isset( $groupBy ) ) {
 		<?php } ?>
 
 		<?php
-			$reportQuery = "SELECT " . $groupBy . ", count(" . ( $groupBy != "query" ? 'DISTINCT ' : '' ) . "query) as 'queries', sum(impressions) as 'impressions', sum(clicks) as 'clicks', avg(avg_position) as 'avg_position' FROM ".$mysql::DB_TABLE_SEARCH_ANALYTICS." " . $reportDetails['whereClauseTable'] . "GROUP BY " . $groupBy . " ORDER BY " . $reportDetails['sortBy'] . " ASC";
+			$reportQuery = "SELECT " . $groupBy . ", count(" . ( $groupBy != "query" ? 'DISTINCT ' : '' ) . "query) as 'queries', sum(impressions) as 'impressions', sum(clicks) as 'clicks', sum(avg_position*impressions)/sum(impressions) as 'avg_position' FROM ".$mysql::DB_TABLE_SEARCH_ANALYTICS." " . $reportDetails['whereClauseTable'] . "GROUP BY " . $groupBy . " ORDER BY " . $reportDetails['sortBy'] . " ASC";
 
 			/* Get MySQL Results */
 			$outputTable = $outputChart = array();
