@@ -1,9 +1,10 @@
 <?php
 	$now = time();
 
-	$GLOBALS['basedirWebServer'] = $_SERVER['DOCUMENT_ROOT']."/";
+	$GLOBALS['basedirWebServer'] = ($_SERVER['CONTEXT_DOCUMENT_ROOT'])?$_SERVER['CONTEXT_DOCUMENT_ROOT']."/":$_SERVER['DOCUMENT_ROOT']."/";
+	$GLOBALS['aliasdir'] = ($_SERVER['CONTEXT_PREFIX'])?ltrim($_SERVER['CONTEXT_PREFIX'],"/")."/":"";
 	$GLOBALS['basedir'] = preg_replace( '/\\\/', '/', realpath(dirname(__FILE__).'/../../').'/' );
-	$GLOBALS['appInstallDir'] = str_replace( $GLOBALS['basedirWebServer'], "", $GLOBALS['basedir'] );
+	$GLOBALS['appInstallDir'] = str_replace( $GLOBALS['basedirWebServer'], "", $GLOBALS['basedir'].$GLOBALS['aliasdir'] );
 	$GLOBALS['file_name'] = basename( $_SERVER['SCRIPT_FILENAME'], ".php" );
 
 	$isConfigured = file_exists($GLOBALS['basedir'].'config/config.php');
