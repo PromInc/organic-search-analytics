@@ -66,6 +66,49 @@ if( isset( $_GET ) && isset( $_GET['upgrade'] ) ) {
 
 			$alert = array("type"=>"success", "message"=>"Upgrade performed succesfully.");
 			break;
+		case "2_4_2_to_2_4_3":
+			/* Include resources */
+			include_once( 'inc/code/core.php' ); //Core functions
+			include_once( 'inc/code/mysql.php' ); //Database Connection
+			$core = new Core(); //Load core
+			$mysql = new MySQL(); //Load MySQL
+			$GLOBALS['db'] = $core->mysql_connect_db(); // Connect to DB
+
+			$errors = array();
+
+			/* Alter tables */
+			$query = "ALTER TABLE `report_saved` CONVERT TO CHARACTER SET `utf8` COLLATE `utf8_unicode_ci`";
+			$result = $mysql->query( $query );
+			if( !$result ) {
+				$errors[] = $mysql->error;
+			}
+
+			$query = "ALTER TABLE `report_saved_categories` CONVERT TO CHARACTER SET `utf8` COLLATE `utf8_unicode_ci`";
+			$result = $mysql->query( $query );
+			if( !$result ) {
+				$errors[] = $mysql->error;
+			}
+
+			$query = "ALTER TABLE `search_analytics` ENGINE=`INNODB`, CONVERT TO CHARACTER SET `utf8` COLLATE `utf8_unicode_ci`";
+			$result = $mysql->query( $query );
+			if( !$result ) {
+				$errors[] = $mysql->error;
+			}
+
+			$query = "ALTER TABLE `settings` ENGINE=`INNODB`, CONVERT TO CHARACTER SET `utf8` COLLATE `utf8_unicode_ci`";
+			$result = $mysql->query( $query );
+			if( !$result ) {
+				$errors[] = $mysql->error;
+			}
+
+			if( !count( $errors ) ) {
+				$alert = array("type"=>"success", "message"=>"Upgrade performed succesfully.");
+			} else {
+				$errorString = "There were errors in the upgrade process.<br><br>";
+				$errorString .= implode("<br>", $errors );
+				$alert = array("type"=>"error", "message"=>$errorString);
+			}
+			break;
 	}
 }
 ?>
@@ -96,6 +139,14 @@ if( isset( $_GET ) && isset( $_GET['upgrade'] ) ) {
 			<ul>
 				<li>Adds column <b>country</b> to the search_analytics table.</li>
 				<li><a href="<?PHP echo $_SERVER['SCRIPT_NAME'] ?>?upgrade=2_x_x_to_2_4_0">Run Update for Version 2.x.x to 2.4.0</a></li>
+			</ul>
+		</li>
+		<li>
+			<h2>Version 2.4.2 to 2.4.3</h2>
+			<ul>
+				<li>Change default <b>charset</b> and <b>collation</b> on database tables.</li>
+				<li>Change database engine to Innodb for <b>search_analytics</b> and <b>settings</b> database tables.</li>
+				<li><a href="<?PHP echo $_SERVER['SCRIPT_NAME'] ?>?upgrade=2_4_2_to_2_4_3">Run Update for Version 2.4.3 to 2.4.3</a></li>
 			</ul>
 		</li>
 	</ul>
