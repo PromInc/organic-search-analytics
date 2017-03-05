@@ -73,7 +73,7 @@
 			$bingSites = json_decode( $bing->requestApi( config::CREDENTIALS_BING_API_KEY, 'GetUserSites' ) );
 
 			$return = array();
-			if( $bingSites ) {
+			if( $bingSites && !isset( $bingSites->ErrorCode ) ) {
 				foreach( $bingSites->d as $site ) {
 					$return[] = array( 'url' => $site->Url );
 				}

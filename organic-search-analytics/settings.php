@@ -4,6 +4,7 @@
 <?php include_once('inc/html/_head.php'); ?>
 
 <?php
+$sitesList = array();
 if( $isConfigured ) {
 	/* Get sites settings */
 	$siteSettings = array();
@@ -16,7 +17,6 @@ if( $isConfigured ) {
 	$wmtSites['Bing'] = $dataCapture->getSitesBingWebmaster();
 	
 	/* Get combined sites */
-	$sitesList = array();
 	foreach( $wmtSites as $searchEngine => $sitesData ) {
 		foreach( $sitesData as $key => $data ) {
 			if( !isset( $sitesList[ $data['url'] ] ) ) {
