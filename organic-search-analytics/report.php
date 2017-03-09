@@ -22,6 +22,7 @@
 
 <?php
 $colHeadingSecondary = "Queries";
+$granularity = ($reportParams['granularity'])?$reportParams['granularity']:'day';
 if( $reportParams ) {
 	$reportDetails = $reports->getReportQueryAndHeading( $reportParams );
 	$groupBy = $reportDetails['groupBy'];
@@ -38,7 +39,7 @@ if( isset( $reportDetails ) ) {
 /* Set labels */
 if( isset( $groupBy ) ) {
 	if( preg_match( '/\(date\)/', $groupBy ) ) {
-		$colHeadingPrimary = substr( $groupBy, 0, strpos( $groupBy, '(' ) );
+		$colHeadingPrimary = $granularity;
 	} else {
 		$colHeadingPrimary = $groupBy;
 	}

@@ -294,7 +294,9 @@
 
 				$groupByDate = 'date';
 				if( isset( $reportParams['granularity'] ) && $reportParams['granularity'] != 'day' ) {
-					$return['groupBy'] = strtoupper( $reportParams['granularity'] ) . '(' . $groupByDate . ')';
+					if ($reportParams['granularity'] == 'month') $return['groupBy'] = strtoupper( DATE_FORMAT ) . '(' . $groupByDate . ',"%Y-%m")';
+					elseif ($reportParams['granularity'] == 'week') $return['groupBy'] = 'DATE_FORMAT(DATE_ADD(date, INTERVAL(1-DAYOFWEEK(date)) DAY),"%Y-%m-%d")';
+					else $return['groupBy'] = strtoupper( $reportParams['granularity'] ) . '(' . $groupByDate . ')';
 					$return['pageHeadingItems'][] = "Granularity: " . $reportParams['granularity'];
 				} else {
 					$return['groupBy'] = $groupByDate;
