@@ -66,8 +66,8 @@ CREATE TABLE IF NOT EXISTS `search_analytics` (
   `impressions` int(11) NOT NULL,
   `clicks` int(11) NOT NULL,
   `ctr` float NOT NULL,
-  `avg_position` int(11) NOT NULL,
-  `avg_position_click` int(11) NULL,
+  `avg_position` float NOT NULL,
+  `avg_position_click` float NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=0 ;
 

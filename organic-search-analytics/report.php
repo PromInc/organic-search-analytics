@@ -22,6 +22,7 @@
 
 <?php
 $colHeadingSecondary = "Queries";
+$granularity = ($reportParams['granularity'])?$reportParams['granularity']:'day';
 if( $reportParams ) {
 	$reportDetails = $reports->getReportQueryAndHeading( $reportParams );
 	$groupBy = $reportDetails['groupBy'];
@@ -38,7 +39,7 @@ if( isset( $reportDetails ) ) {
 /* Set labels */
 if( isset( $groupBy ) ) {
 	if( preg_match( '/\(date\)/', $groupBy ) ) {
-		$colHeadingPrimary = substr( $groupBy, 0, strpos( $groupBy, '(' ) );
+		$colHeadingPrimary = $granularity;
 	} else {
 		$colHeadingPrimary = $groupBy;
 	}
@@ -88,7 +89,7 @@ if( isset( $groupBy ) ) {
 		<?php } ?>
 
 		<?php
-			$reportQuery = "SELECT " . $groupBy . ", count(" . ( $groupBy != "query" ? 'DISTINCT ' : '' ) . "query) as 'queries', sum(impressions) as 'impressions', sum(clicks) as 'clicks', avg(avg_position) as 'avg_position' FROM ".$mysql::DB_TABLE_SEARCH_ANALYTICS." " . $reportDetails['whereClauseTable'] . "GROUP BY " . $groupBy . " ORDER BY " . $reportDetails['sortBy'] . " ASC";
+			$reportQuery = "SELECT " . $groupBy . ", count(" . ( $groupBy != "query" ? 'DISTINCT ' : '' ) . "query) as 'queries', sum(impressions) as 'impressions', sum(clicks) as 'clicks', sum(avg_position*impressions)/sum(impressions) as 'avg_position' FROM ".$mysql::DB_TABLE_SEARCH_ANALYTICS." " . $reportDetails['whereClauseTable'] . "GROUP BY " . $groupBy . " ORDER BY " . $reportDetails['sortBy'] . " ASC";
 
 			/* Get MySQL Results */
 			$outputTable = $outputChart = array();
