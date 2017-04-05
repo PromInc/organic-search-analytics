@@ -101,6 +101,7 @@ if( isset( $groupBy ) ) {
 							" count(DISTINCT page) as 'pages',".
 							" sum(impressions) as 'impressions',".
 							" sum(clicks) as 'clicks',".
+							" sum(avg_position*impressions)/sum(impressions) as 'avg_position',".
 							" avg(ctr) as 'ctr'".
 							" FROM ".$mysql::DB_TABLE_SEARCH_ANALYTICS.
 							" " . $reportDetails['whereClauseTable'] .
@@ -307,16 +308,26 @@ if( isset( $groupBy ) ) {
 				});
 				</script>
 
-
 				<?php if( $reportDetails['sortDir'] == 'desc' ) { $rows = array_reverse( $rows ); } ?>
+
+				<?php
+				$totalsExcludes = array(
+					"date" => array(),
+					"query" => array("queries"),
+					"page" => array("pages")
+				);
+				?>
 
 				<table class="sidebysidetable sidebysidetable_col mT2p mB2p">
 					<tr>
 						<?php foreach ( $totals as $index => $values ) { ?>
+							<?php if( in_array( $index, $totalsExcludes[$groupBy] ) ) { continue; } ?>
+							<td><?php echo ucwords( strtolower( str_replace( "_", " ", $index ) ) ) ?></td>
 						<?php } ?>
 					</tr>
 					<tr>
 						<?php foreach ( $totals as $index => $values ) { ?>
+							<?php if( in_array( $index, $totalsExcludes[$groupBy] ) ) { continue; } ?>
 							<td><?php echo $values ?></td>
 						<?php } ?>
 					</tr>
@@ -330,36 +341,161 @@ if( isset( $groupBy ) ) {
 							<span class="sort sort_asc"></span>
 							<span class="sort sort_desc"></span>
 						</td>
+
+						<?php if( in_array( $groupBy, array("date") ) ) { ?>
 						<td id="data_heading_queries">
 							<span class="data_heading" datatype="queries"><?php echo $colHeadingSecondary ?></span>
 							<span class="sort sort_asc"></span>
 							<span class="sort sort_desc"></span>
+							<label class="reportTooltip" tooltip="Number of unique queries displayed in the SERP for this date"><span></span></label>
 						</td>
+						<?php } ?>
+
+						<?php if( $groupBy == "page" ) { ?>
+						<td id="data_heading_instances">
+							<span class="data_heading" datatype="queries"><?php echo $colHeadingSecondary ?></span>
+							<span class="sort sort_asc"></span>
+							<span class="sort sort_desc"></span>
+							<label class="reportTooltip" tooltip="Number of unique queries returned this page in the SERP"><span></span></label>
+						</td>
+						<?php } ?>
+
+						<?php if( in_array( $groupBy, array("query","date") ) ) { ?>
+						<td id="data_heading_pages">
+							<span class="data_heading" datatype="pages">Pages</span>
+							<span class="sort sort_asc"></span>
+							<span class="sort sort_desc"></span>
+							<label class="reportTooltip" tooltip="Number of URLs that were displayed in the SERP for this result"><span></span></label>
+						</td>
+						<?php } ?>
+
 						<td id="data_heading_impressions">
 							<span class="data_heading" datatype="impressions">Impressions</span>
 							<span class="sort sort_asc"></span>
 							<span class="sort sort_desc"></span>
+							<label class="reportTooltip" tooltip="Number of times this result was displayed in the SERP"><span></span></label>
 						</td>
+
 						<td id="data_heading_clicks">
 							<span class="data_heading" datatype="clicks">Clicks</span>
 							<span class="sort sort_asc"></span>
 							<span class="sort sort_desc"></span>
+							<label class="reportTooltip" tooltip="Number of times this result was clicked in the SERP"><span></span></label>
 						</td>
+
 						<td id="data_heading_avg_position">
 							<span class="data_heading" datatype="avg_position">Avg Position</span>
 							<span class="sort sort_asc"></span>
 							<span class="sort sort_desc"></span>
+							<label class="reportTooltip" tooltip="Average position in the SERP when this result triggered an impression"><span></span></label>
 						</td>
+
 						<td id="data_heading_ctr">
 							<span class="data_heading" datatype="ctr">CTR</span>
 							<span class="sort sort_asc"></span>
 							<span class="sort sort_desc"></span>
+							<label class="reportTooltip" tooltip="Percent of clicks for this result from the SERP (Clicks / Impressions)"><span></span></label>
 						</td>
 					</tr>
 					<?php foreach ( $rows as $index => $values ) { ?>
 						<tr>
+							<td class="taL">
+								<?php
+								$url = false;
+								if( $groupBy == "query" ) {
+									$url = 'https://www.google.com/search?q=' . urlencode($index) . '&start=' . floor($values["avg_position"] / 10) * 10;
+								} elseif( $groupBy == "page" ) {
+									$url = $index;
+								}
 
+								if( $url ) {
+									echo '<a href="' . $url . '" target="_blank">';
+								}
+								$indexDomain = substr( $index, 0, strlen( $reportParams['domain'] ) );
+								if( strlen( $index ) > strlen( $indexDomain ) && $indexDomain == $reportParams['domain'] ) {
+									echo substr( $index, strlen( $reportParams['domain'] ) );
+								} else {
+									echo $index;
+								}
 
+								if( $url ) {
+									echo '<i class="fa fa-external-link reportLinkExt" aria-hidden="true"></i>';
+									echo '</a>';
+								}
+								?>
+							</td>
+
+							<?php if( in_array( $groupBy, array("date","page") ) ) { ?>
+							<td>
+								<?php
+								$urlParams = false;
+								switch( $reportParams['groupBy'] ) {
+									case "date":
+										$urlParams = $reportParams;
+										$urlParams['groupBy'] = "query";
+										$urlParams['sortBy'] = "query";
+										$urlParams['date_start'] = $index;
+										$urlParams['date_end'] = $index;
+										break;
+									case "page":
+										$urlParams = $reportParams;
+										$urlParams['groupBy'] = "query";
+										$urlParams['sortBy'] = "query";
+										$urlParams['page'] = $index;
+										$urlParams['pageMatch'] = 'exact';
+										break;
+									default:
+								}
+								http_build_query($urlParams);
+								?>
+
+								<?php if( $urlParams ) { ?>
+								<a href="report.php?<?php echo http_build_query($urlParams) ?>">
+								<?php } ?>
+
+								<?php echo number_format( $values["queries"] ) ?>
+
+								<?php if( $urlParams ) { ?>
+								</a>
+								<?php } ?>
+							</td>
+							<?php } ?>
+
+							<?php if( !in_array( $groupBy, array("page") ) ) { ?>
+							<td>
+								<?php
+								$urlParams = false;
+								switch( $reportParams['groupBy'] ) {
+									case "date":
+										$urlParams = $reportParams;
+										$urlParams['groupBy'] = "page";
+										$urlParams['sortBy'] = "page";
+										$urlParams['date_start'] = $index;
+										$urlParams['date_end'] = $index;
+										break;
+									case "query":
+										$urlParams = $reportParams;
+										$urlParams['groupBy'] = "page";
+										$urlParams['sortBy'] = "page";
+										$urlParams['queryMatch'] = "exact";
+										$urlParams['query'] = $index;
+										break;
+									default:
+								}
+								http_build_query($urlParams);
+								?>
+
+								<?php if( $urlParams ) { ?>
+								<a href="report.php?<?php echo http_build_query($urlParams) ?>">
+								<?php } ?>
+
+								<?php echo number_format( $values["pages"] ) ?>
+
+								<?php if( $urlParams ) { ?>
+								</a>
+								<?php } ?>
+							</td>
+							<?php } ?>
 							<td><?php echo number_format( $values["impressions"] ) ?></td>
 							<td><?php echo number_format( $values["clicks"] ) ?></td>
 							<td><?php echo number_format( $values["avg_position"], 2 ) ?></td>
