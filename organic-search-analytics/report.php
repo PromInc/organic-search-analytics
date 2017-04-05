@@ -22,6 +22,7 @@
 
 <?php
 $colHeadingSecondary = "Queries";
+$colHeadingPrimary = "Query";
 if( $reportParams ) {
 	$reportDetails = $reports->getReportQueryAndHeading( $reportParams );
 	$groupBy = $reportDetails['groupBy'];
@@ -39,6 +40,8 @@ if( isset( $reportDetails ) ) {
 if( isset( $groupBy ) ) {
 	if( preg_match( '/\(date\)/', $groupBy ) ) {
 		$colHeadingPrimary = substr( $groupBy, 0, strpos( $groupBy, '(' ) );
+	} elseif( $groupBy == "query" ) {
+		$colHeadingPrimary = "Query";
 	} else {
 		$colHeadingPrimary = $groupBy;
 	}
@@ -65,7 +68,11 @@ if( isset( $groupBy ) ) {
 	<div class="clear"></div>
 
 	<?php if( isset( $reportDetails ) ) { ?>
-		<h2><?php echo implode( ", ", $reportDetails['pageHeadingItems'] ); ?></h2>
+		<div id="reportParameters">
+			<h2 id="reportParametersHeading">Report Parameters</h2>
+			<div><?php echo implode( "</div><div>", $reportDetails['pageHeadingItems'] ); ?></div>
+		</div>
+		<div class="clear"></div>
 
 		<?php
 		$reports = new Reports(); //Load Reporting Class
@@ -88,7 +95,18 @@ if( isset( $groupBy ) ) {
 		<?php } ?>
 
 		<?php
-			$reportQuery = "SELECT " . $groupBy . ", count(" . ( $groupBy != "query" ? 'DISTINCT ' : '' ) . "query) as 'queries', sum(impressions) as 'impressions', sum(clicks) as 'clicks', avg(avg_position) as 'avg_position' FROM ".$mysql::DB_TABLE_SEARCH_ANALYTICS." " . $reportDetails['whereClauseTable'] . "GROUP BY " . $groupBy . " ORDER BY " . $reportDetails['sortBy'] . " ASC";
+			$reportQuery = "SELECT ".
+							$groupBy. ",".
+							" count(" . ( $groupBy != "query" ? 'DISTINCT ' : '' ) . "query) as 'queries',".
+							" count(DISTINCT page) as 'pages',".
+							" sum(impressions) as 'impressions',".
+							" sum(clicks) as 'clicks',".
+							" avg(ctr) as 'ctr'".
+							" FROM ".$mysql::DB_TABLE_SEARCH_ANALYTICS.
+							" " . $reportDetails['whereClauseTable'] .
+							" GROUP BY " . $groupBy .
+							" ORDER BY " . $reportDetails['sortBy'] . " ASC"
+							;
 
 			/* Get MySQL Results */
 			$outputTable = $outputChart = array();
@@ -101,12 +119,13 @@ if( isset( $groupBy ) ) {
 			/* If Results */
 			if( count($outputTable) > 0 ) {
 				/* Put MySQL Results into an array */
-				$totals = array( 'rows' => 0, 'queries' => 0, 'impressions' => 0, 'clicks' => 0, 'avg_position' => 0, 'avg_ctr' => 0 );
+				$totals = array( 'rows' => 0, 'queries' => 0, 'pages' => 0, 'impressions' => 0, 'clicks' => 0, 'avg_position' => 0, 'avg_ctr' => 0 );
 				$rows = array();
 				for( $r=0; $r < count($outputTable); $r++ ) {
-					$rows[ $outputTable[$r][$groupBy] ] = array( "queries" => $outputTable[$r]["queries"], "impressions" => $outputTable[$r]["impressions"], "clicks" => $outputTable[$r]["clicks"], "avg_position" => $outputTable[$r]["avg_position"] );
+					$rows[ $outputTable[$r][$groupBy] ] = array( "queries" => $outputTable[$r]["queries"], "pages" => $outputTable[$r]["pages"], "impressions" => $outputTable[$r]["impressions"], "clicks" => $outputTable[$r]["clicks"], "avg_position" => $outputTable[$r]["avg_position"] );
 					/* Add to totals */
 					$totals['queries'] += $outputTable[$r]["queries"];
+					$totals['pages'] += $outputTable[$r]["pages"];
 					$totals['impressions'] += $outputTable[$r]["impressions"];
 					$totals['clicks'] += $outputTable[$r]["clicks"];
 					$totals['avg_position'] += $outputTable[$r]["avg_position"];
@@ -117,6 +136,7 @@ if( isset( $groupBy ) ) {
 				/* Format numbers */
 				$totals['rows'] = number_format( count($outputTable), 0 );
 				$totals['queries'] = number_format( $totals['queries'], 0 );
+				$totals['pages'] = number_format( $totals['pages'], 0 );
 				$totals['impressions'] = number_format( $totals['impressions'], 0 );
 				$totals['clicks'] = number_format( $totals['clicks'], 0 );
 
@@ -124,7 +144,15 @@ if( isset( $groupBy ) ) {
 				$jqData = array( $groupBy => array(), "impressions" => array(), "clicks" => array(), "ctr" => array(), "avg_position" => array() );
 
 				foreach ( $rows as $index => $values ) {
-					$jqData[$groupBy][] = $index;
+					if( $groupBy == "page" ) {
+						$indexDomain = substr( $index, 0, strlen( $reportParams['domain'] ) );
+						if( strlen( $index ) > strlen( $indexDomain ) && $indexDomain == $reportParams['domain'] ) {
+							$jqData[$groupBy][] = substr( $index, strlen( $reportParams['domain'] ) );
+						}
+					} else {
+						$jqData[$groupBy][] = $index;
+					}
+
 					$jqData['impressions'][] = $values["impressions"];
 					$jqData['clicks'][] = $values["clicks"];
 					$jqData['ctr'][] = ( $values["clicks"] / $values["impressions"] ) * 100;
@@ -190,8 +218,7 @@ if( isset( $groupBy ) ) {
 							
 					<?php } elseif( $groupBy ==  "query" ) { ?>
 							var plot2 = $.jqplot('reportchart', [[<?php echo $posString ?>]], {
-									title:'Default Bar Chart',
-									// animate: !$.jqplot.use_excanvas,
+									title:'Average Position | Query',
 									seriesDefaults:{
 											renderer:$.jqplot.BarRenderer,
 											rendererOptions: {
@@ -199,11 +226,50 @@ if( isset( $groupBy ) ) {
 												showDataLabels: true
 											},
 									},
-									legent: {
-										show: true
+									axesDefaults: {
+											tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+											tickOptions: {
+												angle: 30,
+												fontSize: '10pt'
+											}
+									},
+									axes:{
+										xaxis:{
+											renderer: $.jqplot.CategoryAxisRenderer,
+											pointLabels: { show: true }
+										}
+									},
+									cursor:{
+										show: true,
+										zoom: true,
+									},
+									highlighter: {
+										show: true,
+										tooltipAxes: 'xy',
+										useAxesFormatters: false,
+										showTooltip: true,
+										tooltipFormatString: '%s'
+									}
+							});
+
+							/* Click displays information on HTML page */
+							$('#reportchart').bind('jqplotDataClick', 
+									function (ev, seriesIndex, pointIndex, data) {
+											$('#chartDataCallout').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data);
+									}
+							);
+					<?php } elseif( $groupBy ==  "page" ) { ?>
+							var plot2 = $.jqplot('reportchart', [[<?php echo $posString ?>]], {
+									title:'Average Position | Page',
+									seriesDefaults:{
+											renderer:$.jqplot.BarRenderer,
+											rendererOptions: {
+												varyBarColor: true,
+												showDataLabels: true
+											},
 									},
 									axesDefaults: {
-											tickRenderer: $.jqplot.CanvasAxisTickRenderer ,
+											tickRenderer: $.jqplot.CanvasAxisTickRenderer,
 											tickOptions: {
 												angle: 30,
 												fontSize: '10pt'
@@ -247,7 +313,6 @@ if( isset( $groupBy ) ) {
 				<table class="sidebysidetable sidebysidetable_col mT2p mB2p">
 					<tr>
 						<?php foreach ( $totals as $index => $values ) { ?>
-							<td><?php echo ucfirst( strtolower( $index ) ) ?></td>
 						<?php } ?>
 					</tr>
 					<tr>
@@ -293,8 +358,8 @@ if( isset( $groupBy ) ) {
 					</tr>
 					<?php foreach ( $rows as $index => $values ) { ?>
 						<tr>
-							<td class="taL"><?php echo $index ?></td>
-							<td><?php echo number_format( $values["queries"] ) ?></td>
+
+
 							<td><?php echo number_format( $values["impressions"] ) ?></td>
 							<td><?php echo number_format( $values["clicks"] ) ?></td>
 							<td><?php echo number_format( $values["avg_position"], 2 ) ?></td>

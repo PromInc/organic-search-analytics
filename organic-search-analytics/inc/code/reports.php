@@ -23,11 +23,14 @@
 	class Reports
 	{
 
+
 		public $core;
+
 
 		function __construct() {
 			$this->core = new Core(); //Load core
 		}
+
 
 		/**
 		 *  Import array of Bing Search Keywords to database
@@ -90,7 +93,6 @@
 
 			/* Send Query */
 			$saveReport = MySQL::qryDBinsert( MySQL::DB_TABLE_SAVED_REPORTS, $valueString );
-			// var_dump( $GLOBALS['db'] );
 
 			/* Return query request status */
 			return $saveReport;
@@ -228,9 +230,14 @@
 
 				$whereClause = $return['chartLabel'] = "";
 				$return['whereClauseItemsTable'] = $return['pageHeadingItems'] = [];
+
+				if( isset( $reportParams['groupBy'] ) ) {
+					$return['pageHeadingItems'][] = "<span>Report Type:</span> " . ucfirst($reportParams['groupBy']);
+				}
+				
 				if( isset( $reportParams['domain'] ) && $reportParams['domain'] > "" ) {
 					$return['whereClauseItemsTable'][] = "domain = '" . $reportParams['domain'] . "'";
-					$return['pageHeadingItems'][] = "Domain: " . $reportParams['domain'];
+					$return['pageHeadingItems'][] = "<span>Domain:</span> <a href=\"" . $reportParams['domain'] . "\" target=\"_blank\">" . $reportParams['domain'] . "<i class=\"fa fa-external-link reportLinkExt\" aria-hidden=\"true\"></i></a>";
 				}
 				if( isset( $reportParams['query'] ) && $reportParams['query'] > "" ) {
 					switch( $reportParams['queryMatch'] ) {
@@ -242,20 +249,43 @@
 							$return['whereClauseItemsTable'][] = "query = '" . $reportParams['query'] . "'";
 							break;
 					}
-					$return['pageHeadingItems'][] = "Query: " . $reportParams['query'] . (isset($reportParams['queryMatch'])?" (".$reportParams['queryMatch'].")":"");
+					$return['pageHeadingItems'][] = "<span>Query:</span> <a href=\"https://www.google.com/search?q=" . urlencode( $reportParams['query'] ) . "\" target=\"_blank\">" . $reportParams['query'] . "<i class=\"fa fa-external-link reportLinkExt\" aria-hidden=\"true\"></i></a>" . (isset($reportParams['queryMatch'])?" (".$reportParams['queryMatch'].")":"");
 					$return['chartLabel'] = $reportParams['query'] . (isset($reportParams['queryMatch'])?" (".$reportParams['queryMatch'].")":"");
+				}
+				if( isset( $reportParams['page'] ) && $reportParams['page'] > "" ) {
+					switch( $reportParams['pageMatch'] ) {
+						case "broad":
+						default:
+							$return['whereClauseItemsTable'][] = "page LIKE '%" . $reportParams['page'] . "%'";
+							break;
+						case "exact":
+							$return['whereClauseItemsTable'][] = "page = '" . $reportParams['page'] . "'";
+							break;
+					}
+					
+					$pageHeading_page = "<span>Page:</span> ";
+					if( isset($reportParams['pageMatch']) && $reportParams['pageMatch'] == "exact" ) {
+						$pageHeading_page .= '<a href="' . $reportParams['page'] . '" target="_blank">';
+					}
+					$pageHeading_page .= $reportParams['page'];
+					if( isset($reportParams['pageMatch']) && $reportParams['pageMatch'] == "exact" ) {
+						$pageHeading_page .= '<i class="fa fa-external-link reportLinkExt" aria-hidden="true"></i></a>';
+					}
+					$pageHeading_page .= (isset($reportParams['pageMatch'])?" (".$reportParams['pageMatch'].")":"");
+					$return['pageHeadingItems'][] = $pageHeading_page;
+					$return['chartLabel'] = $reportParams['page'] . (isset($reportParams['pageMatch'])?" (".$reportParams['pageMatch'].")":"");
 				}
 				if( isset( $reportParams['search_type'] ) && $reportParams['search_type'] > "" ) {
 					if( $reportParams['search_type'] != "ALL" ) {
 						$return['whereClauseItemsTable'][] = "search_type = '" . $reportParams['search_type'] . "'";
 					}
-					$return['pageHeadingItems'][] = "Search Type: " . $reportParams['search_type'];
+					$return['pageHeadingItems'][] = "<span>Search Type:</span> " . $reportParams['search_type'];
 				}
 				if( isset( $reportParams['device_type'] ) && $reportParams['device_type'] > "" ) {
 					if( $reportParams['device_type'] != "ALL" ) {
 						$return['whereClauseItemsTable'][] = "device_type = '" . $reportParams['device_type'] . "'";
 					}
-					$return['pageHeadingItems'][] = "Device Type: " . $reportParams['device_type'];
+					$return['pageHeadingItems'][] = "<span>Device Type:</span> " . $reportParams['device_type'];
 				}
 
 				/* Country */
@@ -263,17 +293,17 @@
 					if( $reportParams['country'] != "ALL" ) {
 						$return['whereClauseItemsTable'][] = "country = '" . $reportParams['country'] . "'";
 					}
-					$return['pageHeadingItems'][] = "Country: " . strtoupper( $reportParams['country'] );
+					$return['pageHeadingItems'][] = "<span>Country:</span> " . strtoupper( $reportParams['country'] );
 				}
 
 				if( isset( $reportParams['date_start'] ) && $reportParams['date_start'] > 0 && $reportParams['date_type'] == 'hard_set' ) {
 					if( isset( $reportParams['date_end'] ) && $reportParams['date_end'] > 0 ) {
 						$return['whereClauseItemsTable'][] = "date >= '" . $reportParams['date_start'] . "' AND date <= '" . $reportParams['date_end'] . "'";
 						$num_days = $this->core->getNumDays( $reportParams['date_start'], $reportParams['date_end'] );
-						$return['pageHeadingItems'][] = "Dates: " . $reportParams['date_start'] . " to " . $reportParams['date_end'] . " (" . $num_days . " day" . ( $num_days > 1 ? "s" : "" ) . ")";
+						$return['pageHeadingItems'][] = "<span>Dates:</span> " . $reportParams['date_start'] . " to " . $reportParams['date_end'] . " (" . $num_days . " day" . ( $num_days > 1 ? "s" : "" ) . ")";
 					} else {
 						$return['whereClauseItemsTable'][] = "date = '" . $reportParams['date_start'] . "'";
-						$return['pageHeadingItems'][] = "Date: " . $reportParams['date_start'];
+						$return['pageHeadingItems'][] = "<span>Date:</span> " . $reportParams['date_start'];
 					}
 				} elseif( isset( $reportParams['date_type'] ) && $reportParams['date_type'] != 'hard_set' ) {
 					$queryMaxDate = "SELECT max(date) as 'max' FROM `".MySQL::DB_TABLE_SEARCH_ANALYTICS."` WHERE 1";
@@ -284,25 +314,34 @@
 
 						$dateStart = date('Y-m-d', strtotime('-'.($dateStartOffset-1).' days', strtotime( $dateEnd ) ) );
 						$return['whereClauseItemsTable'][] = "date >= '" . $dateStart . "' AND date <= '" . $dateEnd . "'";
-						$return['pageHeadingItems'][] = "Dates: Past " . $dateStartOffset . " days (" . $dateStart . " to " . $dateEnd . ")";
+						$return['pageHeadingItems'][] = "<span>Dates:</span> Past " . $dateStartOffset . " days (" . $dateStart . " to " . $dateEnd . ")";
 					}
 				}
 				$return['whereClauseTable'] = " WHERE " . implode( " AND ", $return['whereClauseItemsTable'] ) . " ";
 
-				if( isset( $reportParams['sortDir'] ) ) { $return['sortDir'] = $reportParams['sortDir']; } else { $return['sortDir'] = 'asc'; }
-				if( isset( $reportParams['sortBy'] ) ) { $return['sortBy'] = $reportParams['sortBy']; } else { $return['sortBy'] = 'date'; }
+				if( isset( $reportParams['sortDir'] ) ) {
+					$return['sortDir'] = $reportParams['sortDir'];
+				} else {
+					$return['sortDir'] = 'asc';
+				}
+				if( isset( $reportParams['sortBy'] ) ) {
+					$return['sortBy'] = $reportParams['sortBy'];
+				} else {
+					$return['sortBy'] = 'date';
+				}
 
 				$groupByDate = 'date';
 				if( isset( $reportParams['granularity'] ) && $reportParams['granularity'] != 'day' ) {
 					$return['groupBy'] = strtoupper( $reportParams['granularity'] ) . '(' . $groupByDate . ')';
-					$return['pageHeadingItems'][] = "Granularity: " . $reportParams['granularity'];
+					$return['pageHeadingItems'][] = "<span>Granularity:</span> " . $reportParams['granularity'];
 				} else {
 					$return['groupBy'] = $groupByDate;
 				}
 
 				if( isset( $reportParams['groupBy'] ) && $reportParams['groupBy'] == "query" ) {
-					// $return['groupBy'] = $return['sortBy'] = "query";
 					$return['groupBy'] = "query";
+				} elseif( isset( $reportParams['groupBy'] ) && $reportParams['groupBy'] == "page" ) {
+					$return['groupBy'] = "page";
 				}
 			}
 			return $return;

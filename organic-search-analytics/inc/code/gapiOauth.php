@@ -2,7 +2,7 @@
 	/**
 	 *  PHP class for oAuth 2.0 connection to Google Search Console
 	 *
-	 *  Copyright 2015 PromInc Productions. All Rights Reserved.
+	 *  Copyright 2017 PromInc Productions. All Rights Reserved.
 	 *
 	 *  Licensed under the Apache License, Version 2.0 (the "License");
 	 *  you may not use this file except in compliance with the License.

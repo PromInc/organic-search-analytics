@@ -1,9 +1,10 @@
 <?php
 	$now = time();
 
-	$GLOBALS['basedirWebServer'] = $_SERVER['DOCUMENT_ROOT']."/";
+	$GLOBALS['basedirWebServer'] = ( isset( $_SERVER['CONTEXT_DOCUMENT_ROOT'] ) ? $_SERVER['CONTEXT_DOCUMENT_ROOT'] . "/" : $_SERVER['DOCUMENT_ROOT'] . "/" );
+	$GLOBALS['aliasdir'] = ( isset( $_SERVER['CONTEXT_PREFIX'] ) ? ltrim( $_SERVER['CONTEXT_PREFIX'], "/" ) . "/" : "" );
 	$GLOBALS['basedir'] = preg_replace( '/\\\/', '/', realpath(dirname(__FILE__).'/../../').'/' );
-	$GLOBALS['appInstallDir'] = str_replace( $GLOBALS['basedirWebServer'], "", $GLOBALS['basedir'] );
+	$GLOBALS['appInstallDir'] = str_replace( $GLOBALS['basedirWebServer'], "", $GLOBALS['basedir'] ) . $GLOBALS['aliasdir'];
 	$GLOBALS['file_name'] = basename( $_SERVER['SCRIPT_FILENAME'], ".php" );
 
 	$isConfigured = file_exists($GLOBALS['basedir'].'config/config.php');
@@ -12,6 +13,17 @@
 		require_once( $GLOBALS['basedir'].'config/config.php' );  //Credentials & Configuration
 
 		include_once( $GLOBALS['basedir'].'inc/code/core.php' ); //Core functions
+		$core = new Core(); //Load core
+
+		if( defined('config::DEBUG_LOGGER') ) {
+			if( config::DEBUG_LOGGER == Core::ENABLED ) {
+				include_once( $GLOBALS['basedir'].'inc/code/debugLogger.php' ); //Debug Logger
+				$debug = new DebugLogger(); //Load Debugging Logger
+			}
+		} else {
+			$alert = array("type"=>"warning", "message"=>"Go to the <a href=\"settings-configure.php\"><b>Settings Configuration</b></a> page and click the <b>Save</b> button.");
+		}
+
 		include_once( $GLOBALS['basedir'].'inc/code/mysql.php' ); //Database Connection
 		include_once( $GLOBALS['basedir'].'inc/code/gapiOauth.php' ); //Google API Oauth
 		include_once( $GLOBALS['basedir'].'inc/code/wmtimport.php' ); //WMT CSV import functions
@@ -22,7 +34,6 @@
 		include_once( $GLOBALS['basedir'].'apis/Bing/Webmasters.php' ); //Bing Search API
 
 		/* Load classes */
-		$core = new Core(); //Load core
 		$mysql = new MySQL(); //Load MySQL
 		$dataCapture = new DataCapture(); //Load Data Capturing tools
 

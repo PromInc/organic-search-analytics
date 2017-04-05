@@ -1,2 +1,2 @@
-organic-search-analytics/config/
 *.p12
+.DS_STORE
