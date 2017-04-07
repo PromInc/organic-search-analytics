@@ -45,7 +45,7 @@ if( $isConfigured ) {
 			"label" => "Google",
 			"products" => array(
 				"search_console" => array(
-					"description" => "Select which dimensions you'd like to capture.",
+					"description" => "Select which dimensions you'd like to capture.<br><i style=\"font-size:.9em; color: #565656; display: inline-block; padding-left: 1%;\"><b>NOTE</b>: Adding more dimensions could limit the accuracy of the data you obtain.  The Google API provides up to 5,000 results per request.<br>To illustrate this example, if you select <b>Queries</b> only lets say there were 10 queries for that day.  If you then add <b>Country</b> and each query was returned in 5 countries each, you now are receiving 50 results (10 queries X 5 countries).  Adding <b>Device Type</b>, assuming each query in each country was performed on each <b>Device Type</b> the number of results would grow to 150 results.  You can see how as you add additional dimensions the number of results can grow quickly.  Depending on frequently your site shows in the SERPs this may or may not impact your ability to capture all of the avaialbe data.</i>",
 					"label" => "Search Console",
 					"section" => array(
 						"dimensions" => array(
