@@ -1,3 +1,43 @@
+## 2.5.0 - 2017-04-06
+### Reports
+- Add page data to the report
+- Convert query into a link to Google
+- Chart bug fixes
+- Stylized display of applied report parameters
+- Linked relevant applied report parameters
+- Link between relevant reports in the report table
+- Added tooltips to column headings
+- Correct inaccuracy in average_position calculation
+- Fix Date reports with granularity of Week, Month, and Year set
+
+### Database updates
+- Alter search_analytics table for improved data storage and analysis
+	- avg_position from int(11) to float, default NULL
+	- avg_position_click from int(11) to float
+	- default of null for device_type, country, and query columns
+	- add page column
+	- change database charset for wider language compatibility
+	- add settings table
+
+### Added
+- Added page level data in capture from Google and reporting
+- Added debug logger
+- Added the config and log directories to the repository so it isn’t necessary to add it on setup
+
+### Changed
+- Update Font Awesome to 4.7.0
+- Minor style updates throughout the site
+- Installation sql script to reflect new database structure
+- Upgrade script to reflect these database and file system changes
+
+### Fixes/Closes Github Issues
+- #13
+- #16
+- #28
+- #31
+- #32
+- #35
+
 ## 2.4.3 - 2016-07-01
 ### Bug Fix
 - Data Capture would not import any records for new installs (non-upgraded) of this tool.  A MySQL error was thrown in the background due to a field not being available in the database.

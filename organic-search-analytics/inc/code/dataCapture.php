@@ -2,7 +2,7 @@
 	/**
 	 *  PHP class for capturing data from API services
 	 *
-	 *  Copyright 2015 PromInc Productions. All Rights Reserved.
+	 *  Copyright 2017 PromInc Productions. All Rights Reserved.
 	 *  
 	 *  @author: Brian Prom <prombrian@gmail.com>
 	 *  @link:   http://promincproductions.com/blog/brian/
@@ -12,25 +12,59 @@
 	class DataCapture
 	{
 
+
 		const GOOGLE_SEARCH_ANALYTICS_MAX_DATE_OFFSET = 4;
 		const GOOGLE_SEARCH_ANALYTICS_MAX_DAYS = 90;
 
+
 		public $core;
 		public $mysql;
-		
+		public $dimensions;
+
+
 		function __construct() {
 			$this->core = new Core(); //Load core
 			$this->mysql = new MySQL(); //Load MySQL
 		}
 
+
+		/**
+		 *  Get the list of dimensions to capture as defined in the settings page
+		 *
+		 *  @returns    String   Comma separated list of dimensions
+		 */
+		public function getDimensions() {
+			if( !$this->dimensions ) {
+				$siteSettings = $this->mysql->getSettings("settings");
+				$dimensions = array();
+				foreach( $siteSettings as $key => $value ) {
+					if( substr( $key, 0, 32 ) == "google_search_console_dimensions" && $value == "On" ) {
+						$dimensions[] = substr($key, 33 );
+					}
+				}
+
+				uasort($dimensions, function($a, $b) {
+					static $sizes = array('query' => 0, 'page' => 1, 'device' => 2, 'country' => 3);
+					return $sizes[strtolower($a)] - $sizes[strtolower($b)];
+				});
+
+				$this->dimensions = array_values($dimensions);
+			}
+			return $this->dimensions;
+		}
+
+
 		/**
 		 *  Default settings for Google Search Analytics
 		 */
-		private $defaultGoogleSearchAnalyticsSettings = array(
+		private function defaultGoogleSearchAnalyticsSettings() {
+			return array(
 			'mode' => 'import', /* What to do with the data.  Valid options: import, return */
-			'dimensions' => array('query','device','country'),
+			'dimensions' => $this->getDimensions(),
 			'row_limit' => 5000 /* Number of rows to capture from Google.  Valid options: 1-5000 */
-		);
+			);
+		}
+
 
 		/**
 		 *  Get authorized sites from Google Search Console
@@ -166,7 +200,7 @@
 		 *  @returns   Integer,array   Number of records found or var_dump of returned data from Google depending on mode
 		 */
 		public function downloadGoogleSearchAnalytics( $website, $date, $overrides = array() ) {
-			$params = array_merge( $this->defaultGoogleSearchAnalyticsSettings, $overrides );
+			$params = array_merge( $this->defaultGoogleSearchAnalyticsSettings(), $overrides );
 
 			$importCount = 0;
 
@@ -220,6 +254,8 @@
 				$searchAnalyticsRequest->setAggregationType( $params['aggregation_type'] );
 			}
 
+			$dimensionMap = array_flip( $this->getDimensions() );
+
 			/* Loop through each of the search types */
 			foreach( $searchTypes as $searchType ) {
 				/* Set search type in Search Analytics Request */
@@ -233,7 +269,7 @@
 					switch( $params['mode'] ) {
 						case 'import':
 							$wmtimport = new WMTimport();
-							$importCount += $wmtimport->importGoogleSearchAnalytics( $website, $date, $searchType, $searchAnalyticsResponse );
+							$importCount += $wmtimport->importGoogleSearchAnalytics( $website, $date, $searchType, $searchAnalyticsResponse, $dimensionMap );
 							break;
 						case 'return':
 							var_dump( $searchAnalyticsResponse );

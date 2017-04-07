@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `report_saved` (
   `category` int(11) NOT NULL,
   `paramaters` varchar(1000) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=0 ;
+) ENGINE=InnoDB  DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci AUTO_INCREMENT=0 ;
 
 -- --------------------------------------------------------
 
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS `report_saved_categories` (
   `name` varchar(256) NOT NULL,
   `description` varchar(1000) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=0 ;
+) ENGINE=InnoDB  DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci AUTO_INCREMENT=0 ;
 
 -- --------------------------------------------------------
 
@@ -60,16 +60,17 @@ CREATE TABLE IF NOT EXISTS `search_analytics` (
   `date` date NOT NULL,
   `search_engine` varchar(50) NOT NULL,
   `search_type` varchar(24) NOT NULL,
-  `device_type` varchar(24) NOT NULL,
-  `country` varchar(10) NULL,
-  `query` varchar(500) NOT NULL,
+  `device_type` varchar(24) NULL DEFAULT NULL,
+  `country` varchar(10) NULL DEFAULT NULL,
+  `query` varchar(500) NULL DEFAULT NULL,
+  `page` VARCHAR(500) NULL DEFAULT NULL,
   `impressions` int(11) NOT NULL,
   `clicks` int(11) NOT NULL,
   `ctr` float NOT NULL,
-  `avg_position` int(11) NOT NULL,
-  `avg_position_click` int(11) NULL,
+  `avg_position` float NOT NULL,
+  `avg_position_click` float NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=0 ;
+) ENGINE=MyISAM  DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci AUTO_INCREMENT=0 ;
 
 -- --------------------------------------------------------
 
@@ -83,7 +84,15 @@ CREATE TABLE IF NOT EXISTS `settings` (
   `value` varchar(256) NOT NULL,
   `data` varchar(500) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=0 ;
+) ENGINE=InnoDB  DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci AUTO_INCREMENT=0 ;
+
+INSERT INTO `settings`
+	(type, value, data)
+VALUES
+	('settings', 'google_search_console_dimensions_query', 'On'),
+	('settings', 'google_search_console_dimensions_page', 'Off'),
+	('settings', 'google_search_console_dimensions_device', 'On'),
+	('settings', 'google_search_console_dimensions_country', 'On') ;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

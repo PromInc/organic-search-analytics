@@ -23,6 +23,16 @@
 		<span><input type="radio" name="queryMatch" id="queryMatchExact" value="exact"<?php echo ( isset( $reportParams['queryMatch'] ) && $reportParams['queryMatch'] == 'exact' ? $checkedTrue : $checkedFalse ) ?>><label for="queryMatchExact">Exact</label></span>
 	</div>
 
+	<div class="report-parameter-group">
+		<label for="page" class="groupLabel">Page: </label><input type="text" name="page" id="page" value="<?php echo ( isset( $reportParams['page'] ) ? $reportParams['page'] : '' ) ?>">
+	</div>
+
+	<div class="report-parameter-group">
+		<span class="groupLabel">Page Match Type:</span>
+		<span><input type="radio" name="pageMatch" id="pageMatchBroad" value="broad"<?php echo ( !isset( $reportParams['pageMatch'] ) || isset( $reportParams['pageMatch'] ) && $reportParams['pageMatch'] == 'broad' ? $checkedTrue : $checkedFalse ) ?>><label for="pageMatchBroad">Broad</label></span>
+		<span><input type="radio" name="pageMatch" id="pageMatchExact" value="exact"<?php echo ( isset( $reportParams['pageMatch'] ) && $reportParams['pageMatch'] == 'exact' ? $checkedTrue : $checkedFalse ) ?>><label for="pageMatchExact">Exact</label></span>
+	</div>
+
 	<?php
 	$now = time();
 	$queryDateRange = "SELECT max(date) as 'max', min(date) as 'min' FROM `".$mysql::DB_TABLE_SEARCH_ANALYTICS."` WHERE 1";
@@ -169,7 +179,7 @@
 		$datePicker_end = $reportParams['date_end'];
 	}
 	?>
-	
+
 	<script>
 		$(function() {
 			/* Date Picker - Start */
@@ -204,18 +214,12 @@
 		});
 	</script>
 	<div class="clear"></div>
-<!--
-	<div id="paramGroup_metricPrimary" class="report-parameter-group">
-		Primary Metric:
-		<span><input type="radio" name="metricPrimary" id="metricPrimaryDate" value="date" checked><label for="metricPrimaryDate">Date</label></span>
-		<span><input type="radio" name="metricPrimary" id="metricPrimaryQuery" value="query"><label for="metricPrimaryQuery">Query</label></span>
-	</div>
--->
 
 	<div id="paramGroup_groupBy" class="report-parameter-group">
 		<span class="groupLabel">Group By:</span>
 		<span><input type="radio" name="groupBy" id="groupByDate" value="date"<?php echo ( !isset( $reportParams['groupBy'] ) || isset( $reportParams['groupBy'] ) && $reportParams['groupBy'] == 'date' ? $checkedTrue : $checkedFalse ) ?>><label for="groupByDate">Date</label></span>
 		<span><input type="radio" name="groupBy" id="groupByQuery" value="query"<?php echo ( isset( $reportParams['groupBy'] ) && $reportParams['groupBy'] == 'query' ? $checkedTrue : $checkedFalse ) ?>><label for="groupByQuery">Query</label></span>
+		<span><input type="radio" name="groupBy" id="groupByPage" value="page"<?php echo ( isset( $reportParams['groupBy'] ) && $reportParams['groupBy'] == 'page' ? $checkedTrue : $checkedFalse ) ?>><label for="groupByPage">Page</label></span>
 	</div>
 
 	<div id="paramGroup_granularity" class="report-parameter-group"<?php echo ( isset( $reportParams['groupBy'] ) && $reportParams['groupBy'] != 'date' ? $hideContent : $selectedFalse ) ?>>
@@ -228,15 +232,25 @@
 
 	<div id="paramGroup_sortBy" class="report-parameter-group">
 		<span class="groupLabel">Sort By:</span>
-		<?php $displayCheck = true;  if( isset( $reportParams['groupBy'] ) && strtolower( $reportParams['groupBy'] )  == 'query' ) { $displayCheck = false; } ?>
-		<span<?php if( ! $displayCheck ) { echo ' style="display:none;"'; } ?>><input type="radio" name="sortBy" id="sortByDate" value="date"<?php echo ( !isset( $reportParams['sortBy'] ) || isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'date' ? $checkedTrue : $checkedFalse ) ?><?php if( ! $displayCheck ) { echo ' disabled'; } ?>><label for="sortByDate">Date</label></span>
-		<?php $displayCheck = true;  if( ! $reportParams || isset( $reportParams['groupBy'] ) && strtolower( $reportParams['groupBy'] )  == 'date' ) { $displayCheck = false; } ?>
-		<span<?php if( ! $displayCheck ) { echo ' style="display:none;"'; } ?>><input type="radio" name="sortBy" id="sortByQuery" value="query"<?php echo ( isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'query' ? $checkedTrue : $checkedFalse ) ?><?php if( ! $displayCheck ) { echo ' disabled'; } ?>><label for="sortByQuery">Query</label></span>
-		<span><input type="radio" name="sortBy" id="sortByQueries" value="queries"<?php echo ( isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'queries' ? $checkedTrue : $checkedFalse ) ?>><label for="sortByQueries"><?php echo $colHeadingSecondary ?></label></span>
-		<span><input type="radio" name="sortBy" id="sortByImpressions" value="impressions"<?php echo ( isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'impressions' ? $checkedTrue : $checkedFalse ) ?>><label for="sortByImpressions">Impressions</label></span>
-		<span><input type="radio" name="sortBy" id="sortByClicks" value="clicks"<?php echo ( isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'clicks' ? $checkedTrue : $checkedFalse ) ?>><label for="sortByClicks">Clicks</label></span>
-		<span><input type="radio" name="sortBy" id="sortByAvgPos" value="avg_position"<?php echo ( isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'avg_position' ? $checkedTrue : $checkedFalse ) ?>><label for="sortByAvgPos">Avg Position</label></span>
-		<span><input type="radio" name="sortBy" id="sortByCtr" value="ctr"<?php echo ( isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'ctr' ? $checkedTrue : $checkedFalse ) ?>><label for="sortByCtr">Click Through Rate</label></span>
+		<?php $displayCheck = true;  if( isset( $reportParams['groupBy'] ) && in_array( strtolower( $reportParams['groupBy'] ), array('query','page') ) ) { $displayCheck = false; } ?>
+		<span class="sortByOption"<?php if( ! $displayCheck ) { echo ' style="display:none;"'; } ?>><input type="radio" name="sortBy" id="sortByDate" value="date"<?php echo ( !isset( $reportParams['sortBy'] ) || isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'date' ? $checkedTrue : $checkedFalse ) ?><?php if( ! $displayCheck ) { echo ' disabled'; } ?>><label for="sortByDate">Date</label></span>
+
+		<?php $displayCheck = true;  if( ! $reportParams || isset( $reportParams['groupBy'] ) && in_array( strtolower( $reportParams['groupBy'] ), array('date','page') ) ) { $displayCheck = false; } ?>
+		<span class="sortByOption"<?php if( ! $displayCheck ) { echo ' style="display:none;"'; } ?>><input type="radio" name="sortBy" id="sortByQuery" value="query"<?php echo ( isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'query' ? $checkedTrue : $checkedFalse ) ?><?php if( ! $displayCheck ) { echo ' disabled'; } ?>><label for="sortByQuery">Query</label></span>
+
+		<?php $displayCheck = true;  if( ! $reportParams || isset( $reportParams['groupBy'] ) && in_array( strtolower( $reportParams['groupBy'] ), array('date','query') ) ) { $displayCheck = false; } ?>
+		<span class="sortByOption"<?php if( ! $displayCheck ) { echo ' style="display:none;"'; } ?>><input type="radio" name="sortBy" id="sortByPage" value="page"<?php echo ( isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'page' ? $checkedTrue : $checkedFalse ) ?><?php if( ! $displayCheck ) { echo ' disabled'; } ?>><label for="sortByQuery">Page</label></span>
+
+		<?php $displayCheck = true;  if( ! $reportParams || isset( $reportParams['groupBy'] ) && in_array( strtolower( $reportParams['groupBy'] ), array('query') ) ) { $displayCheck = false; } ?>		
+		<span class="sortByOption"<?php if( ! $displayCheck ) { echo ' style="display:none;"'; } ?>><input type="radio" name="sortBy" id="sortByQueries" value="queries"<?php echo ( isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'queries' ? $checkedTrue : $checkedFalse ) ?><?php if( ! $displayCheck ) { echo ' disabled'; } ?>><label for="sortByQueries"><?php echo $colHeadingSecondary ?></label></span>
+
+		<?php $displayCheck = true;  if( ! $reportParams || isset( $reportParams['groupBy'] ) && in_array( strtolower( $reportParams['groupBy'] ), array('page') ) ) { $displayCheck = false; } ?>
+		<span class="sortByOption"<?php if( ! $displayCheck ) { echo ' style="display:none;"'; } ?>><input type="radio" name="sortBy" id="sortByPages" value="pages"<?php echo ( isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'pages' ? $checkedTrue : $checkedFalse ) ?><?php if( ! $displayCheck ) { echo ' disabled'; } ?>><label for="sortByPages">Pages</label></span>
+
+		<span class="sortByOption"><input type="radio" name="sortBy" id="sortByImpressions" value="impressions"<?php echo ( isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'impressions' ? $checkedTrue : $checkedFalse ) ?>><label for="sortByImpressions">Impressions</label></span>
+		<span class="sortByOption"><input type="radio" name="sortBy" id="sortByClicks" value="clicks"<?php echo ( isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'clicks' ? $checkedTrue : $checkedFalse ) ?>><label for="sortByClicks">Clicks</label></span>
+		<span class="sortByOption"><input type="radio" name="sortBy" id="sortByAvgPos" value="avg_position"<?php echo ( isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'avg_position' ? $checkedTrue : $checkedFalse ) ?>><label for="sortByAvgPos">Avg Position</label></span>
+		<span class="sortByOption"><input type="radio" name="sortBy" id="sortByCtr" value="ctr"<?php echo ( isset( $reportParams['sortBy'] ) && $reportParams['sortBy'] == 'ctr' ? $checkedTrue : $checkedFalse ) ?>><label for="sortByCtr">Click Through Rate</label></span>
 	</div>
 
 	<div id="paramGroup_sortDir" class="report-parameter-group">

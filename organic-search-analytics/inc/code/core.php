@@ -2,7 +2,7 @@
 	/**
 	 *  PHP class for core functions
 	 *
-	 *  Copyright 2015 PromInc Productions. All Rights Reserved.
+	 *  Copyright 2017 PromInc Productions. All Rights Reserved.
 	 *
 	 *  Licensed under the Apache License, Version 2.0 (the "License");
 	 *  you may not use this file except in compliance with the License.
@@ -22,6 +22,21 @@
 
 	class Core
 	{
+
+
+		const ENABLED = 1;
+		const DISABLED = 0;
+
+		const WARNING = "WARNING";
+		const ERROR = "ERROR";
+		const INFO = "INFO";
+		const DEBUG = "DEBUG";
+
+		const NEWLINE = "\n";
+		const TAB = "\t";
+
+		const DS = "/";
+
 
 		/**
 		 *  Connect to MySQL
@@ -100,6 +115,7 @@
 			if( $include_end_day ) { $num_days = $num_days + 1; }
 			return $num_days;
 		}
+
 
 		/**
 		 *  Get the current date/time

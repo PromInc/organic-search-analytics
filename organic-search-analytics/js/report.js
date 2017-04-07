@@ -37,33 +37,42 @@ function ajaxScript(catId, script, domain, date, callback) {
 *  Hides granularity when date is not the group by method
 *  Displays the appropriate sortBy features
 */
+var groupBySortSettings = {
+	groupByDate: {
+		defaultSortBy: "sortByDate",
+		disable: ["sortByQuery","sortByPage"],
+		hideGranularity: false
+	},
+	groupByQuery: {
+		defaultSortBy: "sortByQuery",
+		disable: ["sortByDate","sortByQueries","sortByPage"],
+		hideGranularity: true
+	},
+	groupByPage: {
+		defaultSortBy: "sortByPage",
+		disable: ["sortByDate","sortByQuery","sortByPages"],
+		hideGranularity: true
+	}
+};
 jQuery("#report-custom input:radio[name=groupBy]").change(function(e){
-	if( e.target.id == "groupByQuery" ) {
-		jQuery( "#paramGroup_granularity" ).hide();
-
-		var checked_status = jQuery( "#sortByDate" ).prop("checked");
-
-		jQuery( "#sortByDate" ).parent("span").hide();
-		jQuery( "#sortByDate" ).attr("disabled",true).prop("checked",false);
-
-		jQuery( "#sortByQuery" ).parent("span").show();
-		jQuery( "#sortByQuery" ).attr("disabled",false);
-		if( checked_status ) {
-			jQuery( "#sortByQuery" ).prop("checked",true);
-		}
-	} else {
+	// Toggle granularity
+	if( !groupBySortSettings[e.target.id]['hideGranularity'] ) {
 		jQuery( "#paramGroup_granularity" ).show();
+	} else {
+		jQuery( "#paramGroup_granularity" ).hide();
+	}
 
-		var checked_status = jQuery( "#sortByQuery" ).prop("checked");
+	// Disable non-applicable sort by options
+	jQuery("#paramGroup_sortBy .sortByOption").show();
+	jQuery("input[name=sortBy]").attr("disabled",false);
+	for( disableOption in groupBySortSettings[e.target.id]['disable'] ) {
+		jQuery("#"+groupBySortSettings[e.target.id]['disable'][disableOption]).parent("span.sortByOption").hide();
+		jQuery("#"+groupBySortSettings[e.target.id]['disable'][disableOption]).attr("disabled",true).prop("checked",false);
+	}
 
-		jQuery( "#sortByQuery" ).parent("span").hide();
-		jQuery( "#sortByQuery" ).attr("disabled",true).prop("checked",false);
-
-		jQuery( "#sortByDate" ).parent("span").show();
-		jQuery( "#sortByDate" ).attr("disabled",false);
-		if( checked_status ) {
-			jQuery( "#sortByDate" ).prop("checked",true);
-		}
+	// Set default option if an option is not set
+	if( !jQuery('input[name=sortBy]').is(':checked') || jQuery("#"+jQuery('input[name=sortBy]:checked').attr("id")).attr("disabled") == "disabled" ) {
+		jQuery( "#"+groupBySortSettings[e.target.id]["defaultSortBy"] ).prop("checked",true);
 	}
 });
 

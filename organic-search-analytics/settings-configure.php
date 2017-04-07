@@ -19,6 +19,8 @@ if( isset( $_POST['save'] ) ) {
 	$writeToConfigFile .= $t.$t."const OAUTH_CREDENTIALS_PRIVATE_KEY_FILE_NAME = '".$_POST['OAUTH_CREDENTIALS_PRIVATE_KEY_FILE_NAME']."';".$nl;
 	$writeToConfigFile .= "".$nl;
 	$writeToConfigFile .= $t.$t."const CREDENTIALS_BING_API_KEY = '".$_POST['CREDENTIALS_BING_API_KEY']."';".$nl;
+	$writeToConfigFile .= "".$nl;
+	$writeToConfigFile .= $t.$t."const DEBUG_LOGGER = ".( isset( $_POST['DEBUG_LOGGER'] ) ? 1 : 0 ).";".$nl;
 	$writeToConfigFile .= $t."}".$nl;
 	$writeToConfigFile .= "?>";
 
@@ -54,6 +56,7 @@ if( isset( $_POST['save'] ) ) {
 
 			$credentials_bing_api_key = config::CREDENTIALS_BING_API_KEY;
 
+			$debug_logger = ( defined( 'config::DEBUG_LOGGER' ) ? config::DEBUG_LOGGER : Core::DISABLED );
 		} else {
 			$db_connection_host = $db_connection_user = $db_connection_password = $db_connection_database = $oauth_credentials_private_key_file_name = $oauth_credentials_email = $credentials_bing_api_key = "";
 		}
@@ -104,8 +107,16 @@ if( isset( $_POST['save'] ) ) {
 	</p>
 
 	<hr>
+	<h3>Debug Logging</h3>
 
-	<input type="submit" name="save" id="save" value="Save Configuration">
+	<p>
+		<label for="DEBUG_LOGGER">Enable Debug Logger</label>
+		<input type="checkbox" id="DEBUG_LOGGER" name="DEBUG_LOGGER"<?php echo ( $debug_logger == Core::ENABLED ? " checked=checked" : "" ) ?>">
+	</p>
+
+	<hr>
+
+	<input type="submit" name="save" id="save" class="button" value="Save Configuration">
 
 	</form>
 

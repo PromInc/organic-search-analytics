@@ -13,6 +13,16 @@
 	{
 
 
+		public $debug;
+
+
+		function __construct() {
+			if( config::DEBUG_LOGGER == Core::ENABLED ) {
+				$this->debug = new DebugLogger(); //Load Debugging Logger
+			}
+		}
+
+
 		/**
 		 *  Break apart the filename to return the data pieces
 		 *
@@ -43,7 +53,6 @@
 			}
 
 			return $return;
-
 		}
 
 
@@ -57,20 +66,25 @@
 		 *
 		 *  @returns   Int   Count of records imported
 		 */
-		public function importGoogleSearchAnalytics($domain, $date, $searchType, $searchAnalytics) {
+		public function importGoogleSearchAnalytics($domain, $date, $searchType, $searchAnalytics, $dimensionMap) {
 			$countImport = 0;
 			foreach( $searchAnalytics->rows as $recordKey => $recordData ) {
 				/* Prep data */
 				$domain = addslashes( $domain );
 				$searchType = addslashes( $searchType );
-				$deviceType = addslashes( strtolower( $recordData['keys'][1] ) );
-				$country = addslashes( strtolower( $recordData['keys'][2] ) );
-				$query = addslashes( $recordData['keys'][0] );
+				$query = ( isset( $dimensionMap['query'] ) ? addslashes( $recordData['keys'][$dimensionMap['query']] ) : NULL );
+				$page = ( isset( $dimensionMap['page'] ) ? addslashes( $recordData['keys'][$dimensionMap['page']] ) : NULL );
+				$deviceType = ( isset( $dimensionMap['device'] ) ? addslashes( strtolower( $recordData['keys'][$dimensionMap['device']] ) ) : NULL );
+				$country = ( isset( $dimensionMap['country'] ) ? addslashes( strtolower( $recordData['keys'][$dimensionMap['country']] ) ) : NULL );
 
-				$import = "INSERT into ".MySQL::DB_TABLE_SEARCH_ANALYTICS."(domain, date, search_engine, search_type, device_type, country, query, impressions, clicks, ctr, avg_position) values('$domain', '$date', 'google', '$searchType', '$deviceType', '$country', '{$query}','{$recordData['impressions']}','{$recordData['clicks']}','{$recordData['ctr']}','{$recordData['position']}')";
+				$import = "INSERT into ".MySQL::DB_TABLE_SEARCH_ANALYTICS."(domain, date, search_engine, search_type, device_type, country, query, page, impressions, clicks, ctr, avg_position) values('$domain', '$date', 'google', '$searchType', '$deviceType', '$country', '{$query}', '{$page}', '{$recordData['impressions']}', '{$recordData['clicks']}', '{$recordData['ctr']}', '{$recordData['position']}')";
 
 				if( $GLOBALS['db']->query($import) ) {
 					$countImport++;
+				} else {
+					if( config::DEBUG_LOGGER == Core::ENABLED ) {
+						$this->debug->debugLog($GLOBALS['db']->error,Core::ERROR);
+					}
 				}
 			}
 			return $countImport;
@@ -88,7 +102,7 @@
 		public function importBingSearchKeywords($domain, $searchKeywords) {
 			$searchKeywords = json_decode($searchKeywords);
 			$countImport = 0;
-		
+
 			/* Check for prior import in DB */
 			$lastImported = "SELECT MAX(date) AS 'lastImported' FROM ".MySQL::DB_TABLE_SEARCH_ANALYTICS." WHERE domain = '".$domain."' AND search_engine = 'bing'";
 			if( $lastImportedResult = $GLOBALS['db']->query($lastImported) ) {
@@ -106,6 +120,10 @@
 
 						if( $GLOBALS['db']->query($import) ) {
 							$countImport++;
+						} else {
+							if( config::DEBUG_LOGGER == Core::ENABLED ) {
+								$this->debug->debugLog($GLOBALS['db']->error,Core::ERROR);
+							}
 						}
 					}
 				}
