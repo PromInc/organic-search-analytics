@@ -26,6 +26,7 @@ $colHeadingPrimary = "Query";
 if( $reportParams ) {
 	$reportDetails = $reports->getReportQueryAndHeading( $reportParams );
 	$groupBy = $reportDetails['groupBy'];
+	$groupByAlias = $reportDetails['groupByAlias'];
 }
 ?>
 
@@ -38,10 +39,14 @@ if( isset( $reportDetails ) ) {
 <?php
 /* Set labels */
 if( isset( $groupBy ) ) {
-	if( preg_match( '/\(date\)/', $groupBy ) ) {
-		$colHeadingPrimary = substr( $groupBy, 0, strpos( $groupBy, '(' ) );
-	} elseif( $groupBy == "query" ) {
+	if( $groupBy == "query" ) {
 		$colHeadingPrimary = "Query";
+	} elseif( $groupByAlias == "date" ) {
+		if( isset( $reportDetails['granularity'] ) ) {
+			$colHeadingPrimary = ucfirst( $reportDetails['granularity'] );
+		} else {
+			$colHeadingPrimary = ucfirst( $groupByAlias );
+		}
 	} else {
 		$colHeadingPrimary = $groupBy;
 	}
@@ -95,6 +100,12 @@ if( isset( $groupBy ) ) {
 		<?php } ?>
 
 		<?php
+			if( $groupByAlias == "date" && isset( $reportDetails['granularity'] ) ) {
+				$sortByForQuery = $groupBy;
+			} else {
+				$sortByForQuery = $reportDetails['sortBy'];
+			}
+
 			$reportQuery = "SELECT ".
 							$groupBy. ",".
 							" count(" . ( $groupBy != "query" ? 'DISTINCT ' : '' ) . "query) as 'queries',".
@@ -106,7 +117,7 @@ if( isset( $groupBy ) ) {
 							" FROM ".$mysql::DB_TABLE_SEARCH_ANALYTICS.
 							" " . $reportDetails['whereClauseTable'] .
 							" GROUP BY " . $groupBy .
-							" ORDER BY " . $reportDetails['sortBy'] . " ASC"
+							" ORDER BY " . $sortByForQuery . " ASC"
 							;
 
 			/* Get MySQL Results */
@@ -131,10 +142,16 @@ if( isset( $groupBy ) ) {
 					$totals['clicks'] += $outputTable[$r]["clicks"];
 					$totals['avg_position'] += $outputTable[$r]["avg_position"];
 				}
+
 				/* Calculate averages */
 				$totals['avg_position'] = number_format( $totals['avg_position'] / count($outputTable), 2 );
 				$totals['avg_ctr'] = number_format( ( $totals["clicks"] / $totals["impressions"] ) * 100, 2 )."%";
+
 				/* Format numbers */
+				/*
+				TODO: The totals really should be a separate query for more accurate/useful data.
+					  i.e. On a Date report with Year granularity, you might get 50 queries from year 1 and 47 from year 2.  These get added together to be 97.  But this doesn't account for any overlap in the two years.  There may really only be 52 unique queries as an example.
+				*/
 				$totals['rows'] = number_format( count($outputTable), 0 );
 				$totals['queries'] = number_format( $totals['queries'], 0 );
 				$totals['pages'] = number_format( $totals['pages'], 0 );
@@ -142,16 +159,16 @@ if( isset( $groupBy ) ) {
 				$totals['clicks'] = number_format( $totals['clicks'], 0 );
 
 				/* Build an array for chart data */
-				$jqData = array( $groupBy => array(), "impressions" => array(), "clicks" => array(), "ctr" => array(), "avg_position" => array() );
+				$jqData = array( $groupByAlias => array(), "impressions" => array(), "clicks" => array(), "ctr" => array(), "avg_position" => array() );
 
 				foreach ( $rows as $index => $values ) {
-					if( $groupBy == "page" ) {
+					if( $groupByAlias == "page" ) {
 						$indexDomain = substr( $index, 0, strlen( $reportParams['domain'] ) );
 						if( strlen( $index ) > strlen( $indexDomain ) && $indexDomain == $reportParams['domain'] ) {
-							$jqData[$groupBy][] = substr( $index, strlen( $reportParams['domain'] ) );
+							$jqData[$groupByAlias][] = substr( $index, strlen( $reportParams['domain'] ) );
 						}
 					} else {
-						$jqData[$groupBy][] = $index;
+						$jqData[$groupByAlias][] = $index;
 					}
 
 					$jqData['impressions'][] = $values["impressions"];
@@ -160,15 +177,18 @@ if( isset( $groupBy ) ) {
 					$jqData['avg_position'][] = $values["avg_position"];
 				}
 
-				$num = count( $jqData[$groupBy] );
+				$num = count( $jqData[$groupByAlias] );
 				$posString = "";
+				$xAxis = "";
 				$posMax = 0;
 				for( $c=0; $c<$num; $c++ ) {
 					if( $c != 0 ) {
 						$posString .= ",";
+						$xAxis .= ",";
 					}
-					$posString .= "['".addslashes($jqData[$groupBy][$c])."',".$jqData['avg_position'][$c]."]";
+					$posString .= "['".addslashes($jqData[$groupByAlias][$c])."',".$jqData['avg_position'][$c]."]";
 					if( $jqData['avg_position'][$c] > $posMax ) { $posMax = $jqData['avg_position'][$c]; }
+					$xAxis .= "['".addslashes($jqData[$groupByAlias][$c])."','".addslashes($jqData[$groupByAlias][$c])."']";
 				}
 				?>
 
@@ -181,7 +201,7 @@ if( isset( $groupBy ) ) {
 
 				<script type="text/javascript">
 				$(document).ready(function(){
-					<?php if( preg_match( '/date/', $groupBy ) ) { ?>
+					<?php if( preg_match( '/date/', $groupByAlias ) ) { ?>
 							var line1=[<?php echo $posString ?>];
 							var plot2 = $.jqplot('reportchart', [line1], {
 									title:'Average Position<?php echo ( strlen( $reportDetails['chartLabel'] ) > 0 ?" | " . $reportDetails['chartLabel'] . "":"") ?>',
@@ -189,8 +209,25 @@ if( isset( $groupBy ) ) {
 										xaxis:{
 											renderer:$.jqplot.DateAxisRenderer,
 											tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+											ticks:[<?php echo $xAxis ?>],
 											tickOptions:{
-												formatString:'%m-%d-%y',
+												<?php
+												if( isset( $reportDetails['granularity'] ) ) {
+													switch( $reportDetails['granularity'] ) {
+														case "year":
+															echo "formatString:'%y',";
+															break;
+														case "month":
+															echo "formatString:'%m-%y',";
+															break;
+														case "week":
+														default:
+															echo "formatString:'%m-%d-%y',";
+													}
+												} else {
+													echo "formatString:'%m-%d-%y',";
+												}
+												?>
 												angle: -30
 											},
 										},
@@ -216,8 +253,7 @@ if( isset( $groupBy ) ) {
 										zoom: true,
 									}
 							});
-							
-					<?php } elseif( $groupBy ==  "query" ) { ?>
+					<?php } elseif( $groupByAlias == "query" ) { ?>
 							var plot2 = $.jqplot('reportchart', [[<?php echo $posString ?>]], {
 									title:'Average Position | Query',
 									seriesDefaults:{
@@ -259,7 +295,7 @@ if( isset( $groupBy ) ) {
 											$('#chartDataCallout').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data);
 									}
 							);
-					<?php } elseif( $groupBy ==  "page" ) { ?>
+					<?php } elseif( $groupByAlias == "page" ) { ?>
 							var plot2 = $.jqplot('reportchart', [[<?php echo $posString ?>]], {
 									title:'Average Position | Page',
 									seriesDefaults:{
@@ -308,7 +344,7 @@ if( isset( $groupBy ) ) {
 				});
 				</script>
 
-				<?php if( $reportDetails['sortDir'] == 'desc' ) { $rows = array_reverse( $rows ); } ?>
+				<?php if( $reportDetails['sortDir'] == 'desc' ) { $rows = array_reverse( $rows, true ); } ?>
 
 				<?php
 				$totalsExcludes = array(
@@ -321,28 +357,30 @@ if( isset( $groupBy ) ) {
 				<table class="sidebysidetable sidebysidetable_col mT2p mB2p">
 					<tr>
 						<?php foreach ( $totals as $index => $values ) { ?>
-							<?php if( in_array( $index, $totalsExcludes[$groupBy] ) ) { continue; } ?>
+							<?php if( in_array( $index, $totalsExcludes[$groupByAlias] ) ) { continue; } ?>
 							<td><?php echo ucwords( strtolower( str_replace( "_", " ", $index ) ) ) ?></td>
 						<?php } ?>
 					</tr>
 					<tr>
 						<?php foreach ( $totals as $index => $values ) { ?>
-							<?php if( in_array( $index, $totalsExcludes[$groupBy] ) ) { continue; } ?>
+							<?php if( in_array( $index, $totalsExcludes[$groupByAlias] ) ) { continue; } ?>
 							<td><?php echo $values ?></td>
 						<?php } ?>
 					</tr>
 				</table>
 				<div class="clear"></div>
 
+				<?php $modifyType = array( 'date' => array( "week", "month", "year" ) ); ?>
+				
 				<table class="sidebysidetable sidebysidetable_col">
 					<tr id="data_headings">
-						<td id="data_heading_<?php echo strtolower( $colHeadingPrimary ) ?>" class="taL">
-							<span class="data_heading" datatype="<?php echo strtolower( $colHeadingPrimary ) ?>"><?php echo ucfirst( strtolower( $colHeadingPrimary ) ) ?></span>
+						<td id="data_heading_<?php echo ( array_key_exists( strtolower( $groupByAlias ), $modifyType ) && in_array( strtolower( $colHeadingPrimary ), $modifyType[$groupByAlias] ) ? $groupByAlias : strtolower( $colHeadingPrimary ) ) ?>" class="taL">
+							<span class="data_heading" datatype="<?php echo ( array_key_exists( strtolower( $colHeadingPrimary ), $modifyType ) && in_array( strtolower( $colHeadingPrimary ), $modifyType[$groupByAlias] ) ? $groupByAlias : strtolower( $colHeadingPrimary ) ) ?>"><?php echo ucfirst( strtolower( $colHeadingPrimary ) ) ?></span>
 							<span class="sort sort_asc"></span>
 							<span class="sort sort_desc"></span>
 						</td>
 
-						<?php if( in_array( $groupBy, array("date") ) ) { ?>
+						<?php if( in_array( $groupByAlias, array("date") ) ) { ?>
 						<td id="data_heading_queries">
 							<span class="data_heading" datatype="queries"><?php echo $colHeadingSecondary ?></span>
 							<span class="sort sort_asc"></span>
@@ -351,7 +389,7 @@ if( isset( $groupBy ) ) {
 						</td>
 						<?php } ?>
 
-						<?php if( $groupBy == "page" ) { ?>
+						<?php if( $groupByAlias == "page" ) { ?>
 						<td id="data_heading_instances">
 							<span class="data_heading" datatype="queries"><?php echo $colHeadingSecondary ?></span>
 							<span class="sort sort_asc"></span>
@@ -360,7 +398,7 @@ if( isset( $groupBy ) ) {
 						</td>
 						<?php } ?>
 
-						<?php if( in_array( $groupBy, array("query","date") ) ) { ?>
+						<?php if( in_array( $groupByAlias, array("query","date") ) ) { ?>
 						<td id="data_heading_pages">
 							<span class="data_heading" datatype="pages">Pages</span>
 							<span class="sort sort_asc"></span>
@@ -397,14 +435,39 @@ if( isset( $groupBy ) ) {
 							<label class="reportTooltip" tooltip="Percent of clicks for this result from the SERP (Clicks / Impressions)"><span></span></label>
 						</td>
 					</tr>
+
 					<?php foreach ( $rows as $index => $values ) { ?>
+						<?php
+						if( $reportParams['groupBy'] == "date" ) {
+							switch( strtolower( $colHeadingPrimary ) ) {
+								case "week":
+									$dateStart = $index;
+									$dateEnd = date( "Y-m-d", strtotime( $index . " +6 days" ) );
+									break;
+								case "month":
+									$dateStart = $index . "-01";
+									$monthStart = strtotime( $index );
+									$addNumDays = cal_days_in_month(CAL_GREGORIAN, date( "m", $monthStart ), date( "Y", $monthStart ) ) - 1;
+									$dateEnd = date( "Y-m-d", strtotime( $index . " +" . $addNumDays . " days" ) );
+									break;
+								case "year":
+									$dateStart = $index . "-01-01";
+									$dateEnd = $index . "-12-31";
+									break;
+								default:
+									$dateStart = $index;
+									$dateEnd = $index;
+							}
+						}
+						?>
+
 						<tr>
 							<td class="taL">
 								<?php
 								$url = false;
-								if( $groupBy == "query" ) {
+								if( $groupByAlias == "query" ) {
 									$url = 'https://www.google.com/search?q=' . urlencode($index) . '&start=' . floor($values["avg_position"] / 10) * 10;
-								} elseif( $groupBy == "page" ) {
+								} elseif( $groupByAlias == "page" ) {
 									$url = $index;
 								}
 
@@ -415,7 +478,7 @@ if( isset( $groupBy ) ) {
 								if( strlen( $index ) > strlen( $indexDomain ) && $indexDomain == $reportParams['domain'] ) {
 									echo substr( $index, strlen( $reportParams['domain'] ) );
 								} else {
-									echo $index;
+									echo ( strlen( $index ) > 0 ? $index : '<i>( not set )</i>' );
 								}
 
 								if( $url ) {
@@ -425,7 +488,7 @@ if( isset( $groupBy ) ) {
 								?>
 							</td>
 
-							<?php if( in_array( $groupBy, array("date","page") ) ) { ?>
+							<?php if( in_array( $groupByAlias, array("date","page") ) ) { ?>
 							<td>
 								<?php
 								$urlParams = false;
@@ -434,8 +497,8 @@ if( isset( $groupBy ) ) {
 										$urlParams = $reportParams;
 										$urlParams['groupBy'] = "query";
 										$urlParams['sortBy'] = "query";
-										$urlParams['date_start'] = $index;
-										$urlParams['date_end'] = $index;
+										$urlParams['date_start'] = $dateStart;
+										$urlParams['date_end'] = $dateEnd;
 										break;
 									case "page":
 										$urlParams = $reportParams;
@@ -461,7 +524,7 @@ if( isset( $groupBy ) ) {
 							</td>
 							<?php } ?>
 
-							<?php if( !in_array( $groupBy, array("page") ) ) { ?>
+							<?php if( !in_array( $groupByAlias, array("page") ) ) { ?>
 							<td>
 								<?php
 								$urlParams = false;
@@ -470,8 +533,8 @@ if( isset( $groupBy ) ) {
 										$urlParams = $reportParams;
 										$urlParams['groupBy'] = "page";
 										$urlParams['sortBy'] = "page";
-										$urlParams['date_start'] = $index;
-										$urlParams['date_end'] = $index;
+										$urlParams['date_start'] = $dateStart;
+										$urlParams['date_end'] = $dateEnd;
 										break;
 									case "query":
 										$urlParams = $reportParams;

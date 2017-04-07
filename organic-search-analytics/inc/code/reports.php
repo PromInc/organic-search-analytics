@@ -330,18 +330,27 @@
 					$return['sortBy'] = 'date';
 				}
 
-				$groupByDate = 'date';
-				if( isset( $reportParams['granularity'] ) && $reportParams['granularity'] != 'day' ) {
-					$return['groupBy'] = strtoupper( $reportParams['granularity'] ) . '(' . $groupByDate . ')';
-					$return['pageHeadingItems'][] = "<span>Granularity:</span> " . $reportParams['granularity'];
-				} else {
-					$return['groupBy'] = $groupByDate;
-				}
-
-				if( isset( $reportParams['groupBy'] ) && $reportParams['groupBy'] == "query" ) {
-					$return['groupBy'] = "query";
-				} elseif( isset( $reportParams['groupBy'] ) && $reportParams['groupBy'] == "page" ) {
-					$return['groupBy'] = "page";
+				if( isset( $reportParams['groupBy'] ) ) {
+					if( $reportParams['groupBy'] == "date" ) {
+						if( isset( $reportParams['granularity'] ) && $reportParams['granularity'] != 'day' ) {
+							$return['granularity'] = $reportParams['granularity'];
+							$return['groupByAlias'] = 'date';
+							if( $reportParams['granularity'] == 'month' ) {
+								$return['groupBy'] = 'DATE_FORMAT(date, "%Y-%m")';
+							} elseif( $reportParams['granularity'] == 'week' ) {
+								$return['groupBy'] = 'DATE_FORMAT(DATE_ADD(date, INTERVAL(1-DAYOFWEEK(date)) DAY),"%Y-%m-%d")';
+							} else {
+								$return['groupBy'] = strtoupper( $reportParams['granularity'] ) . '(date)';
+							}
+							$return['pageHeadingItems'][] = "<span>Granularity:</span> " . ucfirst( $reportParams['granularity'] );
+						} else {
+							$return['groupBy'] = $return['groupByAlias'] = 'date';
+						}
+					} elseif( $reportParams['groupBy'] == "query" ) {
+						$return['groupBy'] = $return['groupByAlias'] = "query";
+					} elseif( $reportParams['groupBy'] == "page" ) {
+						$return['groupBy'] = $return['groupByAlias'] = "page";
+					}
 				}
 			}
 			return $return;
