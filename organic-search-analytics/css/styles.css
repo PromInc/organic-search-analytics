@@ -67,12 +67,21 @@ header, header a { color: #FFFFFF; }
 	color: #FFF;
 }
 
+.warn {
+	background-color: #ffeb3b;
+	color: #000;
+}
+
 .successText {
 	color: #4DAE42;
 }
 
 .errorText {
 	color: #CB1616;
+}
+
+.warnText {
+	color: #ff8d00;
 }
 
 .cta_text {

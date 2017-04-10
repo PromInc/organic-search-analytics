@@ -45,6 +45,8 @@ if( isset( $_POST['save'] ) ) {
 	<form action="<?PHP echo $_SERVER['SCRIPT_NAME'] ?>" method="post">
 
 	<?php
+		$debug_logger = ( defined( 'config::DEBUG_LOGGER' ) ? config::DEBUG_LOGGER : Core::DISABLED );
+
 		if( $isConfigured ) {
 			$db_connection_host = config::DB_CONNECTION_DOMAIN;
 			$db_connection_user = config::DB_CONNECTION_USER;
@@ -55,8 +57,6 @@ if( isset( $_POST['save'] ) ) {
 			$oauth_credentials_private_key_file_name = config::OAUTH_CREDENTIALS_PRIVATE_KEY_FILE_NAME;
 
 			$credentials_bing_api_key = config::CREDENTIALS_BING_API_KEY;
-
-			$debug_logger = ( defined( 'config::DEBUG_LOGGER' ) ? config::DEBUG_LOGGER : Core::DISABLED );
 		} else {
 			$db_connection_host = $db_connection_user = $db_connection_password = $db_connection_database = $oauth_credentials_private_key_file_name = $oauth_credentials_email = $credentials_bing_api_key = "";
 		}
@@ -111,7 +111,7 @@ if( isset( $_POST['save'] ) ) {
 
 	<p>
 		<label for="DEBUG_LOGGER">Enable Debug Logger</label>
-		<input type="checkbox" id="DEBUG_LOGGER" name="DEBUG_LOGGER"<?php echo ( $debug_logger == Core::ENABLED ? " checked=checked" : "" ) ?>">
+		<input type="checkbox" id="DEBUG_LOGGER" name="DEBUG_LOGGER"<?php echo ( $debug_logger == Core::ENABLED ? " checked=checked" : "" ) ?>>
 	</p>
 
 	<hr>

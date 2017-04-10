@@ -25,6 +25,7 @@
 		function __construct() {
 			$this->core = new Core(); //Load core
 			$this->mysql = new MySQL(); //Load MySQL
+			$this->debug = new DebugLogger(); //Load Debugging Logger
 		}
 
 
@@ -74,20 +75,25 @@
 		public function getSitesGoogleSearchConsole() {
 			/* Authorize Google via oAuth 2.0 */
 			$gapiOauth = new GAPIoAuth();
-			$client = $gapiOauth->LogIn();
+			try {
+				$client = $gapiOauth->LogIn();
 
-			/* Load Google Webmasters API */
-			$webmasters = new Google_Service_Webmasters($client);
+				/* Load Google Webmasters API */
+				$webmasters = new Google_Service_Webmasters($client);
 
-			/* Load sites functions */
-			$siteServices = $webmasters->sites;
+				/* Load sites functions */
+				$siteServices = $webmasters->sites;
 
-			/* Get list of sites */
-			$gSites = $siteServices ->listSites();
+				/* Get list of sites */
+				$gSites = $siteServices ->listSites();
 
-			$return = array();
-			foreach( $gSites->getSiteEntry() as $site ) {
-				$return[] = array( 'url' => $site['siteUrl'] );
+				$return = array();
+				foreach( $gSites->getSiteEntry() as $site ) {
+					$return[] = array( 'url' => $site['siteUrl'] );
+				}
+			} catch (Exception $e) {
+				$return['googleapi'] = array( 'warn' => 'Couldn\'t connect to the Google API.' );
+				$this->debug->debugLog("Couldn't connect to the Google API: ".$e->getMessage(), "GoogleApiAuthorization.log");
 			}
 
 			return $return;
@@ -106,10 +112,17 @@
 
 			$bingSites = json_decode( $bing->requestApi( config::CREDENTIALS_BING_API_KEY, 'GetUserSites' ) );
 
-			$return = array();
-			if( $bingSites && !isset( $bingSites->ErrorCode ) ) {
-				foreach( $bingSites->d as $site ) {
-					$return[] = array( 'url' => $site->Url );
+			if( isset( $bingSites->ErrorCode ) ) {
+				$return['bingapi'] = array( 'warn' => 'Couldn\'t connect to the Bing API.' );
+				if( isset( $bingSites->Message ) ) {
+					$this->debug->debugLog("Couldn't connect to the Bing API: ".$bingSites->Message, "BingApiAuthorization.log");				
+				}
+			} elseif( isset( $bingSites->d ) ) {
+				$return = array();
+				if( $bingSites && !isset( $bingSites->ErrorCode ) ) {
+					foreach( $bingSites->d as $site ) {
+						$return[] = array( 'url' => $site->Url );
+					}
 				}
 			}
 
@@ -206,79 +219,82 @@
 
 			/* Authorize Google via oAuth 2.0 */
 			$gapiOauth = new GAPIoAuth();
-			$client = $gapiOauth->LogIn();
+			try {
+				$client = $gapiOauth->LogIn();
 
-			/* Define what search types to request from Google Search Analytics */
-			$searchTypes = array('web','image','video');
+				/* Define what search types to request from Google Search Analytics */
+				$searchTypes = array('web','image','video');
 
-			/* Load Google Webmasters API */
-			$webmasters = new Google_Service_Webmasters($client);
+				/* Load Google Webmasters API */
+				$webmasters = new Google_Service_Webmasters($client);
 
-			/* Load Search Analytics API */
-			$searchAnalyticsRequest = new Google_Service_Webmasters_SearchAnalyticsQueryRequest($client);
+				/* Load Search Analytics API */
+				$searchAnalyticsRequest = new Google_Service_Webmasters_SearchAnalyticsQueryRequest($client);
 
-			/* Prepare Search Analytics Resource */
-			$searchanalytics = $webmasters->searchanalytics;
+				/* Prepare Search Analytics Resource */
+				$searchanalytics = $webmasters->searchanalytics;
 
-			/* Build Search Analytics Request */
-			$searchAnalyticsRequest->setDimensions( $params['dimensions'] );
-			$searchAnalyticsRequest->setRowLimit( $params['row_limit'] ); /* Valid options: 1-5000 */
+				/* Build Search Analytics Request */
+				$searchAnalyticsRequest->setDimensions( $params['dimensions'] );
+				$searchAnalyticsRequest->setRowLimit( $params['row_limit'] ); /* Valid options: 1-5000 */
 
-			/* Set date for Search Analytics Request */
-			$searchAnalyticsRequest->setStartDate( $date );
-			$searchAnalyticsRequest->setEndDate( $date );
+				/* Set date for Search Analytics Request */
+				$searchAnalyticsRequest->setStartDate( $date );
+				$searchAnalyticsRequest->setEndDate( $date );
 
-			if( isset( $params['filters'] ) || isset( $params['groups'] ) ) {
-				$searchAnalyticsDimensionFilterGroup = new Google_Service_Webmasters_ApiDimensionFilterGroup;
-			}
-
-			if( isset( $params['filters'] ) ) {
-				$filters = array();
-				foreach( $params['filters'] as $filter ) {
-					$dimensionFilter = new Google_Service_Webmasters_ApiDimensionFilter;
-					$dimensionFilter->setDimension( $filter['dimension'] );
-					$dimensionFilter->setOperator( $filter['operator'] );
-					$dimensionFilter->setExpression( $filter['expression'] );
-					$filters[] = $dimensionFilter;
+				if( isset( $params['filters'] ) || isset( $params['groups'] ) ) {
+					$searchAnalyticsDimensionFilterGroup = new Google_Service_Webmasters_ApiDimensionFilterGroup;
 				}
-				$searchAnalyticsDimensionFilterGroup->setFilters( $filters );
-				$searchAnalyticsRequest->setDimensionFilterGroups( array( $searchAnalyticsDimensionFilterGroup ) );
-			}
 
-			if( isset( $params['groups'] ) ) {
-				/* TODO */
-				// $dimensionFilterGroups['groups'] = $params['groups'];
-			}
-
-			if( isset( $params['aggregation_type'] ) ) {
-				$searchAnalyticsRequest->setAggregationType( $params['aggregation_type'] );
-			}
-
-			$dimensionMap = array_flip( $this->getDimensions() );
-
-			/* Loop through each of the search types */
-			foreach( $searchTypes as $searchType ) {
-				/* Set search type in Search Analytics Request */
-				$searchAnalyticsRequest->setSearchType( $searchType );
-
-				/* Send Search Analytics Request */
-				$searchAnalyticsResponse = $searchanalytics->query( $website, $searchAnalyticsRequest);
-
-				/* Import Search Analytics to Database */
-				if( is_object( $searchAnalyticsResponse ) ) {
-					switch( $params['mode'] ) {
-						case 'import':
-							$wmtimport = new WMTimport();
-							$importCount += $wmtimport->importGoogleSearchAnalytics( $website, $date, $searchType, $searchAnalyticsResponse, $dimensionMap );
-							break;
-						case 'return':
-							var_dump( $searchAnalyticsResponse );
-							break;
+				if( isset( $params['filters'] ) ) {
+					$filters = array();
+					foreach( $params['filters'] as $filter ) {
+						$dimensionFilter = new Google_Service_Webmasters_ApiDimensionFilter;
+						$dimensionFilter->setDimension( $filter['dimension'] );
+						$dimensionFilter->setOperator( $filter['operator'] );
+						$dimensionFilter->setExpression( $filter['expression'] );
+						$filters[] = $dimensionFilter;
 					}
-					
+					$searchAnalyticsDimensionFilterGroup->setFilters( $filters );
+					$searchAnalyticsRequest->setDimensionFilterGroups( array( $searchAnalyticsDimensionFilterGroup ) );
 				}
-			}
 
+				if( isset( $params['groups'] ) ) {
+					/* TODO */
+					// $dimensionFilterGroups['groups'] = $params['groups'];
+				}
+
+				if( isset( $params['aggregation_type'] ) ) {
+					$searchAnalyticsRequest->setAggregationType( $params['aggregation_type'] );
+				}
+
+				$dimensionMap = array_flip( $this->getDimensions() );
+
+				/* Loop through each of the search types */
+				foreach( $searchTypes as $searchType ) {
+					/* Set search type in Search Analytics Request */
+					$searchAnalyticsRequest->setSearchType( $searchType );
+
+					/* Send Search Analytics Request */
+					$searchAnalyticsResponse = $searchanalytics->query( $website, $searchAnalyticsRequest);
+
+					/* Import Search Analytics to Database */
+					if( is_object( $searchAnalyticsResponse ) ) {
+						switch( $params['mode'] ) {
+							case 'import':
+								$wmtimport = new WMTimport();
+								$importCount += $wmtimport->importGoogleSearchAnalytics( $website, $date, $searchType, $searchAnalyticsResponse, $dimensionMap );
+								break;
+							case 'return':
+								var_dump( $searchAnalyticsResponse );
+								break;
+						}
+					}
+				}
+			} catch (Exception $e) {
+				$importCount = -1;
+				$this->debug->debugLog("Couldn't authorize with the Google API: ".$e->getMessage(),  "GoogleApiAuthorization.log");
+			}
 			return $importCount;
 		}
 

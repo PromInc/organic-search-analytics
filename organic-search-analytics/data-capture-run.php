@@ -28,13 +28,25 @@ if( isset($_GET) && isset($_GET['type']) && isset($_GET['domain']) && isset($_GE
 		case 'googleSearchAnalytics':
 			$recordsImported = $dataCapture->downloadGoogleSearchAnalytics( $_GET['domain'],$_GET['date'], $overrideSettings );
 			if( !isset( $_GET['mode'] ) || $_GET['mode'] != 'return' ) {
-				echo number_format( $recordsImported ) . " records succesfully imported to the database for " . $_GET['domain'] . " for date: " . $_GET['date'] . ".";
+				switch( $recordsImported ) {
+					case -1:
+						echo "There was an error in authorizing your API connection.";
+						break;
+					default:
+						echo number_format( $recordsImported ) . " records succesfully imported to the database for " . $_GET['domain'] . " for date: " . $_GET['date'] . ".";
+				}
 			}
 			break;
 		case 'bingSearchKeywords':
 			$recordsImported = $dataCapture->downloadBingSearchKeywords($_GET['domain'],$_GET['date'], $overrideSettings);
 			if( !isset( $_GET['mode'] ) || $_GET['mode'] != 'return' ) {
-				echo number_format( $recordsImported ) . " records succesfully imported to the database for " . $_GET['domain'] . ".";
+				switch( $recordsImported ) {
+					case -1:
+						echo "There was an error in authorizing your API connection.";
+						break;
+					default:
+						echo number_format( $recordsImported ) . " records succesfully imported to the database for " . $_GET['domain'] . ".";
+				}
 			}
 			break;
 	}

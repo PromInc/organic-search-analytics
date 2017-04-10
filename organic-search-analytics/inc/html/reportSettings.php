@@ -7,8 +7,13 @@
 		<label class="groupLabel">Domain:</label><br>
 		<?php
 		$sitesList = $dataCapture->getSitesGoogleSearchConsole();
-		foreach( $sitesList as $key => $site ) {
-			echo '<input type="radio" name="domain" id="'.$site['url'].'" value="'.$site['url'].'" '.( !isset( $reportParams['domain'] ) && $key == 0 || isset( $reportParams['domain'] ) && $reportParams['domain'] == $site['url'] ? $checkedTrue : $checkedFalse ).'><label for="'.$site['url'].'">'.$site['url'].'</label><br>';
+
+		if( is_array( $sitesList ) && count( $sitesList ) > 0 && isset( $sitesList[0] ) ) {
+			foreach( $sitesList as $key => $site ) {
+				echo '<input type="radio" name="domain" id="'.$site['url'].'" value="'.$site['url'].'" '.( !isset( $reportParams['domain'] ) && $key == 0 || isset( $reportParams['domain'] ) && $reportParams['domain'] == $site['url'] ? $checkedTrue : $checkedFalse ).'><label for="'.$site['url'].'">'.$site['url'].'</label><br>';
+			}
+		} else {
+			echo 'No domains found';
 		}
 		?>
 	</div>

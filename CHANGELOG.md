@@ -1,3 +1,14 @@
+## 2.5.1 - 2017-04-08
+### Bug Fixes
+- Bing data was not being captured.  Run the upgrade script to correct the database structure for this to capture.
+- General fixes that would cause PHP errors
+- Fix inaccurate file and line that called the debug logger in the logs
+- Log API connection failures and handle errors instead of throwing fatal errors
+
+### Added
+- A link to the settings page from the data capture page when no domains have been configured for a search engine.
+- warn css class for warning messages
+
 ## 2.5.0 - 2017-04-06
 ### Reports
 - Add page data to the report
