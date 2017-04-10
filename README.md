@@ -1,6 +1,12 @@
 # Organic Search Analytics Importer
-## Version 2.5.0 Now Available!!! (April 6th, 2017)
-### New Features
+## Version 2.5.1 Now Available!!! (April 9th, 2017)
+### New Features (2.5.1)
+- Bug fix that prevented Bing data from capturing after 2.5.0
+- Fix for the debug logger that will show which file/line the error was thrown on
+- Reduce PHP errors 
+- Provide clearer messaging when API connections fail
+
+### New Features (2.5.0)
 - Choose which dimensions to capture in the settings
 - Capture Page from Google Search Analytics
 - Reporting Bug Fixes and Enhancements
