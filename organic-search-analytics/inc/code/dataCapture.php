@@ -25,7 +25,9 @@
 		function __construct() {
 			$this->core = new Core(); //Load core
 			$this->mysql = new MySQL(); //Load MySQL
-			$this->debug = new DebugLogger(); //Load Debugging Logger
+			if( defined( 'config::DEBUG_LOGGER' ) ) {
+				$this->debug = new DebugLogger(); //Load Debugging Logger
+			}
 		}
 
 

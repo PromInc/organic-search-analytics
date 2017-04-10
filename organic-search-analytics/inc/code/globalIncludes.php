@@ -12,12 +12,13 @@
 	include_once( $GLOBALS['basedir'].'inc/code/core.php' ); //Core functions
 	$core = new Core(); //Load core
 
+	include_once( $GLOBALS['basedir'].'inc/code/debugLogger.php' ); //Debug Logger
+
 	if( $isConfigured ) {
 		require_once( $GLOBALS['basedir'].'config/config.php' );  //Credentials & Configuration
 
 		if( defined('config::DEBUG_LOGGER') ) {
 			if( config::DEBUG_LOGGER == Core::ENABLED ) {
-				include_once( $GLOBALS['basedir'].'inc/code/debugLogger.php' ); //Debug Logger
 				$debug = new DebugLogger(); //Load Debugging Logger
 			}
 		} else {
