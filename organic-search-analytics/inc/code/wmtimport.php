@@ -17,9 +17,7 @@
 
 
 		function __construct() {
-			if( config::DEBUG_LOGGER == Core::ENABLED ) {
-				$this->debug = new DebugLogger(); //Load Debugging Logger
-			}
+			$this->debug = new DebugLogger(); //Load Debugging Logger
 		}
 
 
