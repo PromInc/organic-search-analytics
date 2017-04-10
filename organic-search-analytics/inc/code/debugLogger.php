@@ -36,7 +36,7 @@
 		 *  @param   dir
 		 *  @param   file
 		 */
-		public function debugLog($message, $level, $dir = self::LOG_DIR_DEFAULT, $file = self::LOG_FILE_DEFAULT) {
+		public function debugLog($message, $level, $file = self::LOG_FILE_DEFAULT, $dir = self::LOG_DIR_DEFAULT) {
 			error_log(
 				$this->makeLogMessage($message,$level=Core::DEBUG),
 				3,
@@ -61,8 +61,8 @@
 					Core::TAB.
 					$message.
 					Core::TAB.
-					"in ".$trace[0]['file'].
-					" line ".$trace[0]['line'].
+					"in ".$trace[1]['file'].
+					" line ".$trace[1]['line'].
 					Core::NEWLINE
 					;
 		}

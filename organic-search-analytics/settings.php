@@ -20,19 +20,25 @@ if( $isConfigured ) {
 	/* Get combined sites */
 	foreach( $wmtSites as $searchEngine => $sitesData ) {
 		foreach( $sitesData as $key => $data ) {
-			if( !isset( $sitesList[ $data['url'] ] ) ) {
-				$sitesList[ $data['url'] ] = array( "availableTo" => array(), "enabled" => array() );
+			if( isset( $data['warn'] ) ) {
+				$alert = array("type"=>"warn", "message"=>$data['warn']);
+			} else {
+				if( !isset( $sitesList[ $data['url'] ] ) ) {
+					$sitesList[ $data['url'] ] = array( "availableTo" => array(), "enabled" => array() );
+				}
+				array_push( $sitesList[ $data['url'] ]['availableTo'], $searchEngine );
 			}
-			array_push( $sitesList[ $data['url'] ]['availableTo'], $searchEngine );
 		}
 	}
 
 	/* Mark sites as enabled */
 	foreach( $siteSettings as $searchEngine => $settings ) {
-		foreach( $settings as $site => $value ) {
-			if( $value == 1 ) {
-				if( isset($sitesList[ $site ] ) ) {
-					array_push( $sitesList[ $site ]['enabled'], $searchEngine );
+		if( $settings ) {
+			foreach( $settings as $site => $value ) {
+				if( $value == 1 ) {
+					if( isset($sitesList[ $site ] ) ) {
+						array_push( $sitesList[ $site ]['enabled'], $searchEngine );
+					}
 				}
 			}
 		}

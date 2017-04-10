@@ -9,11 +9,11 @@
 
 	$isConfigured = file_exists($GLOBALS['basedir'].'config/config.php');
 
+	include_once( $GLOBALS['basedir'].'inc/code/core.php' ); //Core functions
+	$core = new Core(); //Load core
+
 	if( $isConfigured ) {
 		require_once( $GLOBALS['basedir'].'config/config.php' );  //Credentials & Configuration
-
-		include_once( $GLOBALS['basedir'].'inc/code/core.php' ); //Core functions
-		$core = new Core(); //Load core
 
 		if( defined('config::DEBUG_LOGGER') ) {
 			if( config::DEBUG_LOGGER == Core::ENABLED ) {

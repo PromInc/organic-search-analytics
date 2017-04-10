@@ -136,6 +136,33 @@ if( isset( $_GET ) && isset( $_GET['upgrade'] ) ) {
 			}
 
 			$alert = array("type"=>"success", "message"=>"Upgrade performed succesfully.<br>Go to the <a href=\"settings-configure.php\"><b>Settings Configuration</b></a> page and click the <b>Save</b> button.");
+			break;			
+		case "2_5_0_to_2_5_1":
+			/* Include resources */
+			include_once( 'inc/code/core.php' ); //Core functions
+			include_once( 'inc/code/mysql.php' ); //Database Connection
+			$core = new Core(); //Load core
+			$mysql = new MySQL(); //Load MySQL
+			$GLOBALS['db'] = $core->mysql_connect_db(); // Connect to DB
+
+ 			$errors = array();
+
+			/* Table: search_analytics */
+			$query = "ALTER TABLE `search_analytics` CHANGE COLUMN `search_type` `search_type` VARCHAR(24) NULL DEFAULT NULL";
+			$result = $mysql->query( $query );
+			if( !$result ) {
+				$errors[] = $mysql->error;
+			}
+			
+			if( !count( $errors ) ) {
+				$alert = array("type"=>"success", "message"=>"Upgrade performed succesfully.");
+			} else {
+				$errorString = "There were errors in the upgrade process.<br><br>";
+				$errorString .= implode("<br>", $errors );
+				$alert = array("type"=>"error", "message"=>$errorString);
+			}
+
+			$alert = array("type"=>"success", "message"=>"Upgrade performed succesfully.");
 			break;
 	}
 }
@@ -147,6 +174,13 @@ if( isset( $_GET ) && isset( $_GET['upgrade'] ) ) {
 	<p>Certain versions require special consideration when upgrading.  This page will take care of technical changes that need to be made.</p>
 	<p><b>NOTE</b>: If upgrading through multiple versions, it's advised to run all of the updates in order.</p>
 	<ul>
+		<li>
+			<h2>Version 2.5.0 to 2.5.1</h2>
+			<ul>
+				<li>Updates column <b>search_type</b> to allow NULL and default to NULL.</li>
+				<li><a href="<?PHP echo $_SERVER['SCRIPT_NAME'] ?>?upgrade=2_5_0_to_2_5_1" class="button">Run Update for Version 2.5.0 to 2.5.1 <i class="fa fa-play" aria-hidden="true"></i></a></li>
+			</ul>
+		</li>
 		<li>
 			<h2>Version 2.x.x to 2.5.0</h2>
 			<ul>

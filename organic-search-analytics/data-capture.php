@@ -31,6 +31,7 @@
 	?>
 	<div id="<?php echo $catId ?>">
 	<?php
+	if( $domains ) {
 		foreach( $domains as $domain => $values ) {
 			echo '<ul class="searchEngine">';
 				echo '<li>'.$domain.'</li>';
@@ -49,6 +50,9 @@
 				}
 			echo '</ul>';
 		}
+	} else {
+		echo '<ul><li><i>No domains are configured.</i>  <a href="settings.php">Configure Domains for Data Capture.</a></li></ul>';
+	}
 	?>
 	</div>
 	<hr>
@@ -70,6 +74,7 @@
 	?>
 	<div id="<?php echo $catId ?>">
 	<?php
+	if( $domains ) {
 		foreach( $domains as $domain => $values ) {
 			echo '<ul class="searchEngine">';
 				echo '<li>'.$domain.'</li>';
@@ -80,6 +85,9 @@
 					echo '</ul>';
 			echo '</ul>';
 		}
+	} else {
+		echo '<ul><li><i>No domains are configured.</i>  <a href="settings.php">Configure Domains for Data Capture.</a></li></ul>';
+	}
 	?>
 	</div>
 	<hr>

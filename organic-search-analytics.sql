@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS `search_analytics` (
   `domain` varchar(256) NOT NULL,
   `date` date NOT NULL,
   `search_engine` varchar(50) NOT NULL,
-  `search_type` varchar(24) NOT NULL,
+  `search_type` varchar(24) NULL DEFAULT NULL,
   `device_type` varchar(24) NULL DEFAULT NULL,
   `country` varchar(10) NULL DEFAULT NULL,
   `query` varchar(500) NULL DEFAULT NULL,
