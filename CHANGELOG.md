@@ -1,3 +1,7 @@
+## 2.5.2 - 2017-04-20
+### Added
+- CRON functionality
+
 ## 2.5.1 - 2017-04-08
 ### Bug Fixes
 - Bing data was not being captured.  Run the upgrade script to correct the database structure for this to capture.

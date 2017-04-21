@@ -1,4 +1,8 @@
 # Organic Search Analytics Importer
+## CRON Features (April 20th, 2017)
+### New Features (2.5.2) - current master branch
+- Ability to run the import via CRON by calling data-capture-run.php
+
 ## Version 2.5.1 Now Available!!! (April 9th, 2017)
 ### New Features (2.5.1)
 - Bug fix that prevented Bing data from capturing after 2.5.0
