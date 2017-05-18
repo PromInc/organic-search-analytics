@@ -212,7 +212,18 @@ table.sidebysidetable td {
 	font-weight: bold;
 }
 
-#reportChartContainer { padding-bottom: 70px; }
+#reportChartContainer {
+	padding-bottom: 3%;
+}
+
+#reportchart.bar {
+    max-width: 90%;
+}
+
+#chartDataCallout {
+	height: 40px;
+	margin-left: 2%;
+}
 
 .processing {
 	font-weight: bold;
@@ -237,6 +248,8 @@ table.sidebysidetable td {
 .floatR { float:right; }
 
 .clear { clear:both; }
+
+.italic { font-style: italic; }
 
 footer { margin-top: 50px; padding: 20px 20px 15px; background-color:#DDDDDD; }
 

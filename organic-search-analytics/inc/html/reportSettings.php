@@ -131,7 +131,7 @@
 		<?php $tooltip = date( "D M jS, Y", strtotime( $row["max"] . ' -29 days' ) ) . ' to ' . date( "D M jS, Y", strtotime( $row["max"] ) ) ?>
 		<span>
 			<input type="radio" name="date_type" id="date_type_recent_30" value="recent_30"<?php echo ( isset( $reportParams['date_type'] ) && $reportParams['date_type'] == 'recent_30' ? $checkedTrue : $checkedFalse ) ?>>
-			<label for="date_type_recent_30=" tooltip="<?php echo $tooltip ?>">Past 30 Days</label>
+			<label for="date_type_recent_30" tooltip="<?php echo $tooltip ?>">Past 30 Days</label>
 		</span>
 		<?php $tooltip = date( "D M jS, Y", strtotime( $row["max"] . ' -89 days' ) ) . ' to ' . date( "D M jS, Y", strtotime( $row["max"] ) ) ?>
 		<span>

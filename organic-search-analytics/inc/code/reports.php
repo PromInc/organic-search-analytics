@@ -24,6 +24,9 @@
 	{
 
 
+		const EMPTY_RESULT_PLACEHOLDER = "not set";
+
+
 		public $core;
 
 
