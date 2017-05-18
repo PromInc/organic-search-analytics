@@ -166,63 +166,113 @@ if( isset( $groupBy ) ) {
 						$indexDomain = substr( $index, 0, strlen( $reportParams['domain'] ) );
 						if( strlen( $index ) > strlen( $indexDomain ) && $indexDomain == $reportParams['domain'] ) {
 							$jqData[$groupByAlias][] = substr( $index, strlen( $reportParams['domain'] ) );
+						} else {
+							$jqData[$groupByAlias][] = ( strlen( $index ) > 0 ? $index : Reports::EMPTY_RESULT_PLACEHOLDER );
 						}
 					} else {
 						$jqData[$groupByAlias][] = $index;
 					}
 
-					$jqData['impressions'][] = $values["impressions"];
-					$jqData['clicks'][] = $values["clicks"];
-					$jqData['ctr'][] = ( $values["clicks"] / $values["impressions"] ) * 100;
-					$jqData['avg_position'][] = $values["avg_position"];
+					if( $groupByAlias == "date" ) {
+						$jqData['impressions'][$index][] = $values["impressions"];
+						$jqData['clicks'][$index][] = $values["clicks"];
+						$jqData['ctr'][$index][] = ( $values["clicks"] / $values["impressions"] ) * 100;
+						$jqData['avg_position'][$index][] = $values["avg_position"];
+					} else {
+						$jqData['impressions'][] = $values["impressions"];
+						$jqData['clicks'][] = $values["clicks"];
+						$jqData['ctr'][] = ( $values["clicks"] / $values["impressions"] ) * 100;
+						$jqData['avg_position'][] = $values["avg_position"];
+
+					}
 				}
 
-				$num = count( $jqData[$groupByAlias] );
 				$posString = "";
-				$xAxis = "";
 				$posMax = 0;
-				for( $c=0; $c<$num; $c++ ) {
-					if( $c != 0 ) {
-						$posString .= ",";
-						$xAxis .= ",";
+				$labelMax = 50;
+				$labelMaxSuffix = "...";
+
+				if( $groupByAlias == "date" ) {
+					asort( $jqData[$groupByAlias] );
+					$jqData[$groupByAlias] = array_values( $jqData[$groupByAlias] );
+
+					$c = 0;
+					foreach( $jqData[$groupByAlias] as $key ) {
+						if( $c != 0 ) {
+							$posString .= ",";
+						}
+						$posString .= "['".addslashes($key)."',".$jqData['avg_position'][$key][0]."]";
+						if( $jqData['avg_position'][$key][0] > $posMax ) { $posMax = $jqData['avg_position'][$key][0]; }
+						$c+=1;
 					}
-					$posString .= "['".addslashes($jqData[$groupByAlias][$c])."',".$jqData['avg_position'][$c]."]";
-					if( $jqData['avg_position'][$c] > $posMax ) { $posMax = $jqData['avg_position'][$c]; }
-					$xAxis .= "['".addslashes($jqData[$groupByAlias][$c])."','".addslashes($jqData[$groupByAlias][$c])."']";
+				} else {
+					$num = count( $jqData[$groupByAlias] );
+					for( $c=0; $c<$num; $c++ ) {
+						if( $c != 0 ) {
+							$posString .= ",";
+						}
+						$posString .= "['".$jqData[$groupByAlias][$c]."',".round( $jqData['avg_position'][$c], 2 )."]";
+						if( $jqData['avg_position'][$c] > $posMax ) { $posMax = $jqData['avg_position'][$c]; }
+					}
 				}
 				?>
 
-				<div id="reportchart"></div>
+				<?php
+				if( in_array( $groupByAlias, array('query','page') ) ) {
+					$chartType = "bar";
+				} else {
+					$chartType = "line";
+				}
+				?>
+
+				<div id="reportchart" class="<?php echo $chartType ?>"></div>
 				<div id="reportChartContainer">
+					<?php if( in_array( $groupByAlias, array('date') ) ) { ?>
 					<div id="zoomReset" class="button floatR">Reset Zoom</div>
+					<?php } ?>
 					<div id="chartDataCallout"></div>
 				</div>
 				<div class="clear"></div>
 
 				<script type="text/javascript">
+				truncateLongTick = function (formatString, value) {
+					var maxLen = 50;
+					var suffix = '...';
+				
+					var allowedLen = maxLen - suffix.length;
+				
+					if( value.length > allowedLen ) {
+						value = value.substring( 0, allowedLen ) + suffix;
+					}
+				
+					return value;
+				}
+
 				$(document).ready(function(){
 					<?php if( preg_match( '/date/', $groupByAlias ) ) { ?>
 							var line1=[<?php echo $posString ?>];
 							var plot2 = $.jqplot('reportchart', [line1], {
-									title:'Average Position<?php echo ( strlen( $reportDetails['chartLabel'] ) > 0 ?" | " . $reportDetails['chartLabel'] . "":"") ?>',
-									axes:{
-										xaxis:{
-											renderer:$.jqplot.DateAxisRenderer,
+									title: 'Average Position<?php echo ( strlen( $reportDetails['chartLabel'] ) > 0 ?" | " . $reportDetails['chartLabel'] . "":"") ?>',
+									axes: {
+										xaxis: {
+											renderer: $.jqplot.DateAxisRenderer,
 											tickRenderer: $.jqplot.CanvasAxisTickRenderer,
-											ticks:[<?php echo $xAxis ?>],
-											tickOptions:{
+											numberTicks: <?php echo count( $rows ) ?>,
+											min: '<?php echo date( 'n/j/Y', strtotime( $jqData[$groupByAlias][0] ) ) ?>',
+											max: '<?php echo date( 'n/j/Y', strtotime( $jqData[$groupByAlias][ count( $rows ) - 1 ] ) ) ?>',
+											tickOptions: {
 												<?php
 												if( isset( $reportDetails['granularity'] ) ) {
 													switch( $reportDetails['granularity'] ) {
 														case "year":
-															echo "formatString:'%y',";
+															echo "formatString: '%y',";
 															break;
 														case "month":
-															echo "formatString:'%m-%y',";
+															echo "formatString: '%m-%y',";
 															break;
 														case "week":
 														default:
-															echo "formatString:'%m-%d-%y',";
+															echo "formatString: '%m-%d-%y',";
 													}
 												} else {
 													echo "formatString:'%m-%d-%y',";
@@ -231,14 +281,12 @@ if( isset( $groupBy ) ) {
 												angle: -30
 											},
 										},
-										yaxis:{
+										yaxis: {
 											max: 1,
-											min: <?php echo $posMax ?>,
-											tickOptions:{
-												formatString:'%i'
+											min: <?php echo $posMax ?> + (<?php echo $posMax ?> * .1),
+											tickOptions: {
+												formatString: '%i'
 											},
-											label:'SERP Position',
-											labelRenderer: $.jqplot.CanvasAxisLabelRenderer
 										}
 									},
 									highlighter: {
@@ -247,95 +295,120 @@ if( isset( $groupBy ) ) {
 										useAxesFormatters: true,
 										showTooltip: true
 									},
-									series:[{lineWidth:4, markerOptions:{style:'square'}}],
-									cursor:{
+									series: [{lineWidth:4, markerOptions:{style:'square'}}],
+									cursor: {
 										show: true,
 										zoom: true,
+										showTooltip: false
 									}
 							});
 					<?php } elseif( $groupByAlias == "query" ) { ?>
 							var plot2 = $.jqplot('reportchart', [[<?php echo $posString ?>]], {
 									title:'Average Position | Query',
-									seriesDefaults:{
-											renderer:$.jqplot.BarRenderer,
-											rendererOptions: {
-												varyBarColor: true,
-												showDataLabels: true
-											},
+									seriesDefaults: {
+										renderer:$.jqplot.BarRenderer,
+										rendererOptions: {
+											varyBarColor: true,
+											showDataLabels: true
+										},
 									},
 									axesDefaults: {
-											tickRenderer: $.jqplot.CanvasAxisTickRenderer,
-											tickOptions: {
-												angle: 30,
-												fontSize: '10pt'
-											}
-									},
-									axes:{
-										xaxis:{
-											renderer: $.jqplot.CategoryAxisRenderer,
-											pointLabels: { show: true }
+										tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+										tickOptions: {
+											angle: 30,
+											fontSize: '10pt'
 										}
 									},
-									cursor:{
-										show: true,
-										zoom: true,
+									axes: {
+										xaxis: {
+											renderer: $.jqplot.CategoryAxisRenderer,
+											tickOptions: {
+												formatter: truncateLongTick
+											}
+										},
+										yaxis: {
+											max: 1,
+											min: <?php echo $posMax ?> + (<?php echo $posMax ?> * .1),
+											tickOptions: {
+												formatString:'%i'
+											}
+										}
+									},
+									cursor: {
+										showTooltip: false
 									},
 									highlighter: {
 										show: true,
-										tooltipAxes: 'xy',
+										tooltipAxes: 'y',
 										useAxesFormatters: false,
 										showTooltip: true,
 										tooltipFormatString: '%s'
 									}
 							});
-
-							/* Click displays information on HTML page */
-							$('#reportchart').bind('jqplotDataClick', 
-									function (ev, seriesIndex, pointIndex, data) {
-											$('#chartDataCallout').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data);
-									}
+							/* Hover displays information on HTML page */
+							$('#reportchart').bind('jqplotDataHighlight', 
+								function (ev, seriesIndex, pointIndex, data) {
+									$('#chartDataCallout').html('URL: '+plot2._plotData[seriesIndex][pointIndex][0]+'<br>Average SERP Position: '+plot2._plotData[seriesIndex][pointIndex][1]);
+								}
+							);
+							$('#reportchart').bind('jqplotDataUnhighlight', 
+								function (ev) {
+									$('#chartDataCallout').html('');
+								}
 							);
 					<?php } elseif( $groupByAlias == "page" ) { ?>
 							var plot2 = $.jqplot('reportchart', [[<?php echo $posString ?>]], {
 									title:'Average Position | Page',
 									seriesDefaults:{
-											renderer:$.jqplot.BarRenderer,
-											rendererOptions: {
-												varyBarColor: true,
-												showDataLabels: true
-											},
+										renderer:$.jqplot.BarRenderer,
+										rendererOptions: {
+											varyBarColor: true,
+											showDataLabels: true
+										},
 									},
 									axesDefaults: {
-											tickRenderer: $.jqplot.CanvasAxisTickRenderer,
-											tickOptions: {
-												angle: 30,
-												fontSize: '10pt'
-											}
-									},
-									axes:{
-										xaxis:{
-											renderer: $.jqplot.CategoryAxisRenderer,
-											pointLabels: { show: true }
+										tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+										tickOptions: {
+											angle: 30,
+											fontSize: '10pt'
 										}
 									},
-									cursor:{
-										show: true,
-										zoom: true,
+									axes: {
+										xaxis: {
+											renderer: $.jqplot.CategoryAxisRenderer,
+											tickOptions: {
+												formatter: truncateLongTick
+											}
+										},
+										yaxis: {
+											max: 1,
+											min: <?php echo $posMax ?> + (<?php echo $posMax ?> * .1),
+											tickOptions: {
+												formatString: '%i'
+											}
+										}
+									},
+									cursor: {
+										showTooltip: false
 									},
 									highlighter: {
 										show: true,
-										tooltipAxes: 'xy',
+										tooltipAxes: 'y',
 										useAxesFormatters: false,
 										showTooltip: true,
 										tooltipFormatString: '%s'
 									}
 							});
-
-							/* Click displays information on HTML page */
-							$('#reportchart').bind('jqplotDataClick', 
-									function (ev, seriesIndex, pointIndex, data) {
-											$('#chartDataCallout').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data);
-									}
+							/* Hover displays information on HTML page */
+							$('#reportchart').bind('jqplotDataHighlight', 
+								function (ev, seriesIndex, pointIndex, data) {
+									$('#chartDataCallout').html('URL: '+plot2._plotData[seriesIndex][pointIndex][0]+'<br>Average SERP Position: '+plot2._plotData[seriesIndex][pointIndex][1]);
+								}
+							);
+							$('#reportchart').bind('jqplotDataUnhighlight', 
+								function (ev) {
+									$('#chartDataCallout').html('');
+								}
 							);
 					<?php } ?>
 
@@ -478,7 +551,7 @@ if( isset( $groupBy ) ) {
 								if( strlen( $index ) > strlen( $indexDomain ) && $indexDomain == $reportParams['domain'] ) {
 									echo substr( $index, strlen( $reportParams['domain'] ) );
 								} else {
-									echo ( strlen( $index ) > 0 ? $index : '<i>( not set )</i>' );
+									echo ( strlen( $index ) > 0 ? $index : '<i>( ' . Reports::EMPTY_RESULT_PLACEHOLDER . ' )</i>' );
 								}
 
 								if( $url ) {
@@ -624,6 +697,10 @@ if( isset( $groupBy ) ) {
 					}
 				</script>
 
+		<?php } else { ?>
+			<div class="italic mT2p">
+				No records found.
+			</div>
 		<?php } ?>
 	<?php } ?>
 	<div class="clear"></div>

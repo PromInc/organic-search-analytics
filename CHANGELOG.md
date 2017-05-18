@@ -1,3 +1,10 @@
+## 2.5.3 - 2017-05-17
+### Bug Fixes
+- Report chart usability and rendering improvements
+
+### Addresses Github Issues
+- #51
+
 ## 2.5.2 - 2017-04-20
 ### Added
 - CRON functionality
