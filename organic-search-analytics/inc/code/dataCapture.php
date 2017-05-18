@@ -64,7 +64,8 @@
 			return array(
 			'mode' => 'import', /* What to do with the data.  Valid options: import, return */
 			'dimensions' => $this->getDimensions(),
-			'row_limit' => 5000 /* Number of rows to capture from Google.  Valid options: 1-5000 */
+			'row_limit' => 5000, /* Number of rows to capture from Google.  Valid options: 1-5000 */
+			'start_row' => 0 /* Start rows to capture from Google.  Valid options: >=0 */
 			);
 		}
 
@@ -204,6 +205,36 @@
 			return $returnArray;
 		}
 
+		/**
+		 *  Request Google Search Analytics API and loop through (max. 20) pages
+		 *
+		 *  @param $website     String   Website URL that is enabled in Google Search Console
+		 *  @param $date     Date (YYYY-MM-DD)   Date for which to request data
+		 *  @param $overrides     Array   Values to override default settings for request
+		 *
+		 *  @returns   Integer,array   Number of records found or var_dump of returned data from Google depending on mode
+		 */
+		public function downloadGoogleSearchAnalyticsPaged( $website, $date, $overrides = array() ) {
+                    $params = array_merge( $this->defaultGoogleSearchAnalyticsSettings(), $overrides );
+                    
+                    $recordsImported = null;
+                    $recordsImportedTotal = 0;
+                    $maxPages = 1;
+                    if( defined( 'config::downloadGoogleMaxPages' ) ) {
+                        $maxPages = max(config::downloadGoogleMaxPages, 1);
+                    }
+                    for ($page = 0; (is_null($recordsImported) || $recordsImported > 0) && $page < $maxPages; $page++) {
+                        $recordsImported = $this->downloadGoogleSearchAnalytics( $website, $date, $overrides );
+                        if( $recordsImported > 0 ) {
+                            $recordsImportedTotal = $recordsImportedTotal + $recordsImported;
+                            $overrides['start_row'] = $params['row_limit']*($page+1);
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                    return $recordsImportedTotal;
+                }
 
 		/**
 		 *  Request Google Search Analytics API
@@ -239,11 +270,13 @@
 				/* Build Search Analytics Request */
 				$searchAnalyticsRequest->setDimensions( $params['dimensions'] );
 				$searchAnalyticsRequest->setRowLimit( $params['row_limit'] ); /* Valid options: 1-5000 */
+				$searchAnalyticsRequest->setStartRow( $params['start_row'] ); /* Valid options: >=0 */
+				
 
 				/* Set date for Search Analytics Request */
 				$searchAnalyticsRequest->setStartDate( $date );
 				$searchAnalyticsRequest->setEndDate( $date );
-
+                                
 				if( isset( $params['filters'] ) || isset( $params['groups'] ) ) {
 					$searchAnalyticsDimensionFilterGroup = new Google_Service_Webmasters_ApiDimensionFilterGroup;
 				}
@@ -260,7 +293,7 @@
 					$searchAnalyticsDimensionFilterGroup->setFilters( $filters );
 					$searchAnalyticsRequest->setDimensionFilterGroups( array( $searchAnalyticsDimensionFilterGroup ) );
 				}
-
+                                
 				if( isset( $params['groups'] ) ) {
 					/* TODO */
 					// $dimensionFilterGroups['groups'] = $params['groups'];
