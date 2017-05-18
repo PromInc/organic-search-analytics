@@ -1,6 +1,10 @@
 # Organic Search Analytics Importer
+## Report Chart Updates (May 17th, 2017)
+### New Features (2.5.3) - current master branch
+- Bug fixes and data layout and style updates to make the charts more useful
+
 ## CRON Features (April 20th, 2017)
-### New Features (2.5.2) - current master branch
+### New Features (2.5.2)
 - Ability to run the import via CRON by calling data-capture-run.php
 
 ## Version 2.5.1 Now Available!!! (April 9th, 2017)
