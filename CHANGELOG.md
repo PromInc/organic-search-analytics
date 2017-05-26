@@ -1,3 +1,8 @@
+## 2.5.4 - 2017-05-25
+### Bug Fixes
+- Revert unintentional deployment of Apache Alias environment propsed in #31 and tracked in #38 and deployed in version 2.5.0 which issues with the report pages.
+- Encode special characters in chart data to prevent broken charts when data contains single quotes
+
 ## 2.5.3 - 2017-05-17
 ### Bug Fixes
 - Report chart usability and rendering improvements
