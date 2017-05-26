@@ -1,6 +1,10 @@
 # Organic Search Analytics Importer
+## Report Bug Fixes (May 25th, 2017)
+### New Features (2.5.4) - current master branch
+- Javascript errors were preventing features and functionality of the report settings and chart display.
+
 ## Report Chart Updates (May 17th, 2017)
-### New Features (2.5.3) - current master branch
+### New Features (2.5.3)
 - Bug fixes and data layout and style updates to make the charts more useful
 
 ## CRON Features (April 20th, 2017)
